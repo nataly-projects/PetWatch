@@ -1,0 +1,31 @@
+# Dependency directories
+/node_modules
+
+# Environment file
+.env
+
+# Build artifacts
+/build
+/dist
+
+# Log files
+/logs
+
+# IDE and editor files
+.idea
+.vscode
+
+# User-specific files
+.DS_Store
+Thumbs.db
+
+# OS generated files
+.DS_Store?
+*.DS_Store
+*.db
+*.sqlite
+*.log
+
+# npm lock file
+package-lock.json
+yarn.lock
