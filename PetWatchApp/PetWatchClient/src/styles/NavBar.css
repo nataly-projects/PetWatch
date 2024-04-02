@@ -1,0 +1,103 @@
+nav {
+  background-color: #F8F4EF;
+  border-bottom: 1px solid #795B4A;
+  text-align: center;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  position: fixed;
+  height: 100px; 
+
+
+  .nav-user {
+    justify-content: space-around;
+  }
+
+  .nav-login {
+    justify-content: space-between;
+  }
+
+  .limit {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+
+  .nav-right {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+  }
+
+  .logo {
+    margin-bottom: 10px; 
+    margin: 20px 0;
+  }
+
+  .logo-image {
+    width: 80px; 
+    height: auto; 
+    margin-left: 10px;
+    margin-top: 10px;
+    border-radius: 10px;
+    border: 2px solid #795B4A;
+  }
+
+  .join_us {
+    float: right;
+    margin-right: 20px;
+    font-size: 30px;
+  }
+
+  .join_us-icon {
+    color: #795B4A;
+  }
+
+  ul {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-self: flex-end;
+    justify-content: space-between;
+    padding-right: 104px;
+    list-style-type: none;
+    padding: 0;
+  }
+
+  ul li {
+    color: white;
+    list-style-type: none;
+    margin-right: 17px;
+    margin-left: 17px;
+    font-weight: 100;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 10px 0;
+  }
+
+  a {
+    text-decoration: none;
+    color: #795B4A;
+    font-weight: bold;
+    padding: 24px 32px;
+  } 
+
+  ul li a.active  {
+    border-bottom: 2px #795B4A solid;
+  } 
+
+  ul li a:hover {
+    cursor: pointer;
+  }
+ 
+}
+
+ 
+  

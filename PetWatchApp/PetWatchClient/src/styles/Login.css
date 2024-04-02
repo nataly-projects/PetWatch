@@ -1,0 +1,121 @@
+
+.login {
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-bottom: 60px;
+  margin-bottom: 30%;
+  padding-top: 24px;
+  width: 100%;
+  background-color: #F8F4EF;
+  border-radius: 10px;
+  border: 1px solid #795B4A;
+
+  .sign-button {
+    height: 50px;
+    width: 70%;
+    font-size: 16px;
+    padding-top: 16px;
+    color: white;
+    background-color: #795B4A;
+    align-items: center;
+  }
+
+  .sign-button:hover {
+    cursor: pointer;
+    background-color: #795B4A;
+  }
+
+  .forgot-password {
+    margin-top: 22px;
+    opacity: 0.8;
+    font-size: 16px;
+    color: #795B4A;
+    width: 70%;
+    text-align: center;
+  }
+
+  .forgot-password:hover {
+    color: #795B4A;
+    cursor: pointer;
+    opacity: 1;
+  }
+
+
+  .form {
+    margin-top: 20px;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .form-row {
+      width: 70%;
+      margin-bottom: 26px;
+    }
+  }
+  
+
+  .title {
+    color: #795B4A;
+    font-size: 19px;
+    font-weight: bold;
+    text-align: center;
+  }
+
+  .secondary-title {
+    margin-top: 10px;
+    margin-bottom: 30px;
+    color: #795B4A;
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .error-message {
+    margin-top: -40px;
+    color: red;
+    font-size: 15px;
+  }
+
+  .input-group {
+    position: relative; 
+  }
+  
+  .input-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%); 
+    left: 10px; 
+    color: #795B4A;
+  }
+
+  .input-group input {
+    padding-left: 40px;
+  }
+
+  .pass-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%); 
+    right: 10px; 
+    color: #795B4A;
+  }
+
+  input {
+    padding: 8px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 5px;
+    border: 1px solid #795B4A;
+    border-radius: 4px;
+    color: #795B4A;
+  }
+
+  label {
+    font-weight: bold;
+    color: #795B4A;
+  }
+
+}
+
+
+

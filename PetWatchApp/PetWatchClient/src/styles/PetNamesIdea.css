@@ -1,0 +1,109 @@
+.names-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    position: relative;
+
+    .header {
+        display: flex;
+        flex-direction: column;
+        position: sticky;
+        top: 100px;
+        background-color: #fff; 
+        margin: 0;
+    }
+
+    .name-navigation {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+        z-index: 1000;
+        color: #795B4A;
+    }
+
+    .letters-container {
+        display: flex; 
+    }
+
+    .letter-circle {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 30px;
+        border-radius: 50%;
+        border: 1px solid #795B4A;
+        margin-right: 10px; 
+        cursor: pointer;
+        color: #795B4A;
+        background-color: #F8F4EF;
+    }
+
+    .desciption-section {
+        color: #795B4A;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .desciption-section p{
+        margin: 5px;
+    }
+    
+    /* .name-selection-section {
+    margin-bottom: 40px;
+    } */
+    
+    .letter-section {
+        display: flex;
+        flex-direction: row;
+        align-items: baseline;
+        gap: 20px;
+        margin-bottom: 20px;
+        border: 1px solid #795B4A;
+        border-radius: 10px;
+        padding: 10px;
+    }
+    
+    .letter-section h3 {
+        font-size: 24px;
+        margin-bottom: 10px;
+        color: #795B4A;
+    }
+    
+    /* .letter-section ul {
+        list-style-type: none;
+        padding: 0;
+        color: #795B4A;
+    }
+    
+    .letter-section ul li {
+        font-size: 18px;
+        margin-bottom: 5px;
+        color: #795B4A;
+    } */
+
+    h2, h1 {
+        border-bottom: 0px;
+        color: #795B4A;
+    }
+
+    .name-grid {
+        width: 100%;
+        display: grid;
+        /* grid-template-columns: repeat(3, 1fr); */
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Adjust minimum width as needed */
+
+        gap: 10px; 
+    }
+    
+    .name-item {
+        color: #795B4A;
+        width: fit-content;
+        background-color:#F8F4EF;
+        padding: 10px;
+        border-radius: 5px;
+    }
+      
+}
+  
+ 
+  

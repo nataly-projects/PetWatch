@@ -1,0 +1,41 @@
+.sidebar {
+    flex: 0 0 150px; 
+    background-color: #F8F4EF;
+    padding: 20px;
+    display: flex; 
+    flex-direction: column; 
+    color: #795B4A;
+
+   
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      flex: 1; /* Expand to fill remaining height within sidebar */
+      gap: 10px; 
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+    
+    li {
+      display: flex;
+      flex: 1;
+      align-items: center; 
+      border-bottom: 1px solid #795B4A;
+      list-style: none;
+    }
+    
+    a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between; 
+      padding: 10px;
+      text-decoration: none;
+      color: #333;
+    }
+    
+  }
+  
+  
+  

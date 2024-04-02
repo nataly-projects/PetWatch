@@ -1,0 +1,89 @@
+
+.user-profile-card {
+    border: 1px solid #795B4A;
+    border-radius: 8px;
+    background: #F8F4EF;
+    color: #795B4A;
+    overflow: hidden;
+    width: 50%;
+    margin: 20px auto;
+    padding: 20px;
+  }
+
+  .user-image-container {
+    position: relative;
+  }
+  
+  .user-image {
+    width: 50%;
+    height: auto;
+    border-radius: 50%;
+  }
+  
+  .upload-overlay {
+    position: absolute;
+    /* top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%; */
+    top: 35%;
+    left: 25%;
+    width: 50%;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  }
+  
+  .user-image-container:hover .upload-overlay {
+    opacity: 1;
+  }
+  
+  .upload-button {
+    background-color: #fff;
+    color: #333;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .user-details {
+    padding: 20px;
+  }
+  
+  h2 {
+    margin-top: 0;
+  }
+
+  input {
+    width: 60%;
+  }
+  
+  button {
+    width: max-content;
+  }
+  
+  .user-header-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .details-container {
+    display: flex;
+    flex-direction: column;
+    margin: 5px;
+
+    label {
+      font-weight: bold;
+    }
+  }
+
+  .edit-actions {
+    display: flex;
+    gap: 15px;
+  }

@@ -1,0 +1,69 @@
+.contact-page {
+  width: 100%;
+  background: linear-gradient( rgba(255,255,255, 0.7), rgba(255,255,255, 0.7) ), url('../images/paw_background.jpg');
+}
+
+.contact-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    margin-top: 24px;
+    margin-bottom: 30px;
+    width: 70%;
+    background-color: #F8F4EF;
+    border-radius: 10px;
+    border: 1px solid #795B4A;
+
+    button:hover {
+      background-color: #4F3E32;
+    }
+
+    h1, p {
+      color: #795B4A;
+    }
+
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 20px;
+    }
+    
+    .contact-form {
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    label {
+      margin-bottom: 8px;
+    }
+    
+    input,
+    textarea {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    
+    button {
+      background-color: #795B4A;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  
+    .error-message {
+      margin-top: -10px;
+      color: red;
+      font-size: 15px;
+    }
+  }
+  
+ 
+  
+  
+  
