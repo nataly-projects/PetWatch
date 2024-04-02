@@ -1,5 +1,10 @@
 import React from 'react';
 import '../styles/VaccinationPage.css';
+import fruitsCanEatImg from '../images/catFruitCanEat.jpg';
+import meatCanEatImg from '../images/catMeatCanEat.jpg';
+import otherCanEatImg from '../images/catOtherCanEat.jpg';
+import eatCautiousImg from '../images/catEatCautious.jpg';
+import notToEatImg from '../images/catNotEat.jpg';
 
 const CatVaccinationPage = () => {
 
@@ -63,18 +68,55 @@ const CatVaccinationPage = () => {
                 <h2>Cat Vaccination Schedule:</h2>
                 {renderVaccineScheduleTable()}
             </div>
-           
-
-            <h2>Routine Care:</h2>
+            <div className="section">
+                <h2>Routine Care:</h2>
+                <ul>
+                    {routineCare.map((care, index) => (
+                        <li key={index}>
+                            <h3>{care.name}</h3>
+                            <p>{care.description}</p>
+                        </li>
+                    ))}
+                    <p><strong>It is important to consult with a veterinarian about the vaccination program that is most appropriate for your cat.</strong></p>
+                </ul>
+            </div>
+            <h2>Feeding Your Cat</h2>
+            <h3>What Can Cats Eat?</h3>
+            <p>
+            Cats can enjoy a variety of foods that are beneficial for their health. Here are some foods that cats can eat:
+            </p>
             <ul>
-                {routineCare.map((care, index) => (
-                    <li key={index}>
-                        <h3>{care.name}</h3>
-                        <p>{care.description}</p>
-                    </li>
-                ))}
-                <p><strong>It is important to consult with a veterinarian about the vaccination program that is most appropriate for your cat.</strong></p>
+                <li><strong>Fruit and Vegetables:</strong>Apples, bananas, strawberries, carrots, and other fruits and vegetables are rich in vitamins, minerals, fiber, and protein.
+                </li>
+                <img src={fruitsCanEatImg}></img>
+                <li><strong>Meat & Fish:</strong> Chicken, beef, salmon, and other meats and fish are high in protein and essential fatty acids.
+                <img src={meatCanEatImg}></img>
+                </li>
+                <li><strong>Other Foods:</strong> Grains, dairy, and eggs can also be given to cats in moderation.
+                <img src={otherCanEatImg}></img>
+                </li>
             </ul>
+            <h3>Foods to Be Cautious About</h3>
+            <p>
+            Foods in this group are ones that can be given to your cat, but you should be cautious about them. In general, what cats eat should be monitored, but with these, you need to be extra careful; most of these foods should be given to your cat in small quantities as too much can cause them potential harm. Others are foods that you need to watch carefully when giving your cat. For example, your cat can enjoy gnawing on a bone, but they can splinter and become sharp and dangerous so will then need to be taken away and safely disposed of if this happens.
+            <img src={eatCautiousImg}></img>
+            </p>
+            
+            <h3>What Can Cats Not Eat?</h3>
+            <p>
+            Certain foods are toxic to cats and should be avoided. Here are some foods that cats can't eat
+            </p>
+                <ul>
+                <li><strong>Chocolate:</strong> Contains theobromine and caffeine, which are toxic to cats.</li>
+                <li><strong>Onions and Garlic:</strong> Can cause damage to a cat's red blood cells.</li>
+                <li><strong>Grapes and Raisins:</strong> Can cause kidney failure in cats.</li>
+                <img src={notToEatImg}></img>
+            </ul>
+            <h3>Summary</h3>
+            <p>
+            Understanding what cats can and can't eat is crucial for their health. While some human foods can be incorporated into their diet, others should be avoided entirely. By providing a balanced diet and avoiding harmful foods, you can ensure your cat stays healthy and happy.
+            </p>
+
         </div>
     );
 };

@@ -1,10 +1,10 @@
 import React from 'react';
 import '../styles/VaccinationPage.css';
-import fruitsCanEatImg from '../images/fruitsCanEat.jpg';
-import meatCanEatImg from '../images/meatCanEat.jpg';
-import otherCanEatImg from '../images/otherCanEat.jpg';
-import eatCautiousImg from '../images/eatCautious.jpg';
-import notToEatImg from '../images/notEat.jpg';
+import fruitsCanEatImg from '../images/dogFruitsCanEat.jpg';
+import meatCanEatImg from '../images/dogMeatCanEat.jpg';
+import otherCanEatImg from '../images/dogOtherCanEat.jpg';
+import eatCautiousImg from '../images/dogEatCautious.jpg';
+import notToEatImg from '../images/dogNotEat.jpg';
 
 const DogVaccinationPage = () => {
     const vaccinations = [
