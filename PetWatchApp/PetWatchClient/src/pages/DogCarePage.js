@@ -155,14 +155,14 @@ const DogVaccinationPage = () => {
       <ul>
         <li><strong>Fruit and Vegetables:</strong> Apples, bananas, strawberries, carrots, and other fruits and 
         vegetables are rich in vitamins, minerals, fiber, and protein.
-        <img src={fruitsCanEatImg}></img>
+        <img src={fruitsCanEatImg} alt= 'fruits and vagetables dogs can eat' />
         </li>
         <li><strong>Meat & Fish:</strong> Chicken, beef, salmon, and other meats and fish are high in protein 
         and essential fatty acids.
-        <img src={meatCanEatImg}></img>
+        <img src={meatCanEatImg} alt= 'meat and fish dogs can eat' />
         </li>
         <li><strong>Other Foods:</strong> Grains, dairy, and eggs can also be given to dogs in moderation.
-        <img src={otherCanEatImg}></img>
+        <img src={otherCanEatImg} alt= 'other foods dogs can eat' />
         </li>
       </ul>
 
@@ -170,14 +170,14 @@ const DogVaccinationPage = () => {
       <p>
         While not toxic, some human foods should be given to dogs in moderation to prevent potential issues. 
         These include grains, dairy products, and certain vegetables.
-        <img src={eatCautiousImg}></img>
+        <img src={eatCautiousImg} alt= 'foods to be cautious about giving your dog' />
       </p>
 
       <h3>What Can Dogs Not Eat?</h3>
       <p>
         Certain foods are toxic to dogs and should be avoided at all costs, including chocolate, caffeine, grapes, 
         and certain vegetables. It's important to be aware of these foods to protect your dog's health.
-        <img src={notToEatImg}></img>
+        <img src={notToEatImg} alt= 'foods dogs cant eat' />
       </p>
       <h3>Summary</h3>
       <p>

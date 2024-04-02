@@ -88,18 +88,18 @@ const CatVaccinationPage = () => {
             <ul>
                 <li><strong>Fruit and Vegetables:</strong>Apples, bananas, strawberries, carrots, and other fruits and vegetables are rich in vitamins, minerals, fiber, and protein.
                 </li>
-                <img src={fruitsCanEatImg}></img>
+                <img src={fruitsCanEatImg} alt= 'fruits and vagetables cats can eat'/>
                 <li><strong>Meat & Fish:</strong> Chicken, beef, salmon, and other meats and fish are high in protein and essential fatty acids.
-                <img src={meatCanEatImg}></img>
+                <img src={meatCanEatImg} alt= 'meats and fish cats can eat' />
                 </li>
                 <li><strong>Other Foods:</strong> Grains, dairy, and eggs can also be given to cats in moderation.
-                <img src={otherCanEatImg}></img>
+                <img src={otherCanEatImg} alt= 'other foods cats can eat' />
                 </li>
             </ul>
             <h3>Foods to Be Cautious About</h3>
             <p>
             Foods in this group are ones that can be given to your cat, but you should be cautious about them. In general, what cats eat should be monitored, but with these, you need to be extra careful; most of these foods should be given to your cat in small quantities as too much can cause them potential harm. Others are foods that you need to watch carefully when giving your cat. For example, your cat can enjoy gnawing on a bone, but they can splinter and become sharp and dangerous so will then need to be taken away and safely disposed of if this happens.
-            <img src={eatCautiousImg}></img>
+            <img src={eatCautiousImg} alt='food to be cautious about giving your cat'/>
             </p>
             
             <h3>What Can Cats Not Eat?</h3>
@@ -110,7 +110,7 @@ const CatVaccinationPage = () => {
                 <li><strong>Chocolate:</strong> Contains theobromine and caffeine, which are toxic to cats.</li>
                 <li><strong>Onions and Garlic:</strong> Can cause damage to a cat's red blood cells.</li>
                 <li><strong>Grapes and Raisins:</strong> Can cause kidney failure in cats.</li>
-                <img src={notToEatImg}></img>
+                <img src={notToEatImg} alt= 'foods cats cant eat' />
             </ul>
             <h3>Summary</h3>
             <p>
