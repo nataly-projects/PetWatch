@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { PetGender } = require('../utils/enums');
+const { PetGender } = require('../utils/enums').default;
 
 
 const Schema = mongoose.Schema;
@@ -48,7 +48,24 @@ const petSchema = new Schema({
     // },
     owner: {
         type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
     },
+    vaccinationRecords: [{ 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'VaccinationRecord' 
+    }],
+    routineCareRecords: [{ 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'RoutineCareRecord' 
+    }],
+    notes: [{ 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Note' 
+    }],
+    expenses: [{ 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Expense' 
+    }],
     created_at: {
         type: Date,
         default: Date.now()

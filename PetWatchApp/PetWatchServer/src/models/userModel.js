@@ -34,6 +34,10 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
+    pets: [{ 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Pet' 
+    }],
     // imageUrl: {
     //     type: String,
     //     default: null
