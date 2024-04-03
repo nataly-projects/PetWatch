@@ -19,6 +19,9 @@ const RoutineCareRecordSchema  = new Schema({
     note: {
         type: String
     },
+    cost: {
+        type: Number
+    },
     date: { 
         type: Date, 
         required: true 

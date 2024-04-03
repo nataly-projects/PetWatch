@@ -1,4 +1,4 @@
-const PetGender = Object.freeze({
+const PetSpecies = Object.freeze({
     MALE: 'MALE',
     FEMALE: 'FEMALE',
 });
@@ -37,11 +37,12 @@ const RoutineCareActivity = Object.freeze({
     NailTrimming: 'Nail trimming',
     EarCleaning: 'Ear cleaning',
     TeethBrushing: 'Teeth brushing',
+    Weighing: 'Weighing',
     Other: 'Other'
 });
 
-export default {
-    PetGender, 
+module.exports = {
+    PetSpecies, 
     VaccineRecordType,
     ExpenseCategory,
     RoutineCareActivity

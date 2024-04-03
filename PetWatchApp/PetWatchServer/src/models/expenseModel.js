@@ -4,10 +4,10 @@ const {ExpenseCategory} = require('../utils/enums').default;
 const Schema = mongoose.Schema;
 
 const ExpenseSchema = new Schema({
-  pet: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: 'Pet', 
-    required: true 
+    pet: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'Pet', 
+        required: true 
     },
     category: { 
         type: String, 
@@ -35,3 +35,4 @@ const ExpenseSchema = new Schema({
 const Expense = mongoose.model('Expense', ExpenseSchema);
 
 module.exports = { Expense, ExpenseSchema};
+

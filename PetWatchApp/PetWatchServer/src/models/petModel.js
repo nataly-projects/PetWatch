@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { PetGender } = require('../utils/enums').default;
+const { PetSpecies } = require('../utils/enums');
 
 
 const Schema = mongoose.Schema;
@@ -14,9 +14,9 @@ const petSchema = new Schema({
         type: Number,
         required: true
     },
-    gender: {
+    species: {
         type: String,
-        enum: Object.values(PetGender), 
+        enum: Object.values(PetSpecies), 
         required: true
     },
     breed: {
@@ -33,7 +33,7 @@ const petSchema = new Schema({
     },
     image: {
         type: String,
-        required: true
+        // required: true //TODO - need to make it requires
     },
     chipNumber: {
         type: String,
@@ -48,7 +48,8 @@ const petSchema = new Schema({
     // },
     owner: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'User',
+        required: true
     },
     vaccinationRecords: [{ 
         type: mongoose.Schema.Types.ObjectId, 

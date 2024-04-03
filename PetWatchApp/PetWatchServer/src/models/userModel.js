@@ -38,6 +38,10 @@ const userSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Pet' 
     }],
+    totalExpenses: {
+        type: Number,
+        default: 0 
+    },
     // imageUrl: {
     //     type: String,
     //     default: null
