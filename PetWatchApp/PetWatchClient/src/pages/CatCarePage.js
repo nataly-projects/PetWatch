@@ -6,7 +6,7 @@ import otherCanEatImg from '../images/catOtherCanEat.jpg';
 import eatCautiousImg from '../images/catEatCautious.jpg';
 import notToEatImg from '../images/catNotEat.jpg';
 
-const CatVaccinationPage = () => {
+const CatCarePage = () => {
 
     const vaccinations = [
         { name: 'FVRCP vaccine', description: 'Protects against serious and contagious viral diseases. Feline leukemia, Calicivirus, and Rhinotracheitis are included. Chlamydia, if required, should be administered separately. ' },
@@ -121,4 +121,4 @@ const CatVaccinationPage = () => {
     );
 };
 
-export default CatVaccinationPage;
+export default CatCarePage;

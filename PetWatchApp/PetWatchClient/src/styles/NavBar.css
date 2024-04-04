@@ -1,4 +1,4 @@
-nav {
+.nav_guest {
   background-color: #F8F4EF;
   border-bottom: 1px solid #795B4A;
   text-align: center;
@@ -12,24 +12,7 @@ nav {
   position: fixed;
   height: 100px; 
 
-
-  .nav-user {
-    justify-content: space-around;
-  }
-
-  .nav-login {
-    justify-content: space-between;
-  }
-
-  .limit {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-
+ 
   .nav-right {
     position: absolute;
     top: 8px;
@@ -97,6 +80,38 @@ nav {
     cursor: pointer;
   }
  
+}
+
+.nav_user {
+  background-color: #F8F4EF;
+  top: 0;
+  right: 0;
+  z-index: 100;
+  /* width: 80%; */
+  display: flex;
+  flex-direction: row;
+  position: fixed;
+  height: auto; 
+  padding: 20px;
+
+  .actions  {
+    display: flex;
+    gap: 15px;
+
+    .user {
+      display: flex;
+      gap: 5px;
+    }
+
+  }
+}
+
+.limit {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
  

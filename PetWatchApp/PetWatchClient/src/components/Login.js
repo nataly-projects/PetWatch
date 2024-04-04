@@ -75,11 +75,11 @@ const Login = () => {
         try {
           //const hashedPassword = await hashPassword(password);
 
-          const userLoginData = await loginUser(email, password);
-          console.log('userLoginData: ', userLoginData);
-          if (userLoginData) {
-            dispatch({ type: 'SET_USER', payload: userLoginData });
-            navigate('/dashboard/adopt');
+          const loginData = await loginUser(email, password);
+          console.log('loginData: ', loginData);
+          if (loginData) {
+            dispatch({ type: 'SET_USER', payload: loginData });
+            navigate('/main');
           }
           
         } catch (error) {

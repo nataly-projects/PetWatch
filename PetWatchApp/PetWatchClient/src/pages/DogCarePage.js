@@ -6,7 +6,7 @@ import otherCanEatImg from '../images/dogOtherCanEat.jpg';
 import eatCautiousImg from '../images/dogEatCautious.jpg';
 import notToEatImg from '../images/dogNotEat.jpg';
 
-const DogVaccinationPage = () => {
+const DogCarePage = () => {
     const vaccinations = [
         { name: 'Multivalent Vaccine - DHPP', description: 'A vaccine that contains protection against 6 contagious diseases (among them also Parvo) that are dangerous for pups and adult dogs. The vaccine is given the first time at the age of 6 to 8 weeks and must be repeated twice after two-weeks gaps (all together a series of 3 multivalent Vaccine shots). Afterwards, or when referring to a dog above 1 year old, the vaccine is given once a year.' },
         { name: 'Rabies Vaccinations', description: 'An obligatory vaccine for all dogs that are 3 months old against the rabies disease which is contagious also to humans. The vaccination is given once a year. With the first rabies vaccine, it is obligatory to inject an electronic chip into the dog, which is done only once in the dog’s life.' },
@@ -188,4 +188,4 @@ const DogVaccinationPage = () => {
   );
 };
 
-export default DogVaccinationPage;
+export default DogCarePage;

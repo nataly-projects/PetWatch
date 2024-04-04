@@ -1,4 +1,11 @@
-#page-body {
+.page-body-logged-in {
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  margin-top: 0;
+}
+
+.page-body-logged-out {
   margin: auto;
   display: flex;
   justify-content: center;

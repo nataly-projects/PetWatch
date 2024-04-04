@@ -7,7 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import store from './store';
 
 import NavBar from './components/NavBar';
-import Dashboard from './pages/DashboardPage';
+import UserMainPage from './pages/UserMainPage';
 import SignupLoginPage from './pages/signupLoginPage';
 import ContactPage from './pages/ContactPage';
 import AboutPage from './pages/AboutPage';
@@ -17,6 +17,7 @@ import CatCarePage from './pages/CatCarePage';
 import PetNamesIdea from './components/PetNamesIdea';
 import DogGuide from './components/DogGuide';
 import CatGuide from './components/CatGuide';
+import EmergencyGuide from './pages/EmergencyGuide';
 
 const App = () => {
   const isLoggedIn = useSelector((state) => state.isLoggedIn);
@@ -28,20 +29,22 @@ console.log('isLoggedIn: ', isLoggedIn);
       <BrowserRouter>
       <div className="App">
         <NavBar  />
-        <div id="page-body">
+        <div className={isLoggedIn ? 'page-body-logged-in' : 'page-body-logged-out'}>
           <Routes>
-          <Route path="/"  element={isLoggedIn ? <Dashboard /> : <SignupLoginPage /> } />
-            <Route path="/dashboard/*"  element={<Dashboard />} />
+          <Route path="*"  element={isLoggedIn ? <UserMainPage /> : <SignupLoginPage /> } />
+            <Route path="/main/*"  element={<UserMainPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/login" element={<SignupLoginPage />} />
 
             <Route path="/info" element={<ImportantInfoPage />} />
-            <Route path="/info/dogs-vaccine" element={<DogCarePage />} />
-            <Route path="/info/cats-vaccine" element={<CatCarePage />} />
+            <Route path="/info/dog-care" element={<DogCarePage />} />
+            <Route path="/info/cat-care" element={<CatCarePage />} />
             <Route path="/info/pet-names" element={<PetNamesIdea />} />
             <Route path="/info/dog-guide" element={<DogGuide />} />
             <Route path="/info/cat-guide" element={<CatGuide />} />
+            <Route path="/info/emergency-guide" element={<EmergencyGuide />} />
+
 
             {/* <Route path="/login/forgot-password" element={< ForgotPassword />} />
             <Route path="/addPetForm" element={<AddPet />} /> */}

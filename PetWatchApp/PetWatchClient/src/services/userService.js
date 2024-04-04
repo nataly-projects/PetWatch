@@ -1,14 +1,15 @@
 import axios from 'axios';
 
+const BASE_API_URL = process.env.REACT_APP_BASE_API_URL;
 
 export const loginUser = async (email, password) => {
     console.log('user service - loginUser');
     try {
-      const response = await axios.post('/api/users/signin', {email, password});
+      const response = await axios.post(`${BASE_API_URL}/users/login`, {email, password});
       console.log(response);
 
       if (response && response.data) {
-        return response.data.user;
+        return response.data;
       }
       return null;
     } catch (error) {
@@ -19,7 +20,7 @@ export const loginUser = async (email, password) => {
 export const signupUser = async (fullName, email, phone, password) => {
     console.log('user service - signupUser');
     try {
-        const response = await axios.post('/api/users/signup', { fullName, email, phone, password });
+        const response = await axios.post('/api/users/register', { fullName, email, phone, password });
         console.log(response);
 
         if (response && response.data) {

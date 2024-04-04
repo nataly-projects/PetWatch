@@ -1,0 +1,32 @@
+.emergency-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+
+    .emergency-section {
+        margin-bottom: 30px;
+      }
+
+    .underline {
+        text-decoration: underline;
+      }
+
+      h1, h2 {
+        color: #333;
+      }
+      
+      ul, ol {
+        margin-bottom: 10px;
+      }
+      
+      p {
+        line-height: 1.6;
+      }
+  }
+
+  
+  
+  
+  
+
+  
