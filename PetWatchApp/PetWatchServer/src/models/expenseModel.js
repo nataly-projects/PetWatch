@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const {ExpenseCategory} = require('../utils/enums').default;
+const {ExpenseCategory} = require('../utils/enums');
 
 const Schema = mongoose.Schema;
 
@@ -7,7 +7,6 @@ const ExpenseSchema = new Schema({
     pet: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Pet', 
-        required: true 
     },
     category: { 
         type: String, 

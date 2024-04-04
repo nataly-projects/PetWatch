@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const {RoutineCareActivity} = require('../utils/enums').default;
+const {RoutineCareActivity} = require('../utils/enums');
 
 
 const Schema = mongoose.Schema;
@@ -9,7 +9,6 @@ const RoutineCareRecordSchema  = new Schema({
     pet: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Pet', 
-        required: true 
     },
     activity: { 
         type: String, 

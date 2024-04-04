@@ -1,5 +1,9 @@
 const { Pet } =  require('../models/petModel');
 const { User } = require('../models/userModel');
+const { VaccinationRecord } = require('../models/vaccinationRecordModel');
+const { RoutineCareRecord } = require('../models/routineCareRecordModel');
+const { Note } = require('../models/noteModel');
+const { Expense } = require('../models/expenseModel');
 
 async function getPetsByUserId(req, res) {
     try {
@@ -17,7 +21,7 @@ async function getPetsByUserId(req, res) {
     }  
 }
 
-async function getPetsById(req, res) {
+async function getPetById(req, res) {
     try {
         const { petId } = req.params;
 
@@ -34,13 +38,13 @@ async function getPetsById(req, res) {
 async function getPetVaccinationRecord (req, res) {
     try {
         const { petId } = req.params;
-
         const pet = await Pet.findById(petId).populate('vaccinationRecords');
         if (!pet) {
         return res.status(404).json({ error: 'Pet not found' });
         }
         res.status(200).json(pet.vaccinationRecords);
     } catch (error) {
+        console.log('error: ', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 }
@@ -105,6 +109,7 @@ async function getPetRoutineCare (req, res) {
 
   async function addPet (req, res) {
     try {
+        console.log('add pet: ', req.body);
         const { userId } = req.params;
         const { name, species, breed, age, weight, description, chipNumber  } = req.body;
 
@@ -119,6 +124,14 @@ async function getPetRoutineCare (req, res) {
             owner: userId,
         });
         await newPet.save();
+
+        // Find the user by ID and update the pets field
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { $push: { pets: newPet._id } }, // Add the pet's ID to the pets array
+            { new: true }
+        );
+
         res.status(201).json({ message: 'Pet added successfully', pet: newPet });
     } catch (error) {
         res.status(500).json({ error: 'Error while adding pet, try again later' });
@@ -128,15 +141,37 @@ async function getPetRoutineCare (req, res) {
 async function addPetVaccineRecord (req, res) {
     try {
         const { petId } = req.params;
-        const { vaccineName, vaccineType, note, date, nextDate } = req.body;
+        const { vaccineType, note, date, nextDate } = req.body;
 
-        const pet = await Pet.findById(petId);
+        // Create a new VaccinationRecord document
+        const vaccinationRecord = new VaccinationRecord({
+            vaccineType,
+            note,
+            date,
+            nextDate,
+            pet: petId
+        });
+
+        await vaccinationRecord.save();
+
+        // const pet = await Pet.findById(petId);
+        // if (!pet) {
+        //     return res.status(404).json({ error: 'Pet not found' });
+        // }
+        // pet.vaccinationRecords.push({ vaccineName, vaccineType, note, date, nextDate });
+        // await pet.save();
+
+        // Find the pet by ID and update its vaccinationRecords array
+        const pet = await Pet.findByIdAndUpdate(
+            petId,
+            { $push: { vaccinationRecords: vaccinationRecord._id } },
+            { new: true }
+        );
+
         if (!pet) {
             return res.status(404).json({ error: 'Pet not found' });
         }
-        pet.vaccinationRecords.push({ vaccineName, vaccineType, note, date, nextDate });
-        await pet.save();
-        res.status(201).json({ message: 'Vaccine record added successfully', pet });
+        res.status(201).json({ message: 'Vaccine record added successfully', vaccinationRecord });
     } catch (error) {
         res.status(500).json({ error: 'Error while adding vaccine record, please try again later' });
     }
@@ -145,16 +180,30 @@ async function addPetVaccineRecord (req, res) {
 async function addPetRoutineCare (req, res) {
     try {
         const { petId } = req.params;
-        const { activity, date } = req.body;
-        const pet = await Pet.findById(petId);
+        const { activity, note, date, nextDate } = req.body;
+
+        // Create a new RoutineCareRecord document
+        const routineCareRecord = new RoutineCareRecord({
+            activity,
+            note,
+            date,
+            nextDate,
+            pet: petId
+        });
+
+        await routineCareRecord.save();
+       
+        //TODO - if there is cost value - add it to the pet expense fiels 
+        //with the expenses type - ExpenseCategory.RoutineCare
+        const pet = await Pet.findByIdAndUpdate(
+            petId,
+            { $push: { routineCareRecords: routineCareRecord._id } },
+            { new: true }
+        );
         if (!pet) {
             return res.status(404).json({ error: 'Pet not found' });
         }
-        pet.routineCare.push({ activity, note, cost, date, nextDate });
-        //TODO - if there is cost value - add it to the pet expense fiels 
-        //with the expenses type - ExpenseCategory.RoutineCare
-        await pet.save();
-        res.status(201).json({ message: 'Routine care record added successfully', pet });
+        res.status(201).json({ message: 'Routine care record added successfully',  routineCareRecord});
     } catch (error) {
         console.error('Error adding routine care record:', error);
         res.status(500).json({ error: 'Error while adding routine care record, please try again later' });
@@ -164,14 +213,24 @@ async function addPetRoutineCare (req, res) {
 async function addPetNote (req, res) {
     try {
         const { petId } = req.params;
-        const { title, content } = req.body;
-        const pet = await Pet.findById(petId);
+        const { content } = req.body;
+
+        // Create a new Note document
+        const note = new Note({
+            content,
+            pet: petId
+        });
+
+        await note.save();
+        const pet = await Pet.findByIdAndUpdate(
+            petId,
+            { $push: { notes: note._id } },
+            { new: true }
+        );
         if (!pet) {
             return res.status(404).json({ error: 'Pet not found' });
         }
-        pet.notes.push({ createdDate, content, updatedDate });
-        await pet.save();
-        res.status(201).json({ message: 'Note added successfully', pet });
+        res.status(201).json({ message: 'Note added successfully',  note});
     } catch (error) {
         console.error('Error adding note:', error);
         res.status(500).json({ error: 'Error while adding note, please try again later' });
@@ -181,44 +240,61 @@ async function addPetNote (req, res) {
 async function addPetExpense (req, res) {
     try {
         const { petId } = req.params;
-        const { category, amount, date } = req.body;
+        const { category, amount, note, date } = req.body;
 
-        //Add row in the pet expenses row
-        const pet = await Pet.findById(petId);
+         // Create a new Note document
+         const expense = new Expense({
+            category,
+            amount, 
+            note,
+            date,
+            pet: petId
+        });
+
+        await expense.save();
+        const pet = await Pet.findByIdAndUpdate(
+            petId,
+            { $push: { expenses: expense._id } },
+            { new: true }
+        );
         if (!pet) {
             return res.status(404).json({ error: 'Pet not found' });
         }
-        pet.expenses.push({ category, amount, date, note });
-        await pet.save();
 
         //Add to the totalExpenses for the pet owner
         const user = await User.findById(pet.owner);
         user.totalExpenses += amount;
         await user.save();
 
-        res.status(201).json({ message: 'Expense added successfully', pet });
+        res.status(201).json({ message: 'Expense added successfully', expense });
     } catch (error) {
         console.error('Error adding expense:', error);
         res.status(500).json({ error: 'Error while adding expense, please try again later' });
     }
 }
 
-async function editNote (req, res) {
+async function updateNoteById (req, res) {
     try {
-        const { petId, noteId } = req.params;
-        const { updatedNote } = req.body;
+        const { noteId } = req.params;
+        const { content } = req.body;
 
-        const pet = await Pet.findById(petId);
-        if (!pet) {
-            return res.status(404).json({ error: 'Pet not found' });
-        }
-        const noteIndex = pet.notes.findIndex(note => note._id.toString() === noteId);
-        if (noteIndex === -1) {
+        const note = await Note.findById(noteId);
+        if (!note) {
             return res.status(404).json({ error: 'Note not found' });
         }
-        pet.notes[noteIndex] = updatedNote;
-        await pet.save();
-        res.status(200).json({ message: 'Note updated successfully', updatedNote });
+
+        note.content = content;
+        note.updatedDate = Date.now();
+        await note.save();
+
+        const pet = await Pet.findById(note.pet);
+        // Update the corresponding note within the pet notes array
+        const index = pet.notes.findIndex(note => note._id.toString() === noteId);
+        if (index !== -1) {
+            pet.notes[index] = note;
+        }
+
+        res.status(200).json({ message: 'Note updated successfully', note });
     } catch (error) {
         console.error('Error updating note:', error);
         res.status(500).json({ error: 'Error while updating note, please try again later' });
@@ -227,17 +303,58 @@ async function editNote (req, res) {
 
 async function deleteNote (req, res) {
     try {
-        const { petId, noteId } = req.params;
+        const { noteId } = req.params;
+        const note = await Note.findByIdAndDelete(noteId);
+        if (!note) {
+            return res.status(404).json({ error: 'Note not found' });
+        }
+        // Remove from the pet notes array
+        const pet = await Pet.findById(note.pet);
+        pet.notes = pet.notes.filter(petNote => petNote.toString() !== noteId );
+        console.log('pet notes: ', pet.notes);
+        await pet.save();
+        res.status(200).json({ message: 'Note deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error while deleting note, please try again later' });
+    }
+}
+
+async function updatePetById(req, res) {
+    try {
+        const { petId } = req.params;
+        const { name, species, breed, age, weight, description, chipNumber } = req.body;
 
         const pet = await Pet.findById(petId);
         if (!pet) {
             return res.status(404).json({ error: 'Pet not found' });
         }
-        pet.notes = pet.notes.filter(note => note._id.toString() !== noteId);
+
+        // Update the pet document with the new information
+        if (name) pet.name = name;
+        if (species) pet.species = species;
+        if (breed) pet.breed = breed;
+        if (age) pet.age = age;
+        if (weight) pet.weight = weight;
+        if (description) pet.description = description;
+        if (chipNumber) pet.chipNumber = chipNumber;
+
         await pet.save();
-        res.status(200).json({ message: 'Note deleted successfully' });
+
+        const user = await User.findById(pet.owner);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Update the pet reference in the user's pets array
+        const petIndex = user.pets.findIndex(pet => pet._id.toString() === petId);
+        if (petIndex !== -1) {
+            user.pets[petIndex] = pet;
+        }
+        await user.save();
+
+        res.status(200).json({ message: 'Pet updated successfully', pet });
     } catch (error) {
-        res.status(500).json({ error: 'Error while deleting note, please try again later' });
+        res.status(500).json({ error: 'Error while updating pet, please try again later' });
     }
 }
 
@@ -271,7 +388,7 @@ async function deletePet (req, res) {
 
 
 module.exports = {
-    getPetsById,
+    getPetById,
     getPetsByUserId,
     getPetVaccinationRecord,
     getPetRoutineCare,
@@ -282,7 +399,8 @@ module.exports = {
     addPetRoutineCare,
     addPetNote,
     addPetExpense,
-    editNote,
+    updateNoteById,
+    updatePetById,
     deleteNote,
     deletePet,
 };

@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
 const { PetSpecies } = require('../utils/enums');
+const VaccinationRecord = require('./vaccinationRecordModel');
+const RoutineCareRecord = require('./routineCareRecordModel');
+const Note = require('./noteModel');
+const Expense = require('./expenseModel');
 
 
 const Schema = mongoose.Schema;
@@ -49,7 +53,6 @@ const petSchema = new Schema({
     owner: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
     },
     vaccinationRecords: [{ 
         type: mongoose.Schema.Types.ObjectId, 

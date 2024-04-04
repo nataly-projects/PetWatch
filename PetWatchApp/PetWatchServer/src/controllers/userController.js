@@ -58,16 +58,15 @@ async function login(req, res) {
         const user = await User.findOne({ email });
 
         if (!user) {
-          return res.status(401).json({ error: 'No user found with that email' });
+          return res.status(404).json({ error: 'No user found with that email' });
         }
-
         // check if the provided password matches the stored hashed password
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
           return res.status(401).json({ error: 'Incorrect  password' });
         }
         // If the password is correct, generate a JWT token
-        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: null });
+        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '100y' });
 
         res.status(200).json({ message: 'Login successful', user, token });
       } catch (error) {

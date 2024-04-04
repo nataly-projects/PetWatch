@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const {VaccineRecordType} = require('../utils/enums').default;
+const {VaccineRecordType} = require('../utils/enums');
 
 const Schema = mongoose.Schema;
 
@@ -8,7 +8,6 @@ const VaccinationRecordSchema  = new Schema({
     pet: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Pet', 
-        required: true 
     },
     vaccineType: { 
         type: String, 
