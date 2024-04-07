@@ -1,4 +1,4 @@
-# Getting Started with Cient
+# Getting Started with PetWatch Client
 ## Client setup:
 - Navigate to the client directory - cd PetWatchClient
 - Install dependencies - npm install
