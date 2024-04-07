@@ -1,9 +1,9 @@
-# Getting Started with Create React App
+# Getting Started with Cient
 ## Client setup:
 - Navigate to the client directory - cd PetWatchClient
 - Install dependencies - npm install
 - Start the client - npm start
-- 
+
 ## Dependencies
 - react: JavaScript library for building user interfaces.
 - redux: State management library for managing application state.
