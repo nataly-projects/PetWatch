@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const {User} = require('../models/userModel');
+const { ActivityLog } = require('../models/activityLogModel');
 const { validatePhone, validateEmail, validatePassword } = require('../validators/userValidators');
 
 async function getUserById(req, res) {
@@ -74,6 +75,18 @@ async function login(req, res) {
       }
 }
 
+async function getUserActivityLog(req, res) {
+  try {
+    const { userId } = req.params;
+
+      const activityLogs = await ActivityLog.find({ userId }).sort({ created_at: -1 });
+      res.status(200).json(activityLogs);
+
+  } catch (error) {
+      res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
 // function genreateSecretKey () {
 //   const secretKey = crypto.randomBytes(32).toString('hex');
 //   // Write the secret key to the .env file
@@ -84,4 +97,5 @@ module.exports = {
     register,
     login,
     getUserById,
+    getUserActivityLog
 };

@@ -6,7 +6,6 @@ const router = express.Router();
 
 // router.get('/', petController.getPetsByFilters);
 // router.post('/:userId', petController.upload.single('image'), petController.addPet);
-router.post('/:userId', petController.addPet);
 
 router.get('/user/:userId', petController.getPetsByUserId);
 router.get('/:petId', petController.getPetById);
@@ -14,7 +13,9 @@ router.get('/vaccinationRecord/:petId', petController.getPetVaccinationRecord);
 router.get('/routineCare/:petId', petController.getPetRoutineCare);
 router.get('/note/:petId', petController.getPetNote);
 router.get('/expense/:petId', petController.getPetExpense);
+router.get('/activity/:petId', petController.getPetActivityLog);
 
+router.post('/:userId', petController.addPet);
 router.post('/vaccinationRecord/:petId', petController.addPetVaccineRecord);
 router.post('/routineCare/:petId', petController.addPetRoutineCare);
 router.post('/note/:petId', petController.addPetNote);

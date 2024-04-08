@@ -41,10 +41,24 @@ const RoutineCareActivity = Object.freeze({
     Other: 'Other'
 });
 
+const ActivityLogType = Object.freeze({
+    VACCINE_RECORD_ADDED: 'vaccine_record_added',
+    ROUTINE_CARE_ADDED: 'routine_care_added',
+    EXPENSE_ADDED: 'expense_added',
+    NOTE_ADDED: 'note_added',
+    PET_ADDED: 'pet_added',
+    PET_EDIT: 'pet_edit',
+    PET_DELETE: 'pet_delete',
+    NOTE_EDIT: 'note_edit' ,
+    NOTE_DELETE: 'note_delete' ,
+    PROFILE_EDIT: 'profile_edit'
+});
+
 module.exports = {
     PetSpecies, 
     VaccineRecordType,
     ExpenseCategory,
-    RoutineCareActivity
+    RoutineCareActivity,
+    ActivityLogType
 };
 

@@ -6,6 +6,8 @@ const userController = require('../controllers/userController');
 const router = express.Router();
 
 router.get('/:userId', userController.getUserById);
+router.get('/activity/:userId', userController.getUserActivityLog);
+
 
 router.post('/register', userController.register);
 
