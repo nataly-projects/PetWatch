@@ -67,6 +67,21 @@ export const fetchUserExpensesArray = async (userId) => {
     }
 }
 
+export const fetchUserUpcomingEvents = async (userId) => {
+    try{
+        const response = await axios.get(`${BASE_API_URL}/users/upcoming/${userId}`);
+        console.log('response from fetchUserUpcomingEvents: ', response);
+        if (response && response.data) {
+            return response.data;
+        }
+        return null;
+
+    } catch (error) {
+      throw error; 
+    }
+}
+
+
 
 
 export const resetPasswordRequest = async (email) => {
