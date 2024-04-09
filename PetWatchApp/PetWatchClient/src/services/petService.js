@@ -106,6 +106,19 @@ export const getPetUpcomingEvents = async (petId) => {
   }
 }
 
+export const getPetExpensesArrays = async (petId) => {
+  try{ 
+    const response = await axios.get(`${BASE_API_URL}/pets/expenses-array/${petId}`);
+    console.log('response from getPetExpensesArrays: ', response);
+    if (response && response.data) {
+        return response.data;
+    }
+    return null;
+  } catch (error) {
+    throw error; 
+  }
+}
+
   export const deletePet = async (petId) => {
     try {
         const response = await axios.delete(`${BASE_API_URL}/pets/${petId}`);

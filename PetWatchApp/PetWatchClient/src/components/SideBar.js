@@ -20,6 +20,7 @@ const Sidebar = () => {
     {title: 'Main', items: [{text: 'Dashboard', link: '/main/dashboard', icon: faHome} ]},
     {title: 'Pets', items: [{text: 'Pets Section', link: '/main/pets', icon: faPaw} ]},
     {title: 'Routine Care', items: [{text: 'Activity Log', link: '/main/activity-log', icon: faBook} ]},
+    {title: 'Expenses', items: [{text: 'Expenses', link: '/main/expenses' , icon: faMoneyCheck} ]},
     {title: 'Info', items: 
     [{text: 'Dogs Care Routine', link: '/main/dog-care' , icon: faDog}, 
     {text: 'Dog Guide', link: '/main/dog-guide' , icon: faDog}, 
@@ -27,7 +28,6 @@ const Sidebar = () => {
     {text: 'Cat Guide', link: '/main/cat-guide', icon: faCat}, 
     {text: 'Emergency Guide', link: '/main/emergency-guide', icon: faAmbulance}, 
     {text: 'Pet Names Idea', link: '/main/pet-names' ,icon: faSignature} ]},
-    {title: 'Expenses', items: [{text: 'Pet Expenses', link: '/main/pet-expenses' , icon: faMoneyCheck} ]},
     {title: 'Settings', items: [{text: 'Account Settings', link: '/main/account-settings', icon: faCog} ]},
     {title: 'Authentication', items: [{text: 'Logout', link: '/login', icon: faRightFromBracket, onClick: handleLogout} ]}
   ]

@@ -23,7 +23,7 @@ const UserMainPage = () => {
       <div className="user-main-content">
         <Routes>
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/dashboard/:petId" element={<PetProfile />} />
+          <Route path="/pet-profile/:petId" element={<PetProfile />} />
           <Route path="/dog-care" element={<DogCarePage />} />
           <Route path="/cat-care" element={<CatCarePage />} />
           <Route path="/dog-guide" element={<DogGuide />} />

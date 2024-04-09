@@ -81,6 +81,20 @@ export const fetchUserUpcomingEvents = async (userId) => {
     }
 }
 
+export const fetchUserNotes = async (userId) => {
+    try{
+        const response = await axios.get(`${BASE_API_URL}/users/notes/${userId}`);
+        console.log('response from fetchUserNotes: ', response);
+        if (response && response.data) {
+            return response.data;
+        }
+        return null;
+
+    } catch (error) {
+      throw error; 
+    }
+}
+
 
 
 

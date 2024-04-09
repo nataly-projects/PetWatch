@@ -39,7 +39,6 @@ console.log('isLoggedIn navbar: ', isLoggedIn);
         return (
             <nav className='nav_user'>
                 <div className="limit">
-                    {/* <span>Pet Watch</span> */}
                     <div className="actions">
                         <FontAwesomeIcon icon={faBell}  />
                         <div className="user">

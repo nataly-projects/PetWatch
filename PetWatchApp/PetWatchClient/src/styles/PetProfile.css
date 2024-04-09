@@ -1,0 +1,79 @@
+.pet-profile-container {
+    padding: 20px;
+
+    .pet-details-card {
+        background-color: #f2f2f2;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+          .chart-container {
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .chart-wrapper {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 20px;
+        background-color: #f9f9f9;
+        width: 500px; 
+        height: 500px;
+    }
+    
+    .health-information,
+    .activity-log,
+    .weight-tracker,
+    .meal-planner,
+    .gallery,
+    .notes-section,
+    .expenses,
+    .actions-section {
+        margin-bottom: 40px;
+    }
+    
+    .notes-section table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .notes-section th,
+    .notes-section td {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        text-align: left;
+    }
+    
+    .notes-section th {
+        background-color: #f2f2f2;
+    }
+    
+    .notes-section td {
+        font-size: 0.9rem;
+    }
+    
+    .actions-section button {
+        margin-right: 10px;
+    }
+
+    
+}
+
+.chart-container {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.chart-wrapper {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    width: 500px; 
+    height: 500px;
+}
+

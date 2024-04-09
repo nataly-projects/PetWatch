@@ -90,7 +90,7 @@ const ExpenseTracker = () => {
 
     return (
         <div className="expense-tracker">
-            <h2>Expense Tracker</h2>
+            <h2>Your Expense Tracker</h2>
             {renderExpensesTable()}
             <div className="chart-container">
                 <h2>Chart Expenses By Pet</h2>

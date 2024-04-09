@@ -1,0 +1,7 @@
+.name-species-section {
+    align-items: baseline;
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+}
+

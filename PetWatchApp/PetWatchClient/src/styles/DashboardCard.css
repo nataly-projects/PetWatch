@@ -1,0 +1,30 @@
+.card {
+    flex: 0 1 45%; /* Adjust width of cards as needed */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    text-align: center;
+  }
+
+  .title-section {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: baseline;
+    gap: 5px
+  }
+  
+  .card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .card-icon {
+    font-size: 1.5rem;
+  }
+  
+  .card-content {
+    font-size: 1.2rem;
+  }

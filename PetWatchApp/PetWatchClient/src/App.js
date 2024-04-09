@@ -18,6 +18,7 @@ import PetNamesIdea from './components/PetNamesIdea';
 import DogGuide from './components/DogGuide';
 import CatGuide from './components/CatGuide';
 import EmergencyGuide from './pages/EmergencyGuide';
+import PetProfile from './components/PetProfile';
 
 const App = () => {
   const isLoggedIn = useSelector((state) => state.isLoggedIn);
