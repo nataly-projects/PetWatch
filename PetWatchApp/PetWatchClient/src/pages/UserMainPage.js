@@ -11,6 +11,8 @@ import CatGuide from '../components/CatGuide';
 import DogGuide from '../components/DogGuide';
 import PetNamesIdea from '../components/PetNamesIdea';
 import EmergencyGuide from './EmergencyGuide';
+import ExpenseTracker from '../components/ExpenseTracker';
+import PetProfile from '../components/PetProfile';
 import '../styles/UserMainPage.css';
 
 
@@ -21,12 +23,15 @@ const UserMainPage = () => {
       <div className="user-main-content">
         <Routes>
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard/:petId" element={<PetProfile />} />
           <Route path="/dog-care" element={<DogCarePage />} />
           <Route path="/cat-care" element={<CatCarePage />} />
           <Route path="/dog-guide" element={<DogGuide />} />
           <Route path="/cat-guide" element={<CatGuide />} />
           <Route path="/pet-names" element={<PetNamesIdea />} />
           <Route path="/emergency-guide" element={<EmergencyGuide />} />
+          <Route path="/expenses" element={<ExpenseTracker />} />
+          <Route path="/activity-log" element={<ActivityLog />} />
           {/* <Route path="/activity-log" element={<ActivityLog />} />
            <Route path="/weight-tracker" element={<WeightTracker />} /> 
            <Route path="/profile" element={<UserProfile />} />  */}

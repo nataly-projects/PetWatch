@@ -20,7 +20,7 @@ export const loginUser = async (email, password) => {
 export const signupUser = async (fullName, email, phone, password) => {
     console.log('user service - signupUser');
     try {
-        const response = await axios.post('/api/users/register', { fullName, email, phone, password });
+        const response = await axios.post(`${BASE_API_URL}/users/register`, { fullName, email, phone, password });
         console.log(response);
 
         if (response && response.data) {
@@ -34,17 +34,44 @@ export const signupUser = async (fullName, email, phone, password) => {
   
 export const fetchUserData = async (userId) => {
     try {
-        const response = await axios.get(`/api/users/${userId}`);
+        const response = await axios.get(`${BASE_API_URL}/users/${userId}`);
         return response.data;
     } catch (error) {
         throw error;
     }
 };
 
+export const fetchUserActivityLog = async (userId) => {
+    try {
+        const response = await axios.get(`${BASE_API_URL}/users/activity/${userId}`);
+        console.log('response from fetchUserActivityLog: ', response);
+        if (response && response.data) {
+            return response.data;
+        }
+        return null;
+    } catch (error) {
+      throw error; 
+    }
+}
+
+export const fetchUserExpensesArray = async (userId) => {
+    try {
+        const response = await axios.get(`${BASE_API_URL}/users/expenses/${userId}`);
+        console.log('response from fetchUserExpensesArray: ', response);
+        if (response && response.data) {
+            return response.data;
+        }
+        return null;
+    } catch (error) {
+      throw error; 
+    }
+}
+
+
 
 export const resetPasswordRequest = async (email) => {
     try {
-        const response = await axios.post('/api/users/reset-password-request', { email });
+        const response = await axios.post(`${BASE_API_URL}/users/reset-password-request`, { email });
         if (response && response.data){
             return true;
         }
@@ -56,7 +83,7 @@ export const resetPasswordRequest = async (email) => {
 
 export const validateResetPasswordCode = async (email, code) => {
     try {
-        const response = await axios.post('/api/users/reset-password-code', { email, code });
+        const response = await axios.post(`${BASE_API_URL}/users/reset-password-code`, { email, code });
         if (response && response.data) {
             return true;
         }
@@ -68,7 +95,7 @@ export const validateResetPasswordCode = async (email, code) => {
 
 export const resetPassword = async (email, newPassword) => {
     try {
-        const response = await axios.post('/api/users/reset-password', { email, newPassword });
+        const response = await axios.post(`${BASE_API_URL}/users/reset-password`, { email, newPassword });
         if (response && response.data){
             return true;
         }
@@ -81,7 +108,7 @@ export const resetPassword = async (email, newPassword) => {
 export const sendContactMessage = async (user, fullName, email, message) => {
     console.log('user service - sendContactMessage ', fullName);
     try {
-        const response = await axios.post('/api/users/contact', {userId: (user ? user._Id : null), fullName, email, message });
+        const response = await axios.post(`${BASE_API_URL}/users/contact`, {userId: (user ? user._Id : null), fullName, email, message });
         console.log(response);
         if (response && response.data) {
             return true;
@@ -94,7 +121,7 @@ export const sendContactMessage = async (user, fullName, email, message) => {
 
 export const editUserDetails = async (userId, formData) => {
     try {
-        const response = await axios.put(`/api/users/${userId}`, formData, {
+        const response = await axios.put(`${BASE_API_URL}/users/${userId}`, formData, {
             headers: {
             'Content-Type': 'multipart/form-data',
             },

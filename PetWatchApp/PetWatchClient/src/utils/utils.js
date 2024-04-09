@@ -23,6 +23,12 @@ export const isValidPhoneNumber = async (phoneNumber) => {
   return phoneNumber.length >= 10 && phoneNumber.length <= 15;
 };
 
+export const formatDate = (timestamp) => {
+  const date = new Date(timestamp);
+  const formattedDate = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()} - ${date.getHours()}:${date.getMinutes()}`;
+  return formattedDate;
+};
+
 export const petNameIdeas = [
   { letter: 'A', names: ['Amigo', 'Apollo', 'Archie', 'Amber', 'Athena', 'Angel', 'Ace', 'Alfie', 'Annie', 'Atlas', 'Autumn'] },
   { letter: 'B', names: ['Beeri', 'Buddy', 'Bailey', 'Bella', 'Bruno', 'Bear', 'Biscuit', 'Blue', 'Baxter', 'Bonnie', 'Bandit'] },

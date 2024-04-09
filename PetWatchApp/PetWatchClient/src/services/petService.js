@@ -1,28 +1,101 @@
 import axios from 'axios';
 
+const BASE_API_URL = process.env.REACT_APP_BASE_API_URL;
 
-export const adoptPet = async (pet, adoptMessage, userId) => {
-    try {
-      console.log('onAdopt: ', adoptMessage);
-      const response = await axios.post('/api/requests/', {
-        message: adoptMessage,
-        petName: pet.name,
-        petId: pet._id,
-        userReqId: userId,
-        ownerId: pet.owner
-      });
+export const getPetById = async (petId) => {
+  try {
+      const response = await axios.get(`${BASE_API_URL}/pets/${petId}`);
+      console.log('response from getPetById: ', response);
       if (response && response.data) {
-        return response;
+          return response.data;
       }
       return null;
-    } catch (error) {
-      throw error; 
-    }
-  };
+  } catch (error) {
+    throw error; 
+  }
+};
+
+export const getPetsByUserId = async (userId) => {
+  try {
+      const response = await axios.get(`${BASE_API_URL}/pets/user/${userId}`);
+      console.log('response from getPetsByUserId: ', response);
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+  } catch (error) {
+    throw error; 
+  }
+};
+
+export const getPetVaccinationRecord = async (petId) => {
+  try {
+      const response = await axios.get(`${BASE_API_URL}/pets/vaccinationRecord/${petId}`);
+      console.log('response from getPetVaccinationRecord: ', response);
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+  } catch (error) {
+    throw error; 
+  }
+};
+
+export const getPetRoutineCare = async (petId) => {
+  try {
+      const response = await axios.get(`${BASE_API_URL}/pets/routineCare/${petId}`);
+      console.log('response from getPetRoutineCare: ', response);
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+  } catch (error) {
+    throw error; 
+  }
+};
+
+export const getPetNote = async (petId) => {
+  try {
+      const response = await axios.get(`${BASE_API_URL}/pets/note/${petId}`);
+      console.log('response from getPetNote: ', response);
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+  } catch (error) {
+    throw error; 
+  }
+};
+
+export const getPetExpense = async (petId) => {
+  try {
+      const response = await axios.get(`${BASE_API_URL}/pets/expense/${petId}`);
+      console.log('response from getPetExpense: ', response);
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+  } catch (error) {
+    throw error; 
+  }
+};
+
+export const getPetActivityLog = async (petId) => {
+  try {
+      const response = await axios.get(`${BASE_API_URL}/pets/activity/${petId}`);
+      console.log('response from getPetActivityLog: ', response);
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+  } catch (error) {
+    throw error; 
+  }
+};
 
   export const deletePet = async (petId) => {
     try {
-        const response = await axios.delete(`/api/pets/${petId}`);
+        const response = await axios.delete(`${BASE_API_URL}/pets/${petId}`);
         console.log('response from deletePet: ', response);
         if (response && response.data) {
             return response.data;
@@ -33,10 +106,10 @@ export const adoptPet = async (pet, adoptMessage, userId) => {
     }
   };
 
-  export const editPet = async (pet) => {
+  export const updatePetById = async (pet) => {
     try {
-      const response = await axios.put(`/api/pets/${pet._id}`, {petData: pet});
-      console.log('response from editPet: ', response);
+      const response = await axios.put(`${BASE_API_URL}/pets/${pet._id}`, {petData: pet});
+      console.log('response from updatePetById: ', response);
       if (response && response.data) {
           return response.data;
       }
@@ -48,7 +121,7 @@ export const adoptPet = async (pet, adoptMessage, userId) => {
 
   export const addPet = async (pet) => {
     try {
-      const response = await axios.post(`/api/pets/`, pet, {
+      const response = await axios.post(`${BASE_API_URL}/pets/${pet.owner}`, pet, {
         headers: {
         'Content-Type': 'multipart/form-data',
         },
@@ -63,66 +136,91 @@ export const adoptPet = async (pet, adoptMessage, userId) => {
     }
   };
 
-  export const getUserAddedPets = async (userId) => {
+  export const addPetVaccineRecord = async (petId, vaccinationRecord) => {
     try {
-        const response = await axios.get(`/api/pets/user/${userId}`);
-        console.log('response from userAddedPets: ', response);
-        if (response && response.data) {
-            return response.data.pets;
-        }
-        return [];
-    } catch (error) {
-        console.error('Error fetching pets data:', error);
-      throw error; 
-    }
-  };
-
-  export const getUserAdoptedPets = async (userId) => {
-    try {
-        const response = await axios.get(`/api/requests/adopted-pets/${userId}`);
-        console.log('response from userAoptedPets: ', response);
-        let adoptArray = [];
-        if (response && response.data && response.data.length > 0) {
-            adoptArray = response.data
-            .filter(req => req.status === 'ACCEPT')
-            .map(req => req.petId);
-            console.log('adoptArray: ', adoptArray);
-        }
-        return adoptArray;
-    } catch (error) {
-      throw error; 
-    }
-  };
-
-  export const fetchCategoryPets = async (categoryName, userId) => {
-    try {
-        const response = await axios.get(`/api/pets/${categoryName}?userId=${userId}`); 
-        console.log('response from fetchCategoryPets: ', response);
-        if (response && response.data.pets) {
-            return response.data.pets;
-        }
-        return null;
-    } catch (error) {
-      throw error; 
-    }
-  };
-
-  export const getPetsByFilters = async (filters) => {
-    try {
-      const response = await axios.get('/api/pets', {
-        params: {
-          filters: JSON.stringify(filters)
-        }
-      });
-      console.log('filters response : ', response);
-      if (response && response.data && response.data.pets) {
-        return response.data.pets;
+      const response = await axios.post(`${BASE_API_URL}/pets/vaccinationRecord/${petId}`, vaccinationRecord);
+      console.log('response from addPetVaccineRecord: ', response);
+      if (response && response.data) {
+          return response.data;
       }
-      return [];
-    } catch(error) {
-      throw error;
+      return null;
+    } catch (error) {
+      throw error; 
     }
   };
+
+  export const addPetRoutineCare = async (petId, routineCare) => {
+    try {
+      const response = await axios.post(`${BASE_API_URL}/pets/routineCare/${petId}`, routineCare);
+      console.log('response from addPetRoutineCare: ', response);
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+  };
+
+  export const addPetNote = async (petId, note) => {
+    try {
+      const response = await axios.post(`${BASE_API_URL}/pets/note/${petId}`, note);
+      console.log('response from addPetNote: ', response);
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+  };
+
+  export const addPetExpense = async (petId, expense) => {
+    try {
+      const response = await axios.post(`${BASE_API_URL}/pets/expense/${petId}`, expense);
+      console.log('response from addPetExpense: ', response);
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+  };
+
+  export const updateNoteById = async (note) => {
+    try {
+      const response = await axios.put(`${BASE_API_URL}/pets/note/${note._id}`, note);
+      console.log('response from updateNoteById: ', response);
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+  };
+
+  export const deleteNoteById = async (note) => {
+    try {
+      const response = await axios.delete(`${BASE_API_URL}/pets/note/${note._id}`);
+      console.log('response from deleteNoteById: ', response);
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+  };
+
+
+
+
+
+
+
+
 
 
 
