@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get('/:userId', userController.getUserById);
 router.get('/activity/:userId', userController.getUserActivityLog);
-
+router.get('/expenses/:userId', userController.getUserExpensesArrays);
 
 router.post('/register', userController.register);
 

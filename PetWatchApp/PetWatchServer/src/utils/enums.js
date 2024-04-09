@@ -5,53 +5,53 @@ const PetSpecies = Object.freeze({
 
 const VaccineRecordType = Object.freeze({
     DHPP: 'DHPP',
-    Rabies: 'Rabies',
-    VaccinationAgainstEsophagusWorms: 'Vaccination against Esophagus Worms',
-    FleaAndTick: 'Flea and Tick Treatment',
-    Deworming: 'Deworming',
+    RABIES: 'Rabies',
+    VACCINATION_AGAINST_ESOPHAGUS_WORMS: 'Vaccination against Esophagus Worms',
+    FLEA_AND_TICK: 'Flea and Tick Treatment',
+    DEWORMING: 'Deworming',
 
     FVRCP: 'FVRCP',
-    FeLV: 'FeLV',
-    Other: 'Other'
+    FELV: 'FeLV',
+    OTHER: 'Other'
 });
 
 const ExpenseCategory = Object.freeze({
-    Food: 'Food',
-    Medication: 'Medication',
-    Vaccinations: 'vaccinations',
-    VetVisit: 'VetVisit',
-    Insurance: 'Insurance',
-    RoutineCare: 'Routine Care',
-    Games: 'Games',
-    RelatedProducts: 'Related Products',
-    HomeProducts: 'Home Products',
-    Training: 'Training',
-    Other: 'Other'
+    FOOD: 'Food',
+    MEDICATION: 'Medication',
+    VACCINATION: 'vaccinations',
+    VET_VISIT: 'VetVisit',
+    INSURANCE: 'Insurance',
+    ROUTINE_CARE: 'Routine Care',
+    TOYS: 'Toyes',
+    RELATED_PRODUCTS: 'Related Products',
+    HOME_PROUSUCTS: 'Home Products',
+    TRAINING: 'Training',
+    OTHER: 'Other'
 });
 
 const RoutineCareActivity = Object.freeze({
-    Feeding: 'Feeding',
-    Training: 'Training',
-    Brushing: 'Brushing',
-    Bathing: 'Bathing',
-    NailTrimming: 'Nail trimming',
-    EarCleaning: 'Ear cleaning',
-    TeethBrushing: 'Teeth brushing',
-    Weighing: 'Weighing',
-    Other: 'Other'
+    FEEDING: 'Feeding',
+    TRAINING: 'Training',
+    BRUSHING: 'Brushing',
+    BATHING: 'Bathing',
+    NAIL_TRIMMING: 'Nail trimming',
+    EAR_CLEANING: 'Ear cleaning',
+    TEETH_BRUSING: 'Teeth brushing',
+    WEIGHING: 'Weighing',
+    OTHER: 'Other'
 });
 
 const ActivityLogType = Object.freeze({
-    VACCINE_RECORD_ADDED: 'vaccine_record_added',
-    ROUTINE_CARE_ADDED: 'routine_care_added',
-    EXPENSE_ADDED: 'expense_added',
-    NOTE_ADDED: 'note_added',
-    PET_ADDED: 'pet_added',
-    PET_EDIT: 'pet_edit',
-    PET_DELETE: 'pet_delete',
-    NOTE_EDIT: 'note_edit' ,
-    NOTE_DELETE: 'note_delete' ,
-    PROFILE_EDIT: 'profile_edit'
+    VACCINE_RECORD_ADDED: 'vaccine record added',
+    ROUTINE_CARE_ADDED: 'routine care added',
+    EXPENSE_ADDED: 'expense added',
+    NOTE_ADDED: 'note added',
+    PET_ADDED: 'pet added',
+    PET_EDIT: 'pet edit',
+    PET_DELETE: 'pet delete',
+    NOTE_EDIT: 'note edit' ,
+    NOTE_DELETE: 'note delete' ,
+    PROFILE_EDIT: 'profile edit'
 });
 
 module.exports = {

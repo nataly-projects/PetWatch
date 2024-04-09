@@ -79,11 +79,77 @@ async function getUserActivityLog(req, res) {
   try {
     const { userId } = req.params;
 
-      const activityLogs = await ActivityLog.find({ userId }).sort({ created_at: -1 });
+      const activityLogs = await ActivityLog.find({ userId }).sort({ created_at: -1 })
+      .populate('petId', 'name').exec();
       res.status(200).json(activityLogs);
 
   } catch (error) {
       res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+async function getUserExpensesArrays (req, res) {
+  try {
+    const { userId } = req.params;
+    const userWithPetsAndExpenses = await User.findById(userId)
+  .populate({
+    path: 'pets',
+    populate: {
+      path: 'expenses',
+      populate: {
+        path: 'pet',
+        select: 'name'
+      }
+    }
+  });
+  console.log('userWithPetsAndExpenses: ', userWithPetsAndExpenses);
+
+  const allExpenses = userWithPetsAndExpenses.pets.reduce((accumulatedExpenses, pet) => {
+    return accumulatedExpenses.concat(pet.expenses);
+  }, []);
+
+  const petExpensesData = userWithPetsAndExpenses.pets.map(pet => ({
+    petName: pet.name,
+    totalExpenses: pet.expenses.reduce((total, expense) => total + expense.amount, 0)
+  }));
+
+  const monthlyExpensesData = {}; 
+  const categoryExpensesData = {}; 
+
+  userWithPetsAndExpenses.pets.forEach(pet => {
+    pet.expenses.forEach(expense => {
+      const month = new Date(expense.date).getMonth()+1; // Get month index (0-11)
+      const category = expense.category;
+
+      // Update monthly expenses data
+      monthlyExpensesData[month] = (monthlyExpensesData[month] || 0) + expense.amount;
+
+      // Update category expenses data
+      categoryExpensesData[category] = (categoryExpensesData[category] || 0) + expense.amount;
+    });
+  });
+
+   // Convert monthly expenses data to array of objects
+   const monthlyExpensesChartData = Object.entries(monthlyExpensesData).map(([monthIndex, amount]) => ({
+    month: monthIndex, // Month index
+    amount: amount // Total expenses for the month
+  }));
+
+  // Convert category expenses data to array of objects
+  const categoryExpensesChartData = Object.entries(categoryExpensesData).map(([category, amount]) => ({
+    category: category,
+    amount: amount
+  }));
+
+  res.status(200).json({
+    allUserExpenses: allExpenses,
+    petExpensesData: petExpensesData,
+    monthlyExpensesChartData: monthlyExpensesChartData,
+    categoryExpensesChartData: categoryExpensesChartData});
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 }
 
@@ -97,5 +163,6 @@ module.exports = {
     register,
     login,
     getUserById,
-    getUserActivityLog
+    getUserActivityLog,
+    getUserExpensesArrays
 };

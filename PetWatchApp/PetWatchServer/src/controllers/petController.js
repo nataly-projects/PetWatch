@@ -5,7 +5,7 @@ const { RoutineCareRecord } = require('../models/routineCareRecordModel');
 const { Note } = require('../models/noteModel');
 const { Expense } = require('../models/expenseModel');
 const { ActivityLog } = require('../models/activityLogModel');
-const  {ActivityLogType, VaccineRecordType } = require('../utils/enums');
+const  {ActivityLogType, VaccineRecordType, RoutineCareActivity, ExpenseCategory } = require('../utils/enums');
 
 async function getPetsByUserId(req, res) {
     try {
@@ -99,7 +99,8 @@ async function getPetRoutineCare (req, res) {
     try {
         const { petId } = req.params;
 
-        const activityLogs = await ActivityLog.find({ petId }).sort({ created_at: -1 });
+        const activityLogs = await ActivityLog.find({ petId }).sort({ created_at: -1 })
+        .populate('petId', 'name').exec();
         res.status(200).json(activityLogs);
     } catch (error) {
         res.status(500).json({ error: 'Internal server error' });
@@ -192,7 +193,8 @@ async function addPetVaccineRecord (req, res) {
         const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: petId,
-            actionType: ActivityLogType.VACCINE_RECORD_ADDED
+            actionType: ActivityLogType.VACCINE_RECORD_ADDED,
+            details: note ? `vaccine type: ${VaccineRecordType[vaccineType]}.\n your note: ${note}` :  `vaccine type: ${VaccineRecordType[vaccineType]}`
         });
 
         await activityLog.save();
@@ -211,7 +213,7 @@ async function addPetRoutineCare (req, res) {
 
         // Create a new RoutineCareRecord document
         const routineCareRecord = new RoutineCareRecord({
-            activity,
+            activity: RoutineCareActivity[activity],
             note,
             date,
             nextDate,
@@ -236,7 +238,9 @@ async function addPetRoutineCare (req, res) {
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: petId,
-            actionType: ActivityLogType.ROUTINE_CARE_ADDED
+            actionType: ActivityLogType.ROUTINE_CARE_ADDED,
+            details: note ? `routine care type: ${RoutineCareActivity[activity]}.\n your note: ${note}` :  `routine care type: ${RoutineCareActivity[activity]}`
+
         });
         await activityLog.save();
 
@@ -273,7 +277,8 @@ async function addPetNote (req, res) {
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: petId,
-            actionType: ActivityLogType.NOTE_ADDED
+            actionType: ActivityLogType.NOTE_ADDED,
+            details: content
         });
         await activityLog.save();
 
@@ -291,7 +296,7 @@ async function addPetExpense (req, res) {
 
          // Create a new Note document
          const expense = new Expense({
-            category,
+            category: ExpenseCategory[category],
             amount, 
             note,
             date,
@@ -312,7 +317,9 @@ async function addPetExpense (req, res) {
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: petId,
-            actionType: ActivityLogType.EXPENSE_ADDED
+            actionType: ActivityLogType.EXPENSE_ADDED,
+            details: note ? `expense type: ${ExpenseCategory[category]}.\n your note: ${note}` :  `expense type: ${ExpenseCategory[category]}`
+
         });
         await activityLog.save();
 
