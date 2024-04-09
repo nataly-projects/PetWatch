@@ -14,6 +14,7 @@ router.get('/routineCare/:petId', petController.getPetRoutineCare);
 router.get('/note/:petId', petController.getPetNote);
 router.get('/expense/:petId', petController.getPetExpense);
 router.get('/activity/:petId', petController.getPetActivityLog);
+router.get('/upcoming/:petId', petController.getPetUpcomingEvents);
 
 router.post('/:userId', petController.addPet);
 router.post('/vaccinationRecord/:petId', petController.addPetVaccineRecord);

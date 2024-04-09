@@ -48,6 +48,7 @@ const ActivityLogType = Object.freeze({
     NOTE_ADDED: 'note added',
     PET_ADDED: 'pet added',
     PET_EDIT: 'pet edit',
+    PET_WEIGHT_UPDATE: 'pet weight update',
     PET_DELETE: 'pet delete',
     NOTE_EDIT: 'note edit' ,
     NOTE_DELETE: 'note delete' ,

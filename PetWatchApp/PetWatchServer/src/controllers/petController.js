@@ -121,6 +121,52 @@ async function getPetRoutineCare (req, res) {
     }
   }
 
+  async function getPetUpcomingEvents (req, res) {
+    try {
+        const { petId } = req.params;
+
+        const petWithUpcomingEvents = await Pet.findById(petId).populate({
+            path: 'vaccinationRecords',
+            match: { nextDate: { $gte: new Date() }},
+            populate: {path: 'pet',select: 'name'} 
+        }).populate({
+            path: 'routineCareRecords',
+            match: { nextDate: { $gte: new Date() }},
+            populate: {path: 'pet',select: 'name'} 
+        });
+
+        console.log('petWithUpcomingEvents: ', petWithUpcomingEvents);
+        const upcomingEvents = [];
+
+        // const upcomingEvents = [...petWithUpcomingEvents.vaccinationRecords, ...petWithUpcomingEvents.routineCareRecords];
+
+
+        
+        petWithUpcomingEvents.vaccinationRecords.forEach(vaccineRecord => {
+                upcomingEvents.push({
+                    ...vaccineRecord.toObject(),
+                    actionType: 'Vaccine',
+                    details: `Vaccine Type: ${vaccineRecord.vaccineType}`
+                });
+            });
+      
+            petWithUpcomingEvents.routineCareRecords.forEach(routineCareRecord => {
+                upcomingEvents.push({
+                    ...routineCareRecord.toObject(),
+                    actionType: 'Routine Care',
+                    details: `Routine Care Type: ${routineCareRecord.activity}`
+                });
+            });
+        
+
+        // Sort the combined events by nextDate
+        upcomingEvents.sort((a, b) => a.nextDate - b.nextDate);
+        res.status(200).json(upcomingEvents);
+    } catch (error) {
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
   async function addPet (req, res) {
     try {
         console.log('add pet: ', req.body);
@@ -490,6 +536,7 @@ module.exports = {
     getPetNote,
     getPetExpense,
     getPetActivityLog,
+    getPetUpcomingEvents,
     addPet,
     addPetVaccineRecord,
     addPetRoutineCare,

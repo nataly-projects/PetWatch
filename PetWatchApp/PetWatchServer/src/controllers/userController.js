@@ -92,16 +92,16 @@ async function getUserExpensesArrays (req, res) {
   try {
     const { userId } = req.params;
     const userWithPetsAndExpenses = await User.findById(userId)
-  .populate({
-    path: 'pets',
-    populate: {
-      path: 'expenses',
+    .populate({
+      path: 'pets',
       populate: {
-        path: 'pet',
-        select: 'name'
+        path: 'expenses',
+        populate: {
+          path: 'pet',
+          select: 'name'
+        }
       }
-    }
-  });
+    });
   console.log('userWithPetsAndExpenses: ', userWithPetsAndExpenses);
 
   const allExpenses = userWithPetsAndExpenses.pets.reduce((accumulatedExpenses, pet) => {
@@ -153,6 +153,50 @@ async function getUserExpensesArrays (req, res) {
   }
 }
 
+async function getUserUpcomingEvents (req, res) {
+  try {
+    const { userId } = req.params;
+    const userWithUpcomingEvents = await User.findById(userId).populate({
+      path: 'pets',
+      populate: [
+          { path: 'vaccinationRecords', 
+          match: { nextDate: { $gte: new Date() } },  
+           populate: {path: 'pet',select: 'name'} },
+          { path: 'routineCareRecords', 
+          match: { nextDate: { $gte: new Date() } },
+          populate: {path: 'pet', select: 'name'} }
+      ]
+    });
+    console.log('userWithUpcomingEvents: ', userWithUpcomingEvents);
+    const upcomingEvents = [];
+
+    userWithUpcomingEvents.pets.forEach(pet => {
+      pet.vaccinationRecords.forEach(vaccineRecord => {
+          upcomingEvents.push({
+              ...vaccineRecord.toObject(),
+              actionType: 'Vaccine',
+              details: `Vaccine Type: ${vaccineRecord.vaccineType}`
+          });
+      });
+
+      pet.routineCareRecords.forEach(routineCareRecord => {
+          upcomingEvents.push({
+              ...routineCareRecord.toObject(),
+              actionType: 'Routine Care',
+              details: `Routine Care Type: ${routineCareRecord.activity}`
+          });
+      });
+  });
+
+    // Sort the combined events by nextDate
+    upcomingEvents.sort((a, b) => a.nextDate - b.nextDate);
+    res.status(200).json(upcomingEvents);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
 // function genreateSecretKey () {
 //   const secretKey = crypto.randomBytes(32).toString('hex');
 //   // Write the secret key to the .env file
@@ -164,5 +208,6 @@ module.exports = {
     login,
     getUserById,
     getUserActivityLog,
-    getUserExpensesArrays
+    getUserExpensesArrays,
+    getUserUpcomingEvents
 };

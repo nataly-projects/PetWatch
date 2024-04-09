@@ -8,6 +8,7 @@ const router = express.Router();
 router.get('/:userId', userController.getUserById);
 router.get('/activity/:userId', userController.getUserActivityLog);
 router.get('/expenses/:userId', userController.getUserExpensesArrays);
+router.get('/upcoming/:userId', userController.getUserUpcomingEvents);
 
 router.post('/register', userController.register);
 
