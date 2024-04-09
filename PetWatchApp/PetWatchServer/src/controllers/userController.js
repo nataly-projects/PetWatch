@@ -197,6 +197,32 @@ async function getUserUpcomingEvents (req, res) {
   }
 }
 
+async function getUserNotes (req, res) {
+  try {
+    console.log('getUserNotes');
+    const { userId } = req.params;
+    const userWithNotes = await User.findById(userId).populate({
+      path: 'pets',
+      populate: [
+          { path: 'notes',  
+           populate: {path: 'pet',select: 'name'} },
+      ]
+    });
+    console.log('userWithNotes: ', userWithNotes);
+    const notes = [];
+
+    userWithNotes.pets.map(pet => {
+      notes.push(...pet.notes);
+      });
+
+      
+    res.status(200).json(notes);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
 // function genreateSecretKey () {
 //   const secretKey = crypto.randomBytes(32).toString('hex');
 //   // Write the secret key to the .env file
@@ -209,5 +235,6 @@ module.exports = {
     getUserById,
     getUserActivityLog,
     getUserExpensesArrays,
-    getUserUpcomingEvents
+    getUserUpcomingEvents,
+    getUserNotes
 };

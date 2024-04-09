@@ -12,7 +12,12 @@ async function getPetsByUserId(req, res) {
         const { userId } = req.params;
 
         // const pets = await Pet.find({ owner: userId }).populate('category');
-        const user = await User.findById(userId).populate('pets');
+        const user = await User.findById(userId).populate({
+            path: 'pets',
+                populate: {
+                    path: 'notes',
+                }
+          });
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
             }
@@ -167,6 +172,45 @@ async function getPetRoutineCare (req, res) {
     }
   }
 
+  async function getPetExpensesArrays(req, res) {
+    try {
+        const { petId } = req.params;
+
+      const petWithExpenses = await Pet.findById(petId).populate('expenses');
+  console.log('petWithExpenses: ', petWithExpenses);
+      const monthlyExpensesData = {};
+      const categoryExpensesData = {};
+  
+      petWithExpenses.expenses.forEach(expense => {
+        const month = new Date(expense.date).getMonth() + 1; // Get month index (0-11)
+        const category = expense.category;
+  
+        // Update monthly expenses data
+        monthlyExpensesData[month] = (monthlyExpensesData[month] || 0) + expense.amount;
+  
+        // Update category expenses data
+        categoryExpensesData[category] = (categoryExpensesData[category] || 0) + expense.amount;
+      });
+  
+      // Convert monthly expenses data to array of objects
+      const monthlyExpensesChartData = Object.entries(monthlyExpensesData).map(([monthIndex, amount]) => ({
+        month: monthIndex, // Month index
+        amount: amount // Total expenses for the month
+      }));
+  
+      // Convert category expenses data to array of objects
+      const categoryExpensesChartData = Object.entries(categoryExpensesData).map(([category, amount]) => ({
+        category: category,
+        amount: amount
+      }));
+  
+      res.status(200).json({ monthlyExpensesChartData, categoryExpensesChartData });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
   async function addPet (req, res) {
     try {
         console.log('add pet: ', req.body);
@@ -191,6 +235,14 @@ async function getPetRoutineCare (req, res) {
             { $push: { pets: newPet._id } }, // Add the pet's ID to the pets array
             { new: true }
         );
+
+        const weightActivityLog = new ActivityLog({
+            userId: newPet.owner, 
+            petId: newPet._id,
+            actionType: ActivityLogType.PET_WEIGHT_UPDATE,
+            details: `update weight to ${weight} `
+        });
+        await weightActivityLog.save();
 
           // Log the activity
           const activityLog = new ActivityLog({
@@ -465,6 +517,17 @@ async function updatePetById(req, res) {
 
         await pet.save();
 
+        //TODO - if weight is change - add to activity log
+        if (weight) {
+            const weightActivityLog = new ActivityLog({
+                userId: pet.owner, 
+                petId: petId,
+                actionType: ActivityLogType.PET_WEIGHT_UPDATE,
+                details: `update weight to ${weight} `
+            });
+            await weightActivityLog.save();
+        }
+        
         const user = await User.findById(pet.owner);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
@@ -537,6 +600,7 @@ module.exports = {
     getPetExpense,
     getPetActivityLog,
     getPetUpcomingEvents,
+    getPetExpensesArrays,
     addPet,
     addPetVaccineRecord,
     addPetRoutineCare,

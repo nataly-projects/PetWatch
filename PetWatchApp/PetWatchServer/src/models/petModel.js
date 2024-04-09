@@ -42,6 +42,15 @@ const petSchema = new Schema({
     chipNumber: {
         type: String,
     },
+    chipNumber: {
+        type: String,
+    },
+    medications: [{
+        type: String
+    }],
+    allergies: [{
+        type: String
+    }],
     additionalImages: [{
         type: String,
     }],
