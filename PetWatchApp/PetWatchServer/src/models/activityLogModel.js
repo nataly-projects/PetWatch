@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const {ActivityLogType} = require('../utils/enums');
 
 const Schema = mongoose.Schema;
 
@@ -15,6 +16,7 @@ const activityLogSchema = new Schema({
     },
     actionType: {
         type: String,
+        enum: Object.values(ActivityLogType),
         required: true
     },
     details: {

@@ -47,7 +47,7 @@ async function register (req, res) {
       });
 
         await newUser.save();
-        res.json({ message: 'User signed up successfully', user: newUser });
+        res.status(200).json({ message: 'User signed up successfully', user: newUser });
     } catch (error) {
       res.status(500).json({ error: 'Internal server error' });
     } 
@@ -142,7 +142,7 @@ async function getUserExpensesArrays (req, res) {
   }));
 
   res.status(200).json({
-    allUserExpenses: allExpenses,
+    allExpenses: allExpenses,
     petExpensesData: petExpensesData,
     monthlyExpensesChartData: monthlyExpensesChartData,
     categoryExpensesChartData: categoryExpensesChartData});
@@ -223,6 +223,58 @@ async function getUserNotes (req, res) {
   }
 }
 
+async function getUserAccountSettings (req, res) {
+  try {
+    console.log('getUserAccountSettings');
+    const { userId } = req.params;
+    const user = await User.findById(userId);
+    if (!user) {
+      return { error: 'User not found' };
+    }
+
+    // Extract and return account settings
+    const accountSettings = {
+      notificationPreferences: user.notificationPreferences,
+      theme: user.theme,
+      language: user.language
+    };
+
+    res.status(200).json( {message: 'User account settings update successfully', accountSettings});
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+async function updateUserAccountSettings (req, res) {
+  try {
+    const { userId } = req.params;
+    const {updateSettings} = req.body;
+    console.log('updateSettings: ', updateSettings)
+    const user = await User.findById(userId);
+    if (!user) {
+      return { error: 'User not found' };
+    }
+
+    // Update user account settings
+    if (updateSettings.notificationPreferences) {
+      user.notificationPreferences = updateSettings.notificationPreferences;
+    }
+    if (updateSettings.theme) {
+        user.theme = updateSettings.theme;
+    }
+    if (updateSettings.language) {
+        user.language = updateSettings.language;
+    }
+    await user.save();
+
+    res.status(200).json(user);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
 // function genreateSecretKey () {
 //   const secretKey = crypto.randomBytes(32).toString('hex');
 //   // Write the secret key to the .env file
@@ -236,5 +288,7 @@ module.exports = {
     getUserActivityLog,
     getUserExpensesArrays,
     getUserUpcomingEvents,
-    getUserNotes
+    getUserNotes,
+    getUserAccountSettings,
+    updateUserAccountSettings
 };

@@ -25,9 +25,11 @@ export const isValidPhoneNumber = async (phoneNumber) => {
 
 export const formatDate = (timestamp) => {
   const date = new Date(timestamp);
-  const formattedDate = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()} - ${date.getHours()}:${date.getMinutes()}`;
+  // const formattedDate = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()} - ${date.getHours()}:${date.getMinutes()}`;
+  const formattedDate = `${date.toLocaleDateString()} - ${date.toLocaleTimeString()}`;
   return formattedDate;
 };
+
 
 export const petNameIdeas = [
   { letter: 'A', names: ['Amigo', 'Apollo', 'Archie', 'Amber', 'Athena', 'Angel', 'Ace', 'Alfie', 'Annie', 'Atlas', 'Autumn'] },

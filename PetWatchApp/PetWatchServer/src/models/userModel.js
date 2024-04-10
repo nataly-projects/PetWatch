@@ -42,6 +42,30 @@ const userSchema = new Schema({
         type: Number,
         default: 0 
     },
+       // Account settings
+    notificationPreferences: {
+        email: {
+            type: Boolean,
+            default: true
+        },
+        vaccineTime: {
+            type: Boolean,
+            default: true
+        },
+        routineCareTime: {
+            type: Boolean,
+            default: true
+        },
+        // Add more notification preferences as needed
+    },
+    theme: {
+        type: String,
+        default: 'light' // Or any default theme
+    },
+    language: {
+        type: String,
+        default: 'en' // Or any default language
+    },
     // imageUrl: {
     //     type: String,
     //     default: null

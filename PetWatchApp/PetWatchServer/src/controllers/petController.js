@@ -113,13 +113,12 @@ async function getPetRoutineCare (req, res) {
   }
 
   async function getPetWeightTracker (req, res) {
-    //TODO - think how to get the info
     try {
         const { petId } = req.params;
-        const pet = await Pet.findById(petId);
-        if (!pet) {
-        return res.status(404).json({ error: 'Pet not found' });
-        }
+
+        const weightLogs = await ActivityLog.find({ petId, actionType: ActivityLogType.PET_WEIGHT_UPDATE });
+        console.log('weightLogs: ', weightLogs);
+        res.status(200).json(weightLogs);
       
     } catch (error) {
       res.status(500).json({ error: 'Internal server error' });
@@ -177,6 +176,8 @@ async function getPetRoutineCare (req, res) {
         const { petId } = req.params;
 
       const petWithExpenses = await Pet.findById(petId).populate('expenses');
+      const allExpenses = petWithExpenses.expenses;
+
   console.log('petWithExpenses: ', petWithExpenses);
       const monthlyExpensesData = {};
       const categoryExpensesData = {};
@@ -204,7 +205,7 @@ async function getPetRoutineCare (req, res) {
         amount: amount
       }));
   
-      res.status(200).json({ monthlyExpensesChartData, categoryExpensesChartData });
+      res.status(200).json({ allExpenses, monthlyExpensesChartData, categoryExpensesChartData });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Internal server error' });
@@ -601,6 +602,7 @@ module.exports = {
     getPetActivityLog,
     getPetUpcomingEvents,
     getPetExpensesArrays,
+    getPetWeightTracker,
     addPet,
     addPetVaccineRecord,
     addPetRoutineCare,
