@@ -95,6 +95,34 @@ export const fetchUserNotes = async (userId) => {
     }
 }
 
+export const fetchUserAccountSettings = async (userId) => {
+    try{
+        const response = await axios.get(`${BASE_API_URL}/users/settings/${userId}`);
+        console.log('response from fetchUserAccountSettings: ', response);
+        if (response && response.data) {
+            return response.data;
+        }
+        return null;
+
+    } catch (error) {
+      throw error; 
+    }
+}
+
+export const updateUserSettings = async (userId, updateSettings) => {
+    try{
+        const response = await axios.put(`${BASE_API_URL}/users/settings/${userId}`, updateSettings);
+        console.log('response from fetchUserNotes: ', response);
+        if (response && response.data) {
+            return response.data;
+        }
+        return null;
+
+    } catch (error) {
+      throw error; 
+    }
+}
+
 
 
 

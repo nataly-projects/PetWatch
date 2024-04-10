@@ -80,6 +80,20 @@ export const getPetExpense = async (petId) => {
   }
 };
 
+export const getPetWeightTracker = async (petId) => {
+  try {
+      const response = await axios.get(`${BASE_API_URL}/pets/weight-track/${petId}`);
+      console.log('response from getPetWeightTracker: ', response);
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+  } catch (error) {
+    throw error; 
+  }
+};
+
+
 export const getPetActivityLog = async (petId) => {
   try {
       const response = await axios.get(`${BASE_API_URL}/pets/activity/${petId}`);

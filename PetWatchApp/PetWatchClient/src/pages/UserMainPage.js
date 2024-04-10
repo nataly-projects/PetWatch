@@ -13,6 +13,7 @@ import PetNamesIdea from '../components/PetNamesIdea';
 import EmergencyGuide from './EmergencyGuide';
 import ExpenseTracker from '../components/ExpenseTracker';
 import PetProfile from '../components/PetProfile';
+import AccountSettings from '../components/AccountSettings';
 import '../styles/UserMainPage.css';
 
 
@@ -32,6 +33,7 @@ const UserMainPage = () => {
           <Route path="/emergency-guide" element={<EmergencyGuide />} />
           <Route path="/expenses" element={<ExpenseTracker />} />
           <Route path="/activity-log" element={<ActivityLog />} />
+          <Route path="/account-settings" element={<AccountSettings />} />
           {/* <Route path="/activity-log" element={<ActivityLog />} />
            <Route path="/weight-tracker" element={<WeightTracker />} /> 
            <Route path="/profile" element={<UserProfile />} />  */}

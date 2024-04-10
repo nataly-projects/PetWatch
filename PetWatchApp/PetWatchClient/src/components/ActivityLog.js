@@ -1,101 +1,62 @@
-import React, {useState, useEffect} from 'react';
-import { useSelector } from 'react-redux';
+import React from 'react';
 import { formatDate } from '../utils/utils';
-import { fetchUserActivityLog } from '../services/userService';
-import { fetchUserUpcomingEvents } from '../services/userService';
 import '../styles/ActivityLog.css';
 
-const ActivityLog = ({ logs }) => {
-    const user = useSelector((state) => state.user);
-    const [activityLogs, setActivityLogs] = useState([]);
-    const [upcomingEvents, setUpcomingEvents] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
-
-    const fetchData = async () => {
-        try {
-            const logs = await fetchUserActivityLog(user._id);
-            const events = await fetchUserUpcomingEvents(user._id);
-            setActivityLogs(logs);
-            setUpcomingEvents(events);
-            setLoading(false);
-        } catch (error) {
-            console.error('Error fetching data:', error);
-            setError(true);
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        if (user) {
-            fetchData();
-        }
-      }, [user]);
-
-    if (loading) {
-        return (
-            <div className="loading-container">
-                <div className="loading-spinner"></div>
-                <div>Loading...</div>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div>
-                <p>Failed to fetch expense data. Please try again later.</p>
-                <button onClick={fetchData}>Retry</button>
-            </div>
-        );
-    }
-
-
+const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
+    
     return (
         <div className="activity-log-container">
-            <h2>Your Activity Logs: </h2>
-            <table className='table'>
-                <thead>
-                    <tr>
-                    <th>Date</th>
-                    <th>Pet Name</th>
-                    <th>Action Type</th>
-                    <th>Details</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {activityLogs.map(log => (
-                        <tr key={log._id}>
-                            <td>{formatDate(log.created_at)}</td>
-                            <td>{log.petId.name}</td>
-                            <td>{log.actionType}</td>
-                            <td>{log.details}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            <h3>{petName !== null ? `${petName} Activity Logs` : 'Your Activity Logs'}</h3>
 
-            <h2>Upcoming Events</h2>
-            <table className='table'>
-                <thead>
-                    <tr>
+            {activityLogs.length > 0 ?
+                <table className='table'>
+                    <thead>
+                        <tr>
                         <th>Date</th>
-                        <th>Pet Name</th>
+                        {petName == null && <th>Pet Name</th>}
                         <th>Action Type</th>
                         <th>Details</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {upcomingEvents.map(event => (
-                        <tr key={event._id}>
-                            <td>{formatDate(event.nextDate)}</td>
-                            <td>{event.pet.name}</td>
-                            <td>{event.actionType}</td>
-                            <td>{event.details}</td>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {activityLogs.map(log => (
+                            <tr key={log._id}>
+                                <td>{formatDate(log.created_at)}</td>
+                                {petName == null && <td>{log.petId.name}</td>}
+                                <td>{log.actionType}</td>
+                                <td>{log.details}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+                :
+                <p>No activity logs yet.</p>
+            }
+            <h3>{petName !== null ? `${petName} Upcoming Events` : 'Your Upcoming Events'}</h3>
+            {upcomingEvents.length > 0 ?
+                <table className='table'>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            {petName == null && <th>Pet Name</th>}
+                            <th>Action Type</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {upcomingEvents.map(event => (
+                            <tr key={event._id}>
+                                <td>{formatDate(event.nextDate)}</td>
+                                {petName == null && <td>{event.pet.name}</td>}
+                                <td>{event.actionType}</td>
+                                <td>{event.details}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+                : 
+                <p>No upcoming events yet.</p>
+            }
         </div>
     );
 };

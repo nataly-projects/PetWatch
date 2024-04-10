@@ -65,9 +65,8 @@ const WeightTracker = ({ weightUpdateLogs }) => {
 
     return (
       <div>
-        <h2>Weight Tracker Activity Log</h2>
         {renderWeightTrackLogTable()}
-        <h2>Weight Changes Over Time</h2>
+        <h3>Weight Changes Over Time</h3>
         <Bar data={data} options={options} />
       </div>
     );
