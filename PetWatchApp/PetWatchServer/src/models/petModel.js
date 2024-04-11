@@ -4,7 +4,8 @@ const VaccinationRecord = require('./vaccinationRecordModel');
 const RoutineCareRecord = require('./routineCareRecordModel');
 const Note = require('./noteModel');
 const Expense = require('./expenseModel');
-
+const Medication = require('./medicationModel');
+const Allergy = require('./allergyModel');
 
 const Schema = mongoose.Schema;
 
@@ -56,7 +57,7 @@ const petSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Allergy',
     }],
-    vetVisitis: [{
+    vetVisits: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'VetVisit',
     }],

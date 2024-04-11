@@ -17,9 +17,12 @@ async function getPetsByUserId(req, res) {
         // const pets = await Pet.find({ owner: userId }).populate('category');
         const user = await User.findById(userId).populate({
             path: 'pets',
-                populate: {
-                    path: 'notes',
-                }
+                populate: [
+                    { path: 'notes' },
+                    { path: 'allergies' },
+                    { path: 'medications' },
+                    { path: 'vetVisits' }
+                ]
           });
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
