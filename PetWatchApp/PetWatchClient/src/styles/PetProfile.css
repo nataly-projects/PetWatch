@@ -7,7 +7,55 @@
         margin-bottom: 20px;
     }
 
-          .chart-container {
+    .pet-details-headers {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .pet-details-actions {
+        display: flex;
+        gap: 10px;
+        cursor: pointer;
+    }
+
+    .health-info-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+    }
+    
+    .health-info-card {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 10px;
+    }
+
+    .health-info-header {
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .health-info-card h4 {
+        margin-top: 0;
+    }
+    
+    .health-info-card p {
+        margin: 5px 0;
+    }
+
+    .health-info-actions {
+        display: flex;
+        gap: 10px;
+        cursor: pointer;
+    }
+    
+    .health-info-card p strong {
+        margin-right: 5px;
+    }
+
+    .chart-container {
         margin-bottom: 20px;
         display: flex;
         flex-direction: column;

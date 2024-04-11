@@ -1,4 +1,9 @@
 import bcrypt from 'bcryptjs';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSyringe, faHeartbeat, faMoneyBillAlt, faStickyNote, faAllergies, faPills, faHospital, 
+  faMicroscope, faUtensils, faDog, faShower, faScissors, faWeightHanging, faCapsules, faShoppingBasket, faHome, 
+  faEllipsisH, faTeeth, faBrush, faEarListen, faPaw, faSoccerBall } from '@fortawesome/free-solid-svg-icons';
+
 const saltRounds = 10; 
 
 export const isValidEmail = (email) => {
@@ -59,6 +64,56 @@ export const petNameIdeas = [
   { letter: 'Y', names: ['Yogi', 'Yoda', 'Yara', 'Yasmin', 'Yoshi', 'Yvette', 'Yvonne', 'Yara', 'Yasmine', 'Yael'] },
   { letter: 'Z', names: ['Zeus', 'Ziggy', 'Zara', 'Zelda', 'Zorro', 'Zoe', 'Zane', 'Zephyr', 'Zig', 'Zola'] }
 ];
-  
+
+export const VaccineRecordType = [
+  { name: 'DHPP', icon: faSyringe, value: 'DHPP' },
+  { name: 'RABIES', icon: faSyringe, value: 'Rabies' },
+  { name: 'VACCINATION_AGAINST_ESOPHAGUS_WORMS', icon: faSyringe, value: 'Vaccination against Esophagus Worms' },
+  { name: 'FLEA_AND_TICK', icon: faSyringe, value: 'Flea and Tick Treatment' },
+  { name: 'DEWORMING', icon: faSyringe, value: 'Deworming' },
+  { name: 'FVRCP', icon: faSyringe, value: 'FVRCP' },
+  { name: 'FELV', icon: faSyringe, value: 'FeLV' },
+  { name: 'OTHER', icon: faSyringe, value: 'OTHER' }
+];
+
+export const RoutineCareActivityItems = [
+  { name: 'FEEDING', icon: faUtensils, value: 'Feeding' },
+  { name: 'TRAINING', icon: faDog, value: 'Training' },
+  { name: 'BRUSHING', icon: faBrush, value: 'Brushing' },
+  { name: 'BATHING', icon: faShower, value: 'Bathing' },
+  { name: 'NAIL_TRIMMING', icon: faPaw, value: 'Nail Trimming' },
+  { name: 'EAR_CLEANING', icon: faEarListen, value: 'Ear Cleaning' },
+  { name: 'HAIRֹֹֹCUT', icon: faScissors, value: 'Haircut' },
+  { name: 'TEETH_BRUSHING', icon: faTeeth, value: 'Teeth Brushing' },
+  { name: 'WEIGHING', icon: faWeightHanging, value: 'Weighing' },
+  { name: 'OTHER', icon: faEllipsisH, value: 'Other' }
+];
+
+export const ExpenseCategory = [
+  { name: 'FOOD', icon: faUtensils, value: 'Food' },
+  { name: 'MEDICATION', icon: faCapsules, value: 'Medication' },
+  { name: 'VACCINATION', icon: faSyringe, value: 'Vaccinations' },
+  { name: 'VET_VISIT', icon: faHospital, value: 'Vet Visit' },
+  { name: 'INSURANCE', icon: faMoneyBillAlt, value: 'Insurance' },
+  { name: 'ROUTINE_CARE', icon: faHeartbeat, value: 'Routine Care' },
+  { name: 'TOYS', icon: faSoccerBall, value: 'Toys' },
+  { name: 'RELATED_PRODUCTS', icon: faShoppingBasket, value: 'Related Products' },
+  { name: 'HOME_PRODUCTS', icon: faHome, value: 'Home Products' },
+  { name: 'TRAINING', icon: faDog, value: 'Training' },
+  { name: 'OTHER', icon: faEllipsisH, value: 'Other' }
+];
+
+export const ActivityType = [
+  { name: 'VACCINE_RECORD', icon: faSyringe, value: 'Vaccine Record', items: true },
+  { name: 'ROUTINE_CARE', icon: faHeartbeat, value: 'Routine Care', items: true },
+  { name: 'EXPENSE', icon: faMoneyBillAlt, value: 'Expense', items: true },
+  { name: 'NOTE', icon: faStickyNote, value: 'Note', items: false },
+  { name: 'ALLERGY', icon: faAllergies, value: 'Allergy', items: false },
+  { name: 'MEDICATION', icon: faPills, value: 'Medication', items: false },
+  { name: 'VET_VISIT', icon: faHospital, value: 'Vet Visit', items: false },
+  { name: 'EXAMINATION', icon: faMicroscope, value: 'Examination', items: false },
+  { name: 'OTHER', icon: faEllipsisH, value: 'Other', items: false }
+];
+
 
   

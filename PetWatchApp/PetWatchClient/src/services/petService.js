@@ -80,6 +80,45 @@ export const getPetExpense = async (petId) => {
   }
 };
 
+export const getPetAllergies = async (petId) => {
+  try {
+      const response = await axios.get(`${BASE_API_URL}/pets/allergy/${petId}`);
+      console.log('response from getPetAllergies: ', response);
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+  } catch (error) {
+    throw error; 
+  }
+};
+
+export const getPetMedications = async (petId) => {
+  try {
+      const response = await axios.get(`${BASE_API_URL}/pets/medication/${petId}`);
+      console.log('response from getPetMedications: ', response);
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+  } catch (error) {
+    throw error; 
+  }
+};
+
+export const getPetVetVisits = async (petId) => {
+  try {
+      const response = await axios.get(`${BASE_API_URL}/pets/vet-visit/${petId}`);
+      console.log('response from getPetVetVisits: ', response);
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+  } catch (error) {
+    throw error; 
+  }
+};
+
 export const getPetWeightTracker = async (petId) => {
   try {
       const response = await axios.get(`${BASE_API_URL}/pets/weight-track/${petId}`);
@@ -226,6 +265,68 @@ export const getPetExpensesArrays = async (petId) => {
     } catch (error) {
       throw error; 
     }
+  };
+
+  export const addPetAllergy = async (petId, allergyData) => {
+    try {
+      const response = await axios.post(`${BASE_API_URL}/pets/allergy/${petId}`, allergyData);
+      console.log('response from addPetAllergy: ', response);
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+  };
+
+  export const addPetMedication = async (petId, medicationData) => {
+    try {
+      const response = await axios.post(`${BASE_API_URL}/pets/medication/${petId}`, medicationData);
+      console.log('response from addPetMedication: ', response);
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+  };
+
+  export const addPetVetVisit = async (petId, vetVisitData) => {
+    try {
+      const response = await axios.post(`${BASE_API_URL}/pets/vet-visit/${petId}`, vetVisitData);
+      console.log('response from addPetVetVisit: ', response);
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+  };
+
+  export const addPetActivity = async (petId, selectedActivity, data) => {
+    switch (selectedActivity.name) {
+      case 'VACCINE_RECORD':
+          return addPetVaccineRecord(petId, data);
+      case 'ROUTINE_CARE':
+          return addPetRoutineCare(petId, data);
+      case 'EXPENSE':
+          return addPetExpense(petId, data);
+      case 'NOTE':
+          return addPetNote(petId, data);
+      case 'ALLERGY':
+          return addPetAllergy(petId, data);
+      case 'MEDICATION':
+          return addPetMedication(petId, data);
+      case 'VET_VISIT':
+          return addPetVetVisit(petId, data);
+      // case 'OTHER':
+      //     return addOtherActivity(petId, data);
+      default:
+          throw new Error('Invalid activity type');
+  }
   };
 
   export const updateNoteById = async (note) => {

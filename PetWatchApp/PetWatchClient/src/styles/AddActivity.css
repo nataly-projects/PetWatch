@@ -1,0 +1,27 @@
+.container {
+    padding: 20px;
+
+    .input-container {
+        margin-bottom: 15px;
+      }
+      
+      .label {
+        margin-bottom: 5px;
+      }
+      
+      .input-field {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      
+      .textarea-field {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        resize: vertical;
+      }
+  }
+  
