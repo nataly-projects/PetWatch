@@ -1,29 +1,26 @@
 const mongoose = require('mongoose');
-const {VaccineRecordType} = require('../utils/enums');
 
 const Schema = mongoose.Schema;
 
-
-const VaccinationRecordSchema  = new Schema({
+const AllergySchema = new Schema({
     pet: { 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Pet', 
     },
-    vaccineType: { 
+    name: { 
         type: String, 
-        enum: Object.values(VaccineRecordType),
         required: true 
     },
     note: {
         type: String
     },
+    treatment: {
+        type: String,
+        required: true
+    },
     date: { 
         type: Date, 
         required: true 
-    },
-    nextDate: {
-        type: Date,
-        required: true
     },
     created_at: {
         type: Date,
@@ -32,10 +29,7 @@ const VaccinationRecordSchema  = new Schema({
 });
 
 
-const VaccinationRecord = mongoose.model('VaccinationRecord', VaccinationRecordSchema);
+const Allergy = mongoose.model('Allergy', AllergySchema);
 
-module.exports = { VaccinationRecord, VaccinationRecordSchema};
-
-
-
+module.exports = { Allergy, AllergySchema};
 

@@ -2,6 +2,9 @@ const { Pet } =  require('../models/petModel');
 const { User } = require('../models/userModel');
 const { VaccinationRecord } = require('../models/vaccinationRecordModel');
 const { RoutineCareRecord } = require('../models/routineCareRecordModel');
+const { Allergy } = require('../models/allergyModel');
+const { Medication } = require('../models/medicationModel');
+const { VetVisit } = require('../models/vetVisitModel');
 const { Note } = require('../models/noteModel');
 const { Expense } = require('../models/expenseModel');
 const { ActivityLog } = require('../models/activityLogModel');
@@ -212,11 +215,53 @@ async function getPetRoutineCare (req, res) {
     }
   }
 
+  async function getPetAllergies (req, res) {
+    try {
+        const { petId } = req.params;
+
+        const pet = await Pet.findById(petId).populate('allergies');
+        if (!pet) {
+        return res.status(404).json({ error: 'Pet not found' });
+        }
+        res.status(200).json(pet.allergies);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+async function getPetMedications (req, res) {
+    try {
+        const { petId } = req.params;
+
+        const pet = await Pet.findById(petId).populate('medications');
+        if (!pet) {
+        return res.status(404).json({ error: 'Pet not found' });
+        }
+        res.status(200).json(pet.medications);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+async function getPetVetVisits (req, res) {
+    try {
+        const { petId } = req.params;
+
+        const pet = await Pet.findById(petId).populate('vetVisitis');
+        if (!pet) {
+        return res.status(404).json({ error: 'Pet not found' });
+        }
+        res.status(200).json(pet.vetVisitis);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
   async function addPet (req, res) {
     try {
         console.log('add pet: ', req.body);
         const { userId } = req.params;
-        const { name, species, breed, age, weight, description, chipNumber  } = req.body;
+        const { name, species, breed, age, weight, description, chipNumber, birthday } = req.body;
 
         const newPet = new Pet({
             name,
@@ -226,6 +271,7 @@ async function getPetRoutineCare (req, res) {
             weight,
             description, 
             chipNumber,
+            birthday,
             owner: userId,
         });
         await newPet.save();
@@ -434,6 +480,141 @@ async function addPetExpense (req, res) {
     }
 }
 
+async function addPetAllergy (req, res) {
+    try {
+        const { petId } = req.params;
+        const { allergyData } = req.body;
+console.log('addPetAllergy: ', allergyData);
+
+        const allergy = new Allergy({
+            name: allergyData.name,
+            note: allergyData.note ? allergyData.note : null,
+            treatment: allergyData.treatment ? allergyData.treatment : null,
+            date: allergyData.date,
+            pet: petId
+        });
+
+        await allergy.save();
+
+
+        // Find the pet by ID and update its allergies array
+        const pet = await Pet.findByIdAndUpdate(
+            petId,
+            { $push: { allergies: allergy._id } },
+            { new: true }
+        );
+
+        if (!pet) {
+            return res.status(404).json({ error: 'Pet not found' });
+        }
+
+        // Log the activity
+        const activityLog = new ActivityLog({
+            userId: pet.owner, 
+            petId: petId,
+            actionType: ActivityLogType.ALLERGY_ADDED,
+            details: allergy.note ? `Allergy name: ${allergy.name}.\n The treatment: ${allergy.treatment}\n your note: ${allergy.note}` :  `Allergy name: ${allergy.name}\n The treatment: ${allergy.treatment}`
+        });
+
+        await activityLog.save();
+
+        res.status(201).json({ message: 'Allergy added successfully', allergy });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Error while adding allergy, please try again later' });
+    }
+}
+
+async function addPetMedication (req, res) {
+    try {
+        const { petId } = req.params;
+        const { medicationData } = req.body;
+console.log('addPetMedication: ', medicationData);
+
+        const medication = new Medication({
+            name: medicationData.name,
+            note: medicationData.note ? medicationData.note : null,
+            dosage: medicationData.dosage,
+            startDate: medicationData.startDate,
+            endDate: medicationData.endDate,
+            pet: petId
+        });
+
+        await medication.save();
+
+        // Find the pet by ID and update its medications array
+        const pet = await Pet.findByIdAndUpdate(
+            petId,
+            { $push: { medications: medication._id } },
+            { new: true }
+        );
+
+        if (!pet) {
+            return res.status(404).json({ error: 'Pet not found' });
+        }
+
+        // Log the activity
+        const activityLog = new ActivityLog({
+            userId: pet.owner, 
+            petId: petId,
+            actionType: ActivityLogType.MEDICATION_ADDED,
+            details: medication.note ? `Medication name: ${medication.name}.\n The dosage: ${medication.dosage}\n start date:${new Date(medication.startDate).toLocaleDateString()} - end date:${new Date(medication.endDate).toLocaleDateString()}\n your note: ${medication.note}` :
+              `Medication name: ${medication.name}.\n The dosage: ${medication.dosage}\n start date:${new Date(medication.startDate).toLocaleDateString()} - end date:${new Date(medication.endDate).toLocaleDateString()}`
+        });
+
+        await activityLog.save();
+
+        res.status(201).json({ message: 'Medication added successfully', medication });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Error while adding medication, please try again later' });
+    }
+}
+
+async function addPetVetVisit (req, res) {
+    try {
+        const { petId } = req.params;
+        const { vetVisitData } = req.body;
+console.log('addPetVetVisit: ', vetVisitData);
+
+        const vetVisit = new VetVisit({
+            reason: vetVisitData.reason,
+            note: vetVisitData.note ? vetVisitData.note : null,
+            examination: vetVisitData.examination ? vetVisitData.examination : null,
+            date: vetVisitData.date,
+            pet: petId
+        });
+
+        await vetVisit.save();
+
+        // Find the pet by ID and update its vetVisitis array
+        const pet = await Pet.findByIdAndUpdate(
+            petId,
+            { $push: { vetVisitis: vetVisit._id } },
+            { new: true }
+        );
+
+        if (!pet) {
+            return res.status(404).json({ error: 'Pet not found' });
+        }
+
+        // Log the activity
+        const activityLog = new ActivityLog({
+            userId: pet.owner, 
+            petId: petId,
+            actionType: ActivityLogType.VET_VISIT_ADDED,
+            details: vetVisit.note ? `Visit Reason: ${vetVisit.reason}\n${vetVisit.examination ? `Examination: ${vetVisit.examination}` : ''}\nyour note: ${vetVisit.note}` :
+             `Visit Reason: ${vetVisit.reason}}\n${vetVisit.examination ? `Examination: ${vetVisit.examination}` : ''}`
+        });
+        await activityLog.save();
+
+        res.status(201).json({ message: 'Vet visit added successfully', vetVisit });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Error while adding vet visit, please try again later' });
+    }
+}
+
 async function updateNoteById (req, res) {
     try {
         const { noteId } = req.params;
@@ -471,6 +652,195 @@ async function updateNoteById (req, res) {
 }
 
 async function deleteNote (req, res) {
+    try {
+        const { noteId } = req.params;
+        const note = await Note.findByIdAndDelete(noteId);
+        if (!note) {
+            return res.status(404).json({ error: 'Note not found' });
+        }
+        // Remove from the pet notes array
+        const pet = await Pet.findById(note.pet);
+        pet.notes = pet.notes.filter(petNote => petNote.toString() !== noteId );
+        console.log('pet notes: ', pet.notes);
+        await pet.save();
+
+         // Log the activity
+         const activityLog = new ActivityLog({
+            userId: pet.owner, 
+            petId: pet._id,
+            actionType: ActivityLogType.NOTE_DELETE
+        });
+        await activityLog.save();
+
+        res.status(200).json({ message: 'Note deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error while deleting note, please try again later' });
+    }
+}
+
+async function updateAllergyById (req, res) {
+    try {
+        const { noteId } = req.params;
+        const { content } = req.body;
+
+        const note = await Note.findById(noteId);
+        if (!note) {
+            return res.status(404).json({ error: 'Note not found' });
+        }
+
+        note.content = content;
+        note.updatedDate = Date.now();
+        await note.save();
+
+        const pet = await Pet.findById(note.pet);
+        // Update the corresponding note within the pet notes array
+        const index = pet.notes.findIndex(note => note._id.toString() === noteId);
+        if (index !== -1) {
+            pet.notes[index] = note;
+        }
+
+         // Log the activity
+         const activityLog = new ActivityLog({
+            userId: pet.owner, 
+            petId: petId,
+            actionType: ActivityLogType.NOTE_EDIT
+        });
+        await activityLog.save();
+
+        res.status(200).json({ message: 'Note updated successfully', note });
+    } catch (error) {
+        console.error('Error updating note:', error);
+        res.status(500).json({ error: 'Error while updating note, please try again later' });
+    }
+}
+
+async function deleteAllergy (req, res) {
+    try {
+        const { noteId } = req.params;
+        const note = await Note.findByIdAndDelete(noteId);
+        if (!note) {
+            return res.status(404).json({ error: 'Note not found' });
+        }
+        // Remove from the pet notes array
+        const pet = await Pet.findById(note.pet);
+        pet.notes = pet.notes.filter(petNote => petNote.toString() !== noteId );
+        console.log('pet notes: ', pet.notes);
+        await pet.save();
+
+         // Log the activity
+         const activityLog = new ActivityLog({
+            userId: pet.owner, 
+            petId: pet._id,
+            actionType: ActivityLogType.NOTE_DELETE
+        });
+        await activityLog.save();
+
+        res.status(200).json({ message: 'Note deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error while deleting note, please try again later' });
+    }
+}
+
+async function updateMedicationById (req, res) {
+    try {
+        const { noteId } = req.params;
+        const { content } = req.body;
+
+        const note = await Note.findById(noteId);
+        if (!note) {
+            return res.status(404).json({ error: 'Note not found' });
+        }
+
+        note.content = content;
+        note.updatedDate = Date.now();
+        await note.save();
+
+        const pet = await Pet.findById(note.pet);
+        // Update the corresponding note within the pet notes array
+        const index = pet.notes.findIndex(note => note._id.toString() === noteId);
+        if (index !== -1) {
+            pet.notes[index] = note;
+        }
+
+         // Log the activity
+         const activityLog = new ActivityLog({
+            userId: pet.owner, 
+            petId: petId,
+            actionType: ActivityLogType.NOTE_EDIT
+        });
+        await activityLog.save();
+
+        res.status(200).json({ message: 'Note updated successfully', note });
+    } catch (error) {
+        console.error('Error updating note:', error);
+        res.status(500).json({ error: 'Error while updating note, please try again later' });
+    }
+}
+
+async function deleteMedication (req, res) {
+    try {
+        const { noteId } = req.params;
+        const note = await Note.findByIdAndDelete(noteId);
+        if (!note) {
+            return res.status(404).json({ error: 'Note not found' });
+        }
+        // Remove from the pet notes array
+        const pet = await Pet.findById(note.pet);
+        pet.notes = pet.notes.filter(petNote => petNote.toString() !== noteId );
+        console.log('pet notes: ', pet.notes);
+        await pet.save();
+
+         // Log the activity
+         const activityLog = new ActivityLog({
+            userId: pet.owner, 
+            petId: pet._id,
+            actionType: ActivityLogType.NOTE_DELETE
+        });
+        await activityLog.save();
+
+        res.status(200).json({ message: 'Note deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error while deleting note, please try again later' });
+    }
+}
+
+async function updateVetVisitById (req, res) {
+    try {
+        const { noteId } = req.params;
+        const { content } = req.body;
+
+        const note = await Note.findById(noteId);
+        if (!note) {
+            return res.status(404).json({ error: 'Note not found' });
+        }
+
+        note.content = content;
+        note.updatedDate = Date.now();
+        await note.save();
+
+        const pet = await Pet.findById(note.pet);
+        // Update the corresponding note within the pet notes array
+        const index = pet.notes.findIndex(note => note._id.toString() === noteId);
+        if (index !== -1) {
+            pet.notes[index] = note;
+        }
+
+         // Log the activity
+         const activityLog = new ActivityLog({
+            userId: pet.owner, 
+            petId: petId,
+            actionType: ActivityLogType.NOTE_EDIT
+        });
+        await activityLog.save();
+
+        res.status(200).json({ message: 'Note updated successfully', note });
+    } catch (error) {
+        console.error('Error updating note:', error);
+        res.status(500).json({ error: 'Error while updating note, please try again later' });
+    }
+}
+
+async function deleteVetVisit (req, res) {
     try {
         const { noteId } = req.params;
         const note = await Note.findByIdAndDelete(noteId);
@@ -603,11 +973,17 @@ module.exports = {
     getPetUpcomingEvents,
     getPetExpensesArrays,
     getPetWeightTracker,
+    getPetAllergies,
+    getPetMedications,
+    getPetVetVisits,
     addPet,
     addPetVaccineRecord,
     addPetRoutineCare,
     addPetNote,
     addPetExpense,
+    addPetAllergy,
+    addPetMedication,
+    addPetVetVisit,
     updateNoteById,
     updatePetById,
     deleteNote,

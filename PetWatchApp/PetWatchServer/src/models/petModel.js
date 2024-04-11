@@ -35,6 +35,9 @@ const petSchema = new Schema({
         type: String,
         required: true
     },
+    birthday: {
+        type: Date,
+    },
     image: {
         type: String,
         // required: true //TODO - need to make it requires
@@ -46,10 +49,16 @@ const petSchema = new Schema({
         type: String,
     },
     medications: [{
-        type: String
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Medication',
     }],
     allergies: [{
-        type: String
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Allergy',
+    }],
+    vetVisitis: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'VetVisit',
     }],
     additionalImages: [{
         type: String,
