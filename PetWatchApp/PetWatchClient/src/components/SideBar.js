@@ -1,19 +1,51 @@
-import React from 'react';
-import { useDispatch } from 'react-redux';
+import React, {useEffect, useState} from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; 
-import { faUser, faPaw, faHome, faBook, faDog, faCat, faDashboard, faAmbulance, faMoneyCheck,
+import { faPaw, faHome, faBook, faDog, faCat, faAmbulance, faMoneyCheck,
   faCog, faRightFromBracket, faSignature  } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import { fetchUserActivityLog, fetchUserUpcomingEvents, fetchUserExpensesArray } from '../services/userService';
 import logoImage from "../images/logo.png"; 
-
 import '../styles/SideBar.css';
 
 const Sidebar = () => {
-
   const dispatch = useDispatch();
+  const location = useLocation(); 
+  console.log('location: ', location);
+  const user = useSelector((state) => state.user);
+  const [activityLogs, setActivityLogs] = useState([]);
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [expenses, setExpenses] = useState([]);
+
+  const fetchData = async () => {
+    try {
+        const logs = await fetchUserActivityLog(user._id); 
+        const events = await fetchUserUpcomingEvents(user._id);
+        const userExpenses = await fetchUserExpensesArray(user._id);
+        setActivityLogs(logs);
+        setExpenses(userExpenses);
+        setUpcomingEvents(events);
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+  }
+
+  useEffect(() => {
+    if (user) {
+        fetchData();
+    }
+  }, [user]);
 
   const handleLogout = () => {
     dispatch({ type: 'LOGOUT' });
+  };
+
+  const isActivityLogPath = (path) => {
+    return path === '/main/activity-log';
+  };
+
+  const isExpensesPath = (path) => {
+    return  path === '/main/expenses';
   };
 
   const sideBarItems = [
@@ -47,51 +79,26 @@ const Sidebar = () => {
             {section.items.map((item, index) => (
               <li key={index}>
                 <FontAwesomeIcon icon={item.icon} />
-                <Link to={item.link}>
-                  {item.text} 
-                </Link>
-                {item.onClick && <p onClick={item.onClick}/>}
+              { isActivityLogPath(item.link) 
+                ?
+                <Link to={item.link} state={{activityLogs, upcomingEvents, petName:null}} >{item.text}</Link>
+                :
+                ( isExpensesPath(item.link) ?
+                  <Link to={item.link} state={{expenses, from:'user'}} >{item.text}</Link>
+                  :
+                  <Link to={item.link}>{item.text}</Link>)
+              }
+
+              {item.onClick && <p onClick={item.onClick}/>}
 
               </li>
             ))}
           </ul>
         </div>
       ))}
-    </div>
+  </div>
   );
 
-  // return (
-  //   <div className="sidebar">
-  //     <ul>
-  //       <li>
-  //           <FontAwesomeIcon icon={faBell} />
-  //           <Link to="/dashboard/notifications">Notifications</Link>
-  //       </li>
-  //       <li>
-  //         <Link path="/routine-care"> Routine Care</Link>
-  //       </li>
-  //       <li>
-  //         <Link path="/vaccination-managment"> Vaccination Managment </Link>
-  //       </li>
-  //       <li>
-  //         <Link path="/weight-monitor"> Weight Monitor</Link>
-  //       </li>
-  //       <li>
-  //           <FontAwesomeIcon icon={faUser} />
-  //           <Link to="/dashboard/profile">User Profile</Link>
-  //       </li>
-  //       <li>
-  //           <FontAwesomeIcon icon={faPaw} />
-  //           <Link to="/dashboard/pets">Pets Section</Link>
-  //       </li>
-        
-  //       <li>
-  //         <FontAwesomeIcon icon={faRightFromBracket} />
-  //         <Link to="/login"  onClick={handleLogout}>Logout</Link>
-  //       </li>
-  //     </ul>
-  //   </div>
-  // );
 };
 
 export default Sidebar;

@@ -1,9 +1,17 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import { formatDate } from '../utils/utils';
 import '../styles/ActivityLog.css';
 
 const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
-    
+    const location = useLocation();
+    console.log('loaction: ', location);
+    if(location.pathname && location.pathname == "/main/activity-log") {
+        activityLogs = location.state.activityLogs;
+        upcomingEvents = location.state.upcomingEvents;
+        petName = location.state.petName;
+    }
+
     return (
         <div className="activity-log-container">
             <h3>{petName !== null ? `${petName} Activity Logs` : 'Your Activity Logs'}</h3>

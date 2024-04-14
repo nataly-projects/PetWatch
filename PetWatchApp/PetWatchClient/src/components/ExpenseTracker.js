@@ -1,10 +1,19 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import {Chart, ArcElement, Tooltip, Legend} from 'chart.js'
 import { Pie } from 'react-chartjs-2'; 
 import { formatDate } from '../utils/utils';
 import '../styles/ExpenseTracker.css';
 
 const ExpenseTracker = ({expenses, from}) => {
+    const location = useLocation();
+    console.log('loaction: ', location);
+    if(location.pathname && location.pathname == "/main/expenses") {
+        expenses = location.state.expenses;
+        from = location.state.from;
+    }
+
+    
     Chart.register(ArcElement, Tooltip, Legend);
 
 
