@@ -1,5 +1,4 @@
 import bcrypt from 'bcryptjs';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSyringe, faHeartbeat, faMoneyBillAlt, faStickyNote, faAllergies, faPills, faHospital, 
   faMicroscope, faUtensils, faDog, faShower, faScissors, faWeightHanging, faCapsules, faShoppingBasket, faHome, 
   faEllipsisH, faTeeth, faBrush, faEarListen, faPaw, faSoccerBall } from '@fortawesome/free-solid-svg-icons';
@@ -114,6 +113,46 @@ export const ActivityType = [
   { name: 'EXAMINATION', icon: faMicroscope, value: 'Examination', items: false },
   { name: 'OTHER', icon: faEllipsisH, value: 'Other', items: false }
 ];
+
+export const Currency = {
+  USD: { name: 'USD - United States Dollar', value:'USD', sign: '$' },
+  EUR: { name: 'EUR - Euro', value:'EUR', sign: '€' },
+  GBP: { name: 'GBP - British Pound Sterling', value:'GBP', sign: '£' },
+  JPY: { name: 'JPY - Japanese Yen', value:'JPY', sign: '¥' },
+  CAD: { name: 'CAD - Canadian Dollar', value:'CAD', sign: '$' },
+  AUD: { name: 'AUD - Australian Dollar', value:'AUD', sign: '$' },
+  CHF: { name: 'CHF - Swiss Franc', value:'CHF', sign: 'CHF' },
+  CNY: { name: 'CNY - Chinese Yuan', value:'CNY', sign: '¥' },
+  SEK: { name: 'SEK - Swedish Krona', value:'SEK', sign: 'kr' },
+  NZD: { name: 'NZD - New Zealand Dollar', value:'NZD', sign: '$' },
+  SGD: { name: 'SGD - Singapore Dollar', value:'SGD', sign: '$' },
+  HKD: { name: 'HKD - Hong Kong Dollar', value:'HKD', sign: '$' },
+  NOK: { name: 'NOK - Norwegian Krone', value:'NOK', sign: 'kr' },
+  KRW: { name: 'KRW - South Korean Won', value:'KRW', sign: '₩' },
+  INR: { name: 'INR - Indian Rupee', value:'INR', sign: '₹' },
+  RUB: { name: 'RUB - Russian Ruble', value:'RUB', sign: '₽' },
+  BRL: { name: 'BRL - Brazilian Real', value:'BRL', sign: 'R$' },
+  ZAR: { name: 'ZAR - South African Rand', value:'ZAR', sign: 'R' },
+  MXN: { name: 'MXN - Mexican Peso', value:'MXN', sign: '$' },
+  TRY: { name: 'TRY - Turkish Lira', value:'TRY', sign: '₺' },
+  AED: { name: 'AED - United Arab Emirates Dirham', value:'AED', sign: 'د.إ' },
+  SAR: { name: 'SAR - Saudi Riyal', value:'SAR', sign: '﷼' },
+  PLN: { name: 'PLN - Polish Zloty', value:'PLN', sign: 'zł' },
+  THB: { name: 'THB - Thai Baht', value:'THB', sign: '฿' },
+  DKK: { name: 'DKK - Danish Krone', value:'DKK', sign: 'kr' },
+  IDR: { name: 'IDR - Indonesian Rupiah', value:'IDR', sign: 'Rp' },
+  MYR: { name: 'MYR - Malaysian Ringgit', value:'MYR', sign: 'RM' },
+  HUF: { name: 'HUF - Hungarian Forint', value:'HUF', sign: 'Ft' },
+  CZK: { name: 'CZK - Czech Koruna', value:'CZK', sign: 'Kč' },
+  CLP: { name: 'CLP - Chilean Peso', value:'CLP', sign: '$' },
+  PHP: { name: 'PHP - Philippine Peso', value:'PHP', sign: '₱' },
+  ILS: { name: 'ILS - Israeli New Shekel', value:'ILS', sign: '₪' },
+  PKR: { name: 'PKR - Pakistani Rupee', value:'PKR', sign: '₨' },
+  EGP: { name: 'EGP - Egyptian Pound', value:'EGP', sign: 'E£' },
+  KWD: { name: 'KWD - Kuwaiti Dinar', value:'KWD', sign: 'د.ك' },
+  QAR: { name: 'QAR - Qatari Riyal', value:'QAR', sign: '﷼' },
+  VND: { name: 'VND - Vietnamese Dong', value:'VND', sign: '₫' },
+};
 
 
   

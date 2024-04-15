@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const { validatePhone, validateEmail } = require('../validators/userValidators');
-
+const {Currency} = require('../utils/enums');
 
 const Schema = mongoose.Schema;
 
@@ -62,9 +62,10 @@ const userSchema = new Schema({
         type: String,
         default: 'light' // Or any default theme
     },
-    language: {
+    currency: {
         type: String,
-        default: 'en' // Or any default language
+        enum: Object.values(Currency),
+        default: Currency.ILS
     },
     // imageUrl: {
     //     type: String,

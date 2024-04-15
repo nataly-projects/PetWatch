@@ -58,11 +58,54 @@ const ActivityLogType = Object.freeze({
     PROFILE_EDIT: 'profile edit'
 });
 
+const Currency = Object.freeze({
+    USD: 'USD',
+    EUR: 'EUR',
+    GBP: 'GBP',
+    JPY: 'JPY',
+    CAD: 'CAD',
+    AUD: 'AUD',
+    CHF: 'CHF',
+    CNY: 'CNY',
+    SEK: 'SEK',
+    NZD: 'NZD',
+    SGD: 'SGD',
+    HKD: 'HKD',
+    NOK: 'NOK',
+    KRW: 'KRW',
+    INR: 'INR',
+    RUB: 'RUB',
+    BRL: 'BRL',
+    ZAR: 'ZAR',
+    MXN: 'MXN',
+    TRY: 'TRY',
+    AED: 'AED',
+    SAR: 'SAR',
+    PLN: 'PLN',
+    THB: 'THB',
+    DKK: 'DKK',
+    IDR: 'IDR',
+    MYR: 'MYR',
+    HUF: 'HUF',
+    CZK: 'CZK',
+    CLP: 'CLP',
+    PHP: 'PHP',
+    ILS: 'ILS',
+    PKR: 'PKR',
+    EGP: 'EGP',
+    KWD: 'KWD',
+    QAR: 'QAR',
+    VND: 'VND',
+  });
+  
+  
 module.exports = {
     PetSpecies, 
     VaccineRecordType,
     ExpenseCategory,
     RoutineCareActivity,
-    ActivityLogType
+    ActivityLogType,
+    Currency 
+
 };
 

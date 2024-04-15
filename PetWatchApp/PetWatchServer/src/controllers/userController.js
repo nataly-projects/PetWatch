@@ -236,10 +236,10 @@ async function getUserAccountSettings (req, res) {
     const accountSettings = {
       notificationPreferences: user.notificationPreferences,
       theme: user.theme,
-      language: user.language
+      currency: user.currency
     };
 
-    res.status(200).json( {message: 'User account settings update successfully', accountSettings});
+  res.status(200).json( {message: 'User account settings update successfully', accountSettings});
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: 'Internal server error' });
@@ -263,8 +263,8 @@ async function updateUserAccountSettings (req, res) {
     if (updateSettings.theme) {
         user.theme = updateSettings.theme;
     }
-    if (updateSettings.language) {
-        user.language = updateSettings.language;
+    if (updateSettings.currency) {
+        user.currency = updateSettings.currency;
     }
     await user.save();
 
@@ -273,6 +273,34 @@ async function updateUserAccountSettings (req, res) {
     console.log(error);
     res.status(500).json({ error: 'Internal server error' });
   }
+}
+
+async function changePassword (req, res) {
+  const { email, oldPassword, newPassword } = req.body;
+  console.log('resetPassword: ', req.body);
+    try {
+      // find the user by email 
+      const user = await User.findOne({ email});
+
+      if (!user) {
+        return res.status(401).json({ error: 'No user found with that email' });
+      }
+
+      // check if the provided password matches the stored hashed password
+      const passwordMatch = await bcrypt.compare(oldPassword, user.password);
+      if (!passwordMatch) {
+        return res.status(401).json({ error: 'Incorrect password' });
+      }
+
+      // hash and update the user password in the db
+      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+      user.password = hashedNewPassword;
+      await user.save();
+      return res.status(200).json({ message: 'Password change successfully' });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
 }
 
 // function genreateSecretKey () {
@@ -290,5 +318,6 @@ module.exports = {
     getUserUpcomingEvents,
     getUserNotes,
     getUserAccountSettings,
-    updateUserAccountSettings
+    updateUserAccountSettings,
+    changePassword
 };
