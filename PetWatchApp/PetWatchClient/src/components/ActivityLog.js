@@ -6,7 +6,7 @@ import '../styles/ActivityLog.css';
 const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
     const location = useLocation();
     console.log('loaction: ', location);
-    if(location.pathname && location.pathname == "/main/activity-log") {
+    if(location.pathname && location.pathname === "/main/activity-log") {
         activityLogs = location.state.activityLogs;
         upcomingEvents = location.state.upcomingEvents;
         petName = location.state.petName;

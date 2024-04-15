@@ -1,14 +1,18 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import {Chart, ArcElement, Tooltip, Legend} from 'chart.js'
 import { Pie } from 'react-chartjs-2'; 
 import { formatDate } from '../utils/utils';
+import { Currency } from '../utils/utils';
 import '../styles/ExpenseTracker.css';
 
 const ExpenseTracker = ({expenses, from}) => {
+    const currencySign = Currency[useSelector((state) => state.user.currency)].sign;
+
     const location = useLocation();
     console.log('loaction: ', location);
-    if(location.pathname && location.pathname == "/main/expenses") {
+    if(location.pathname && location.pathname === "/main/expenses") {
         expenses = location.state.expenses;
         from = location.state.from;
     }
@@ -40,7 +44,7 @@ const ExpenseTracker = ({expenses, from}) => {
                 <thead>
                     <tr>
                         <th>Date</th>
-                        {from == 'user' && <th>Pet Name</th>}
+                        {from === 'user' && <th>Pet Name</th>}
                         <th>Category</th>
                         <th>Amount</th>
                     </tr>
@@ -49,9 +53,9 @@ const ExpenseTracker = ({expenses, from}) => {
                     {allExpenses.map(expense => (
                         <tr key={expense._id}>
                             <td>{formatDate(expense.date)}</td>
-                            {from == 'user' && <td>{expense.pet.name}</td>}
+                            {from === 'user' && <td>{expense.pet.name}</td>}
                             <td>{expense.category}</td>
-                            <td>${expense.amount.toFixed(2)}</td>
+                            <td>{expense.amount.toFixed(2)} {currencySign}</td>
                         </tr>
                     ))}
                 </tbody>
@@ -87,13 +91,13 @@ const ExpenseTracker = ({expenses, from}) => {
 
     return (
         <div className="expense-tracker">
-            <h3>{from == 'user' ? 'Your Expense Tracker': 'Expenses' }</h3>
+            <h3>{from === 'user' ? 'Your Expense Tracker': 'Expenses' }</h3>
 
             {renderExpensesTable()}
             { allExpenses.length > 0 ?
             <>
                 <div className="chart-container">
-            {from == 'user' ? renderPetExpensesDataChart() : null}
+                    {from === 'user' ? renderPetExpensesDataChart() : null}
                 </div>
                 
 

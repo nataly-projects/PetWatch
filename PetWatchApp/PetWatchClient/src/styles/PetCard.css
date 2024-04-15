@@ -1,7 +1,51 @@
-.name-species-section {
-    align-items: baseline;
-    display: flex;
-    flex-direction: row;
-    gap: 5px;
-}
+.pet-card {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    .pet-card:hover {
+        box-shadow: 0 0 0px rgba(0, 0, 0, 0.1);
+    }
+      
+   
+    .name-species-section {
+        align-items: baseline;
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
+    }
+
+    .extended-details {
+        margin-top: 10px;
+    }
+    
+    .extended-details p {
+        margin: 5px 0;
+    }
+    
+    .additional-photos {
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }
+    
+    .additional-photo {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
+
+    .additional-photo:last-child {
+        margin-right: 0;
+    }
+
+   
+  }
+
+
 

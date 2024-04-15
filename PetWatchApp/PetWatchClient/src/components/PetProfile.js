@@ -14,7 +14,7 @@ import '../styles/PetProfile.css';
 
 const PetProfile = () => {
   const location = useLocation();
-  const { pet } = location.state;
+  const { pet, currencySign } = location.state;
 
   const [activityLogs, setActivityLogs] = useState([]);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
@@ -199,6 +199,7 @@ const handleActivitySelect = async (selectedActivity, data) => {
         <ExpenseTracker 
         expenses={expenses}
         from={'pet'}
+        currencySign={currencySign}
       />
         
       </div>
@@ -224,7 +225,7 @@ const handleActivitySelect = async (selectedActivity, data) => {
         <h3>Emergency Contacts</h3>
         {// Display emergency contact information }
       </div> */}
-      
+
     </div>
   );
 };

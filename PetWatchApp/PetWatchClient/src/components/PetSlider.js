@@ -34,8 +34,8 @@ const PetSlider = ({ pets }) => {
       {pets.map((pet, index) => (
         <div key={index}>
           <PetCard 
-            key={pet.id}
-            pet={pet} 
+            key={pet._id}
+            pet={pet}
             />
         </div>
       ))}

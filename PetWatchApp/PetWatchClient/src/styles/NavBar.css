@@ -97,6 +97,7 @@
   .actions  {
     display: flex;
     gap: 15px;
+    cursor: pointer;
 
     .user {
       display: flex;

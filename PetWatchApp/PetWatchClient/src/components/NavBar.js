@@ -1,13 +1,20 @@
+import React, { useState } from 'react';
 import { Link, NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faBell } from "@fortawesome/free-solid-svg-icons";
 import { useSelector  } from "react-redux";
 import logoImage from "../images/logo.png"; 
+import UserPopup from "./UserPopup";
 import '../styles/NavBar.css';
 
 const NavBar = () => {
     const isLoggedIn = useSelector((state) => state.isLoggedIn);
-console.log('isLoggedIn navbar: ', isLoggedIn);
+    const user = useSelector((state) => state.user);
+    const [isUserPopupVisible, setUserPopupVisible] = useState(false);
+console.log('user: ', user);
+    const handleUserIconClick = () => {
+        setUserPopupVisible(!isUserPopupVisible);
+      };
 
     const renderGuestNavBar = () => {
         return (
@@ -41,10 +48,12 @@ console.log('isLoggedIn navbar: ', isLoggedIn);
                 <div className="limit">
                     <div className="actions">
                         <FontAwesomeIcon icon={faBell}  />
-                        <div className="user">
+                        <div className="user" onClick={handleUserIconClick}>
                             <FontAwesomeIcon icon={faUser}  />
-                            <span>user name</span>
+                            <span>{user.fullName}</span>
                         </div>
+                        {isUserPopupVisible && <UserPopup onClose={() => setUserPopupVisible(false)} />}
+
                     </div>
                 </div>
             </nav>

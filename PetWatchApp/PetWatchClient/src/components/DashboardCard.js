@@ -18,7 +18,7 @@ const DashboardCard = ({ title, icon, content }) => {
 DashboardCard.propTypes = {
   title: PropTypes.string.isRequired,
   icon: PropTypes.object.isRequired, 
-  content: PropTypes.number.isRequired,
+  content: PropTypes.string.isRequired,
 };
 
 export default DashboardCard;

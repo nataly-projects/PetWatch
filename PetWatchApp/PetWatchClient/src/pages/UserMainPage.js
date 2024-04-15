@@ -14,6 +14,8 @@ import EmergencyGuide from './EmergencyGuide';
 import ExpenseTracker from '../components/ExpenseTracker';
 import PetProfile from '../components/PetProfile';
 import AccountSettings from '../components/AccountSettings';
+import PetsSection from '../components/PetsSection';
+import AddPetForm from '../components/AddPetForm';
 import '../styles/UserMainPage.css';
 
 
@@ -34,13 +36,12 @@ const UserMainPage = () => {
           <Route path="/expenses" element={<ExpenseTracker />} />
           <Route path="/activity-log" element={<ActivityLog />} />
           <Route path="/account-settings" element={<AccountSettings />} />
-          {/* <Route path="/activity-log" element={<ActivityLog />} />
-           <Route path="/weight-tracker" element={<WeightTracker />} /> 
-           <Route path="/profile" element={<UserProfile />} />  */}
+          <Route path="/user-profile" element={<UserProfile />} />
+          <Route path="/pets" element={<PetsSection />} />
+          <Route path="/add-pet" element={<AddPetForm />} />
 
-           {/* <Route path="/dashboard/:petId" element={<PetProfile />} />
-          <Route path="/pets-expenses" element={<PetsExpenses />} />
-          <Route path="/account-settings" element={<AccountSettings />} />
+
+           {/*
           <Route path="*" element={<Navigate to="/dashboard" replace />} />  */}
         </Routes>
       </div>

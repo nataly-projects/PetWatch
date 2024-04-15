@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMars, faVenus } from '@fortawesome/free-solid-svg-icons';
 import '../styles/PetCard.css';
@@ -16,10 +16,6 @@ const PetCard = ({ pet }) => {
 
     const onPetClick = () => {
         navigate( `/pet-profile/${pet._id}`,  { state: { pet }});
-        // history.push({
-        //   pathname: `/dashboard/pet-profile/${pet._id}`,
-        //   state: { pet }
-        // });
       };
 
     return (
@@ -51,7 +47,7 @@ const PetCard = ({ pet }) => {
                             <img
                             key={index}
                             className="additional-photo"
-                            src={`http://localhost:3000/${pet.image}`}  
+                            src={`http://localhost:3000/${photo}`}  
 
                             alt={`Additional Photo ${index + 1}`}
                             />
@@ -61,7 +57,7 @@ const PetCard = ({ pet }) => {
                     
                     )
                     }
-                    <button onClick={onPetClick}> View Pet Page </button>
+                    <button className='btn' onClick={onPetClick}> View Pet Page </button>
                     
                     
                     {/* <div className='buttons'> 

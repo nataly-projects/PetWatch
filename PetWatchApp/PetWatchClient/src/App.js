@@ -45,8 +45,7 @@ console.log('isLoggedIn: ', isLoggedIn);
             <Route path="/info/dog-guide" element={<DogGuide />} />
             <Route path="/info/cat-guide" element={<CatGuide />} />
             <Route path="/info/emergency-guide" element={<EmergencyGuide />} />
-
-
+      
             {/* <Route path="/login/forgot-password" element={< ForgotPassword />} />
             <Route path="/addPetForm" element={<AddPet />} /> */}
           </Routes>

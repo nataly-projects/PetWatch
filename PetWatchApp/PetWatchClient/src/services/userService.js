@@ -111,12 +111,14 @@ export const fetchUserAccountSettings = async (userId) => {
 
 export const updateUserSettings = async (userId, updateSettings) => {
     try{
-        const response = await axios.put(`${BASE_API_URL}/users/settings/${userId}`, updateSettings);
-        console.log('response from fetchUserNotes: ', response);
-        if (response && response.data) {
-            return response.data;
-        }
-        return null;
+        console.log('user id: ', userId);
+        console.log('updateSettings: ', updateSettings);
+        // const response = await axios.put(`${BASE_API_URL}/users/settings/${userId}`, updateSettings);
+        // console.log('response from fetchUserNotes: ', response);
+        // if (response && response.data) {
+        //     return response.data;
+        // }
+        // return null;
 
     } catch (error) {
       throw error; 
@@ -191,6 +193,18 @@ export const editUserDetails = async (userId, formData) => {
     } catch (error) {
         console.log(error);
         throw error;
+    }
+};
+
+export const changePassword = async (changePasswordData) => {
+    try {
+        const response = await axios.post(`${BASE_API_URL}/users/change-password`, { changePasswordData });
+        if (response && response.data){
+            return true;
+        }
+        return false;
+    } catch (error) {
+       throw error;
     }
 };
 

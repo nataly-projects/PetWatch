@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { faPaw, faMoneyCheck } from '@fortawesome/free-solid-svg-icons'; // Importing sample icons
 import { getPetsByUserId } from '../services/petService'; 
-import { fetchUserActivityLog, fetchUserNotes, fetchUserUpcomingEvents, fetchUserExpensesArray } from '../services/userService';
+import { fetchUserActivityLog, fetchUserNotes, fetchUserUpcomingEvents, fetchUserExpensesArray, fetchUserAccountSettings } from '../services/userService';
+import { Currency } from '../utils/utils';
 import DashboardCard from './DashboardCard';
 import PetSlider from './PetSlider';
 import ActivityLog from './ActivityLog';
@@ -18,6 +19,7 @@ const Dashboard = () => {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [notes, setNotes] = useState([]);
   const [expenses, setExpenses] = useState([]);
+  const [currency, setCurrency] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -28,11 +30,13 @@ const Dashboard = () => {
         const notes = await fetchUserNotes(user._id); 
         const events = await fetchUserUpcomingEvents(user._id);
         const userExpenses = await fetchUserExpensesArray(user._id);
+        const userAccountSettings  = await fetchUserAccountSettings(user._id);
         setPets(userPets);
         setActivityLogs(logs);
         setNotes(notes);
         setExpenses(userExpenses);
         setUpcomingEvents(events);
+        setCurrency(userAccountSettings.accountSettings.currency);
         setLoading(false);
     } catch (error) {
         console.error('Error fetching data:', error);
@@ -59,8 +63,8 @@ const Dashboard = () => {
   if (error) {
     return (
       <div>
-          <p>Failed to fetch user data. Please try again later.</p>
-          <button onClick={fetchData}>Retry</button>
+        <p>Failed to fetch user data. Please try again later.</p>
+        <button onClick={fetchData}>Retry</button>
       </div>
     );
   }
@@ -71,17 +75,21 @@ const Dashboard = () => {
             <DashboardCard 
             title="Number of Pets" 
             icon={faPaw}
-            content={pets.length} />
+            content={`${pets.length}`} />
         
             <DashboardCard 
             title="Total Expenses" 
             icon={faMoneyCheck}
-            content={user.totalExpenses} />
+            content={`${user.totalExpenses}  ${Currency[currency].sign}`} />
+
         </div>
       
       <h3>Your pets:</h3>
       <div className="pet-section">
-        <PetSlider pets={pets} />
+        <PetSlider 
+        pets={pets} 
+        currencySign={`${Currency[currency].sign}`}
+        />
       </div>
 
       

@@ -1,0 +1,80 @@
+.add-pet-form-container {
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    height: 100vh; 
+ 
+    .add-pet-form {
+        width: 70%;
+        max-width: 600px;
+        /* margin: 0 auto; */
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+
+    .form-section {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 20px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #ccc;
+    }
+      
+    .form-section:last-child {
+        border-bottom: none;
+    }
+
+    .input-group {
+        margin-bottom: 15px;
+    }
+      
+    .input-group label {
+        display: block;
+        margin-bottom: 5px;
+    }
+      
+    .input-group input, textarea {
+        width: 80%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+      
+    .input-group input:focus, textarea:focus {
+        outline: none;
+        border-color: #007bff;
+    }
+
+      
+    .navigation-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+      
+    .navigation-buttons button {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        background-color: #007bff;
+        color: #fff;
+        cursor: pointer;
+    }
+    
+    .navigation-buttons button:hover {
+        background-color: #0056b3;
+    }
+}
+
+
+
+ 
+
+  
+ 
+  
