@@ -24,7 +24,7 @@ const VaccineRecordActivity = ({ onSave, vaccineType }) => {
         console.log('is valid: ', validateInputs());
         if (validateInputs()) {
             onSave({ 
-                vaccineType: vaccineType.name,
+                vaccineType: vaccineType.value,
                 note: note ? note : null,
                 date,
                 nextDate 

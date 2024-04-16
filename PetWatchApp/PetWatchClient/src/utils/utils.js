@@ -72,7 +72,7 @@ export const VaccineRecordType = [
   { name: 'DEWORMING', icon: faSyringe, value: 'Deworming' },
   { name: 'FVRCP', icon: faSyringe, value: 'FVRCP' },
   { name: 'FELV', icon: faSyringe, value: 'FeLV' },
-  { name: 'OTHER', icon: faSyringe, value: 'OTHER' }
+  { name: 'OTHER', icon: faEllipsisH, value: 'Other' }
 ];
 
 export const RoutineCareActivityItems = [
@@ -102,7 +102,7 @@ export const ExpenseCategory = [
   { name: 'OTHER', icon: faEllipsisH, value: 'Other' }
 ];
 
-export const ActivityType = [
+export const ActivityTypeObject = [
   { name: 'VACCINE_RECORD', icon: faSyringe, value: 'Vaccine Record', items: true },
   { name: 'ROUTINE_CARE', icon: faHeartbeat, value: 'Routine Care', items: true },
   { name: 'EXPENSE', icon: faMoneyBillAlt, value: 'Expense', items: true },
@@ -113,6 +113,15 @@ export const ActivityType = [
   { name: 'EXAMINATION', icon: faMicroscope, value: 'Examination', items: false },
   { name: 'OTHER', icon: faEllipsisH, value: 'Other', items: false }
 ];
+
+export const ActivityType = {
+  VACCINE_RECORD:'Vaccine Record',
+  ROUTINE_CARE:'Routine Care',
+  EXPENSE:'Expense',
+  ALLERGY:'Allergy',
+  MEDICATION:'Medication',
+  VET_VISIT:'Vet Visit',
+};
 
 export const Currency = {
   USD: { name: 'USD - United States Dollar', value:'USD', sign: '$' },

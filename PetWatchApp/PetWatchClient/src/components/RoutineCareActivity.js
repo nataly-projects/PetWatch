@@ -19,7 +19,7 @@ const RoutineCareActivity = ({ onSave, routineCareType }) => {
     const handleSave = () => {
         if (validateInputs()) {
             onSave({ 
-                activity: routineCareType.name, 
+                activity: routineCareType.value, 
                 note: note ? note : null,
                 date, 
                 nextDate 

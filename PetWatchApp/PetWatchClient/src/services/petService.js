@@ -199,20 +199,21 @@ export const getPetExpensesArrays = async (petId) => {
   };
 
   export const addPet = async (pet) => {
-    try {
-      const response = await axios.post(`${BASE_API_URL}/pets/${pet.owner}`, pet, {
-        headers: {
-        'Content-Type': 'multipart/form-data',
-        },
-    });
-      console.log('response from addPet: ', response);
-      if (response && response.data) {
-          return response.data;
-      }
-      return null;
-    } catch (error) {
-      throw error; 
-    }
+    console.log('add pet service: ', pet);
+    // try {
+    //   const response = await axios.post(`${BASE_API_URL}/pets/${pet.owner}`, pet, {
+    //     headers: {
+    //     'Content-Type': 'multipart/form-data',
+    //     },
+    // });
+    //   console.log('response from addPet: ', response);
+    //   if (response && response.data) {
+    //       return response.data;
+    //   }
+    //   return null;
+    // } catch (error) {
+    //   throw error; 
+    // }
   };
 
   export const addPetVaccineRecord = async (petId, vaccinationRecord) => {

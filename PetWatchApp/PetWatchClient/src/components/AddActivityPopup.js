@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { ActivityType, ExpenseCategory, RoutineCareActivityItems, VaccineRecordType } from '../utils/utils';
+import { ActivityTypeObject, ExpenseCategory, RoutineCareActivityItems, VaccineRecordType } from '../utils/utils';
 import VaccineRecordActivity from './VaccineRecordActivity';
 import RoutineCareActivity from './RoutineCareActivity';
 import ExpenseActivity from './ExpenseActivity';
@@ -12,7 +12,7 @@ import OtherActivity from './OtherActivity';
 import '../styles/AddActivityPopup.css';
 
 const AddActivityPopup = ({ onActivitySelect, onClose }) => {
-    const [initialItems, setInitialItems] = useState(ActivityType);
+    const [initialItems, setInitialItems] = useState(ActivityTypeObject);
     const [expandedActivity, setExpandedActivity] = useState(false);
     const [expandedItems, setExpandedItems] = useState(null);
     const [selectedActivity, setSelectedActivity] = useState(null);
@@ -45,7 +45,7 @@ const AddActivityPopup = ({ onActivitySelect, onClose }) => {
                     setExpandedItems(ExpenseCategory);
                     return;
                 default:
-                    setInitialItems(ActivityType);
+                    setInitialItems(ActivityTypeObject);
                     setExpandedActivity(false);
                     setExpandedItems(null);
                     return null;
@@ -53,7 +53,7 @@ const AddActivityPopup = ({ onActivitySelect, onClose }) => {
         } else {
             setShowActivityComponent(true);
             setSelectedActivity(activity);
-            setInitialItems(ActivityType);
+            setInitialItems(ActivityTypeObject);
             setExpandedActivity(false);
             setExpandedItems(null); 
             // onActivitySelect(activity);
