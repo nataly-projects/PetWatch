@@ -121,6 +121,7 @@ export const ActivityType = {
   ALLERGY:'Allergy',
   MEDICATION:'Medication',
   VET_VISIT:'Vet Visit',
+  NOTE:'Note'
 };
 
 export const Currency = {

@@ -13,9 +13,11 @@ router.get('/notes/:userId', userController.getUserNotes);
 router.get('/settings/:userId', userController.getUserAccountSettings);
 
 router.post('/register', userController.register);
+router.post('/login', userController.login);
+router.post('/change-password', userController.changePassword);
+
 router.put('/settings/:userId', userController.updateUserAccountSettings);
 
-router.post('/login', userController.login);
 
 // router.put('/:userId', userController.upload.single('imageUrl'), userController.updateUserById);
 

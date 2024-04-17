@@ -262,21 +262,91 @@ async function getPetVetVisits (req, res) {
 
   async function addPet (req, res) {
     try {
-        console.log('add pet: ', req.body);
         const { userId } = req.params;
-        const { name, species, breed, age, weight, description, chipNumber, birthday } = req.body;
+        const {petData} = req.body;
+        console.log(petData);
+        let medicationIds, allergyIds, vaccinationIds, noteIds, rouineCareIds, expenseIds, vetVisitIds = [];
 
         const newPet = new Pet({
-            name,
-            species,
-            breed,
-            age,
-            weight,
-            description, 
-            chipNumber,
-            birthday,
-            owner: userId,
+            name: petData.name,
+            age: petData.age,
+            birthday: petData.birthday,
+            breed: petData.breed,
+            chipNumber: petData.chip,
+            description: petData.description,
+            owner: petData.owner,
+            species: petData.species,
+            weight: petData.weight
         });
+        console.log('new pet: ', newPet);
+        await newPet.save();
+        const pet = newPet._id;
+
+        if (petData.expenses.length > 0) {
+            expenseIds = await Promise.all(petData.expenses.map(async (expense) => {
+                const newExpense = new Expense({ ...expense, pet });
+                console.log('newExpense: ', newExpense);
+                await newExpense.save();
+                return newExpense._id;
+            }));
+        }
+
+        if (petData.medications.length > 0) {
+            medicationIds = await Promise.all(petData.medications.map(async (medication) => {
+                const newMedication = new Medication({ ...medication, pet });
+                await newMedication.save();
+                return newMedication._id;
+            }));
+        }
+
+        if (petData.allergies.length > 0) {
+            allergyIds = await Promise.all(petData.allergies.map(async (allergy) => {
+                const newAllergy = new Allergy({ ...allergy, pet });
+                await newAllergy.save();
+                return newAllergy._id;
+            }));
+        }
+
+        if (petData.routineCareRecord.length > 0) {
+            rouineCareIds = await Promise.all(petData.routineCareRecord.map(async (routineCare) => {
+                const newRoutineCare = new RoutineCareRecord({ ...routineCare, pet });
+                await newRoutineCare.save();
+                return newRoutineCare._id;
+            }));
+        }
+
+        if (petData.vaccinationRecord.length > 0) {
+            vaccinationIds = await Promise.all(petData.vaccinationRecord.map(async (vaccine) => {
+                const newVaccine = new VaccinationRecord({ ...vaccine, pet });
+                await newVaccine.save();
+                return newVaccine._id;
+            }));
+        }
+
+        if (petData.vetVisits.length > 0) {
+            vetVisitIds = await Promise.all(petData.vetVisits.map(async (visit) => {
+                const newVisit = new VetVisit({ ...visit, pet });
+                await newVisit.save();
+                return newVisit._id;
+            }));
+        }
+
+        if (petData.notes.length > 0) {
+            noteIds = await Promise.all(petData.notes.map(async (note) => {
+                const newNote = new Note({ ...note, pet });
+                await newNote.save();
+                return newNote._id;
+            }));
+        }
+
+        // Update the pet document with the IDs of related data items
+        newPet.medications = medicationIds;
+        newPet.allergies = allergyIds;
+        newPet.vaccinationRecords = vaccinationIds;
+        newPet.routineCareRecords = rouineCareIds,
+        newPet.expenses = expenseIds;
+        newPet.notes = noteIds;
+        newPet.vetVisits = vetVisitIds;
         await newPet.save();
 
         // Find the user by ID and update the pets field
@@ -290,7 +360,7 @@ async function getPetVetVisits (req, res) {
             userId: newPet.owner, 
             petId: newPet._id,
             actionType: ActivityLogType.PET_WEIGHT_UPDATE,
-            details: `update weight to ${weight} `
+            details: `update weight to ${newPet.weight} `
         });
         await weightActivityLog.save();
 
@@ -304,6 +374,7 @@ async function getPetVetVisits (req, res) {
 
         res.status(201).json({ message: 'Pet added successfully', pet: newPet });
     } catch (error) {
+        console.log(error);
         res.status(500).json({ error: 'Error while adding pet, try again later' });
     }
 }
@@ -402,14 +473,13 @@ async function addPetRoutineCare (req, res) {
 async function addPetNote (req, res) {
     try {
         const { petId } = req.params;
-        const { content } = req.body;
-
+        const { noteData } = req.body;
+ 
         // Create a new Note document
         const note = new Note({
-            content,
+            ...noteData,
             pet: petId
         });
-
         await note.save();
         const pet = await Pet.findByIdAndUpdate(
             petId,
@@ -426,7 +496,7 @@ async function addPetNote (req, res) {
             userId: pet.owner, 
             petId: petId,
             actionType: ActivityLogType.NOTE_ADDED,
-            details: content
+            details: noteData.content
         });
         await activityLog.save();
 
@@ -621,14 +691,15 @@ console.log('addPetVetVisit: ', vetVisitData);
 async function updateNoteById (req, res) {
     try {
         const { noteId } = req.params;
-        const { content } = req.body;
+        const { noteData } = req.body;
 
         const note = await Note.findById(noteId);
         if (!note) {
             return res.status(404).json({ error: 'Note not found' });
         }
 
-        note.content = content;
+        note.content = noteData.content;
+        note.title = noteData.title;
         note.updatedDate = Date.now();
         await note.save();
 
