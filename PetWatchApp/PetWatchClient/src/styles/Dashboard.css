@@ -2,7 +2,7 @@
 .dashboard-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    /* align-items: center; */
     padding: 20px;
     margin: 0 auto;
 
@@ -13,17 +13,6 @@
         margin-bottom: 20px;
     }
 
-     /* Sections */
-    .section {
-        width: 100%;
-        margin: 20px 0;
-    }
-  
-    .section-title {
-        font-size: 2rem;
-        font-weight: bold;
-        margin-bottom: 20px;
-    }
   
     /* Pet Section */
     .pet-section {

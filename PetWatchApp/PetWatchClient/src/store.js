@@ -4,12 +4,11 @@ import { createStore } from 'redux';
 const initialState = {
   user: null,
   token: null,
-  isLoggedIn: true,
+  isLoggedIn: false,
 };
 
 
 const rootReducer = (state = initialState, action) => {
-  console.log('action: ', action);
   switch (action.type) {
     case 'SET_USER':
       return { ...state, user: action.payload.user, token: action.payload.token, isLoggedIn: true };

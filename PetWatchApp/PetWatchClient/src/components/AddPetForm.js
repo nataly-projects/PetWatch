@@ -2,11 +2,15 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash} from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
-import { RoutineCareActivityItems, VaccineRecordType, ActivityType } from '../utils/utils';
+import { toast } from 'react-toastify';
+import { RoutineCareActivityItems, VaccineRecordType, ActivityType, ExpenseCategory } from '../utils/utils';
 import VaccineRecordActivity from './VaccineRecordActivity';
 import RoutineCareActivity from './RoutineCareActivity';
 import AllergyActivity from './AllergyActivity';
 import MedicationActivity from './MedicationActivity';
+import ExpenseActivity from './ExpenseActivity';
+import VetVisitActivity from './VetVisitActivity';
+import NoteActivity from './NoteActivity';
 import { formatDate } from '../utils/utils';
 import { addPet } from '../services/petService';
 import '../styles/AddPetForm.css';
@@ -31,12 +35,18 @@ const AddPetForm = () => {
 
     const [vaccinationRecord, setVaccinationRecord] = useState([]);
     const [routineCareRecord, setRoutineCareRecord] = useState([]);
+    const [expensesRecord, setExpensesRecord] = useState([]);
+    const [notesRecord, setNotesRecord] = useState([]);
+    const [vetVisitsRecord, setVetVisitsRecord] = useState([]);
     const [allergies, setAllergies] = useState([]);
     const [medications, setMedications] = useState([]);
     const [selectedVaccineType, setSelectedVaccineType] = useState(null);
     const [selectedRoutineCareType, setSelectedRoutineCareType] = useState(null);
+    const [selectedExpenseType, setSelectedExpenseType] = useState(null);
     const [showAllergyActivity, setShowAllergyActivity] = useState(false);
     const [showMedicationActivity, setShowMedicationActivity] = useState(false);
+    const [showVetVisitActivity, setShowVetVisitActivity] = useState(false);
+    const [showNoteActivity, setShowNoteActivity] = useState(false);
 
     const [currentSection, setCurrentSection] = useState(1);
     const [errors, setErrors] = useState({});
@@ -55,6 +65,9 @@ const AddPetForm = () => {
             allergies: allergies,
             vaccinationRecord: vaccinationRecord,
             routineCareRecord: routineCareRecord,
+            expenses: expensesRecord,
+            notes: notesRecord,
+            vetVisits: vetVisitsRecord,
             owner: user._id
         };
         return pet;
@@ -63,8 +76,9 @@ const AddPetForm = () => {
     // Function to handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         const newPet = createPetObject();
+        console.log('submit newPet: ', newPet);
         try{
             await addPet(newPet);
             toast.success('Pet added successfully!');
@@ -75,6 +89,7 @@ const AddPetForm = () => {
     };
 
     const validateSection1 = () => {
+        console.log('basicDetails: ', basicDetails);
         const validationErrors = {section1: {}};
         if (!basicDetails.name) {
             validationErrors.section1.name = 'Name is required';
@@ -118,6 +133,15 @@ const AddPetForm = () => {
             case ActivityType.MEDICATION:
                 setShowMedicationActivity(true);
                 break;
+            case ActivityType.EXPENSE:
+                setSelectedExpenseType(type);
+                break;
+            case ActivityType.VET_VISIT:
+                setShowVetVisitActivity(true);
+                break;
+            case ActivityType.NOTE:
+                setShowNoteActivity(true);
+                break;
             default:
                 break;
         }
@@ -142,6 +166,18 @@ const AddPetForm = () => {
             case ActivityType.MEDICATION:
                 setMedications([...medications, data]);
                 setShowMedicationActivity(false);
+                break;
+            case ActivityType.EXPENSE:
+                setExpensesRecord([...expensesRecord, data]);
+                setSelectedExpenseType(null);
+                break;
+            case ActivityType.VET_VISIT:
+                setVetVisitsRecord([...vetVisitsRecord, data]);
+                setShowVetVisitActivity(false);
+                break;
+            case ActivityType.NOTE:
+                setNotesRecord([...notesRecord, data]);
+                setShowNoteActivity(false);
                 break;
             default:
                 break;
@@ -170,6 +206,21 @@ const AddPetForm = () => {
                 updatedMedicatios.splice(index, 1);
                 setMedications(updatedMedicatios);
                 break;
+            case ActivityType.EXPENSE:
+                const updatedExpenseRecord = [...expensesRecord];
+                updatedExpenseRecord.splice(index, 1);
+                setExpensesRecord(updatedExpenseRecord);
+                break;
+            case ActivityType.VET_VISIT:
+                const updatedVetVisits = [...vetVisitsRecord];
+                updatedVetVisits.splice(index, 1);
+                setVetVisitsRecord(updatedVetVisits);
+                break;
+            case ActivityType.NOTE:
+                const updatedNotes = [...notesRecord];
+                updatedNotes.splice(index, 1);
+                setNotesRecord(updatedNotes);
+                break;
             default:
                 break;
         }
@@ -189,13 +240,22 @@ const AddPetForm = () => {
                 setCurrentSection(currentSection + 1);
             }
         }
-        else if (currentSection < 6) {
+        else if (currentSection < 9) {
             if (currentSection === 4) {
                 setShowAllergyActivity(false);
                 setShowMedicationActivity(false);
             }
             if (currentSection === 5) {
                 setSelectedVaccineType(null);
+            }
+            if (currentSection === 6) {
+                setSelectedRoutineCareType(null);
+            }
+            if (currentSection === 7) {
+                setSelectedExpenseType(null);
+            }
+            if (currentSection === 8) {
+                setShowVetVisitActivity(false);
             }
             setCurrentSection(currentSection + 1);
         }
@@ -213,6 +273,15 @@ const AddPetForm = () => {
             }
             if (currentSection === 6) {
                 setSelectedRoutineCareType(null);
+            }
+            if (currentSection === 7) {
+                setSelectedExpenseType(null);
+            }
+            if (currentSection === 8) {
+                setShowVetVisitActivity(false);
+            }
+            if (currentSection === 9) {
+                setShowNoteActivity(false);
             }
             setCurrentSection(currentSection - 1);
         }
@@ -243,15 +312,33 @@ const AddPetForm = () => {
                         </div>
                         <div className="input-group">
                             <label>Species:</label>
-                            <input
-                                type="text"
-                                placeholder="Species"
-                                value={basicDetails.species}
-                                onChange={(e) => setBasicDetails({ ...basicDetails, species: e.target.value })}
-                                required
-                            />
+                            <div className='radio-buttons'> 
+                                <div>
+                                    <input
+                                        type="radio"
+                                        id="male"
+                                        name="species"
+                                        value="MALE"
+                                        checked={basicDetails.species === 'MALE'}
+                                        onChange={(e) => setBasicDetails({ ...basicDetails, species: e.target.value })}
+                                    />
+                                    <label htmlFor="male">Male</label>
+                                </div>
+                                <div>
+                                    <input
+                                        type="radio"
+                                        id="female"
+                                        name="species"
+                                        value="FEMALE"
+                                        checked={basicDetails.species === 'FEMALE'}
+                                        onChange={(e) => setBasicDetails({ ...basicDetails, species: e.target.value })}
+                                    />
+                                    <label htmlFor="female">Female</label>
+                                </div>
+                            </div>
                         { errors.section1 && errors.section1.species && <div className="error-message">{errors.section1.species}</div>}
                         </div>
+
                         <div className="input-group">
                             <label>Breed:</label>
                             <input
@@ -360,7 +447,14 @@ const AddPetForm = () => {
                         )}
                         <h4>Add Allergy: </h4>
                         <button className='button' onClick={() => handleItemClick(ActivityType.ALLERGY)}> Add new allergy </button>
-                            {showAllergyActivity && (<AllergyActivity onSave={(data) => handleActivitySave(ActivityType.ALLERGY, data)} /> )}
+                            {showAllergyActivity && (
+                                <div className='add-activity-card'>
+                                    <AllergyActivity onSave={(data) => handleActivitySave(ActivityType.ALLERGY, data)} /> 
+                                </div>
+                            )}
+                        
+                        <hr />
+
                         {medications.length > 0 && (
                             <>
                             <h4>Medications: </h4>
@@ -384,8 +478,13 @@ const AddPetForm = () => {
                         )}
                         <h4>Add Medication: </h4>
                             <button className='button' onClick={() => handleItemClick(ActivityType.MEDICATION)}> Add new medication </button>
-                            {showMedicationActivity && ( <MedicationActivity onSave={(data) => handleActivitySave(ActivityType.MEDICATION, data)} /> )}
-                        <p>You can add this information later in the pet profile. 
+                            {showMedicationActivity && ( 
+                                <div className='add-activity-card'>
+                                    <MedicationActivity onSave={(data) => handleActivitySave(ActivityType.MEDICATION, data)} /> 
+                                </div>
+                            )}
+                        
+                        <p className='optional-section'>You can add this information later in the pet profile. 
                             However, it's important to add all pet info for tracking and analysis.</p>
                     </div>
                     )}
@@ -424,9 +523,11 @@ const AddPetForm = () => {
                             ))}
                         </div>
                         {selectedVaccineType && (
-                            <VaccineRecordActivity onSave={(data) => handleActivitySave(ActivityType.VACCINE_RECORD, data)} vaccineType={selectedVaccineType} />
+                            <div className='add-activity-card'>
+                                <VaccineRecordActivity onSave={(data) => handleActivitySave(ActivityType.VACCINE_RECORD, data)} vaccineType={selectedVaccineType} />
+                            </div>
                         )}
-                        <p>You can add this information later in the pet profile. 
+                        <p className='optional-section'>You can add this information later in the pet profile. 
                             However, it's important to add all pet info for tracking and analysis.</p>
                     </div>
                     )}
@@ -465,18 +566,136 @@ const AddPetForm = () => {
                             ))}
                         </div>
                         {selectedRoutineCareType && (
-                            <RoutineCareActivity onSave={(data) => handleActivitySave(ActivityType.ROUTINE_CARE, data)} routineCareType={selectedRoutineCareType} />
+                            <div className='add-activity-card'>
+                                <RoutineCareActivity onSave={(data) => handleActivitySave(ActivityType.ROUTINE_CARE, data)} routineCareType={selectedRoutineCareType} />
+                            </div>
                         )}
-                        <p>You can add this information later in the pet profile. 
+                        <p className='optional-section'>You can add this information later in the pet profile. 
                             However, it's important to add all pet info for tracking and analysis.</p>
                     </div>
                     )}
 
+                    {/* Section 7 - Expenses Records */}
+                    {currentSection === 7 && (
+                    <div className="form-section">
+                        <h3>Section 7: Expenses Record</h3>
+                        {expensesRecord.length > 0 && (
+                            <>
+                            <h4>Expenses Records: </h4>
+                            <div className="activity-section">
+                            {expensesRecord.map((item, index) => (
+                                <div key={index} className="activity-card">
+                                    <div className="activity-card-header">
+                                        <p><strong>{item.category}</strong></p>
+                                        <FontAwesomeIcon className='activity-card-icon' 
+                                        icon={faTrash} 
+                                        onClick={() => handleDeleteActivityItem(index, ActivityType.EXPENSE)} />
+                                    </div>
+                                    <p>amount: {item.amount}</p>
+                                    <p>Date: {formatDate(item.date)}</p>
+                                </div>
+                            ))}
+                            </div>
+                            </>
+                        )}
+                        <h4>Add Expense: </h4>
+                        <p>Choose the type of the expense</p>
+                        <div className="activity-items-grid">
+                            {ExpenseCategory.map((item, idx) => (
+                                <div key={idx} className="activity-items-card" onClick={() => handleItemClick(ActivityType.EXPENSE ,item)}>
+                                {item.icon ? <FontAwesomeIcon className="icon" icon={item.icon} /> : null}
+                                <span>{item.value}</span>
+                                </div>
+                            ))}
+                        </div>
+                        {selectedExpenseType && (
+                            <div className='add-activity-card'>
+                                <ExpenseActivity onSave={(data) => handleActivitySave(ActivityType.EXPENSE, data)} expenseCategory={selectedExpenseType} />
+                            </div>
+                        )}
+                        <p className='optional-section'>You can add this information later in the pet profile. 
+                            However, it's important to add all pet info for tracking and analysis.</p>
+                    </div>
+                    )}
+
+                    {/* Section 8 - Vet Visit Records */}
+                    {currentSection === 8 && (
+                    <div className="form-section">
+                        <h3>Section 8: Vet Visits Record</h3>
+                        {vetVisitsRecord.length > 0 && (
+                            <>
+                            <h4>Vet Visits Records: </h4>
+                            <div className="activity-section">
+                            {vetVisitsRecord.map((item, index) => (
+                                <div key={index} className="activity-card">
+                                    <div className="activity-card-header">
+                                        <p><strong>{item.reason}</strong></p>
+                                        <FontAwesomeIcon className='activity-card-icon' 
+                                        icon={faTrash} 
+                                        onClick={() => handleDeleteActivityItem(index, ActivityType.VET_VISIT)} />
+                                    </div>
+                                    { item.examination && <p>examination: {item.examination}</p> }
+                                    <p>Date: {formatDate(item.date)}</p>
+                                </div>
+                            ))}
+                            </div>
+                            </>
+                        )}
+                        <h4>Add vet visit: </h4>
+                        <button className='button' onClick={() => handleItemClick(ActivityType.VET_VISIT)}> Add new vet visit </button>
+
+                        {showVetVisitActivity && (
+                            <div className='add-activity-card'>
+                                <VetVisitActivity onSave={(data) => handleActivitySave(ActivityType.VET_VISIT, data)} />
+                            </div>
+                        )}
+                        <p className='optional-section'>You can add this information later in the pet profile. 
+                            However, it's important to add all pet info for tracking and analysis.</p>
+                    </div>
+                    )}
+
+                     {/* Section 9 - Notes Records */}
+                     {currentSection === 9 && (
+                    <div className="form-section">
+                        <h3>Section 9: Notes Record</h3>
+                        {notesRecord.length > 0 && (
+                            <>
+                            <h4>Notes Records: </h4>
+                            <div className="activity-section">
+                            {notesRecord.map((item, index) => (
+                                <div key={index} className="activity-card">
+                                    <div className="activity-card-header">
+                                        <p><strong>{item.content}</strong></p>
+                                        <FontAwesomeIcon className='activity-card-icon' 
+                                        icon={faTrash} 
+                                        onClick={() => handleDeleteActivityItem(index, ActivityType.NOTE)} />
+                                    </div>
+                                    <p>Date: {formatDate(Date.now())}</p>
+                                </div>
+                            ))}
+                            </div>
+                            </>
+                        )}
+                        <h4>Add note: </h4>
+                        <button className='button' onClick={() => handleItemClick(ActivityType.NOTE)}> Add new note </button>
+
+                        {showNoteActivity && (
+                            <div className='add-activity-card'>
+                                <NoteActivity onSave={(data) => handleActivitySave(ActivityType.NOTE, data)} />
+                            </div>
+                        )}
+                        <p className='optional-section'>You can add this information later in the pet profile. 
+                            However, it's important to add all pet info for tracking and analysis.</p>
+                    </div>
+                    )}
+
+                    {/* Section 10 - Adiitional photos */}
+
                     {/* Navigation buttons */}
                     <div className="navigation-buttons">
                         {currentSection > 1 && <button type="button" onClick={handlePrevious}>Previous</button>}
-                        {currentSection < 6 && <button type="button" onClick={handleNext}>Next</button>}
-                        {currentSection === 6 && <button type="submit">Submit</button>}
+                        {currentSection < 9 && <button type="button" onClick={handleNext}>Next</button>}
+                        {currentSection === 9 && <button type="submit">Submit</button>}
                     </div>
                 </form>
             </div>

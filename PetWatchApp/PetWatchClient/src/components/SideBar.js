@@ -86,10 +86,12 @@ const Sidebar = () => {
                 ( isExpensesPath(item.link) ?
                   <Link to={item.link} state={{expenses, from:'user'}} >{item.text}</Link>
                   :
-                  <Link to={item.link}>{item.text}</Link>)
+                  <>
+                  {/* {item.onClick && <p onClick={item.onClick}/>} */}
+                  <Link to={item.link} onClick={item.onClick}>{item.text}</Link>
+                  </>
+                )
               }
-
-              {item.onClick && <p onClick={item.onClick}/>}
 
               </li>
             ))}

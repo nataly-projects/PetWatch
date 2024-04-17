@@ -2,6 +2,7 @@ import React from 'react';
 import { Chart, CategoryScale,LinearScale,BarController, BarElement, Title, Tooltip, Legend } from "chart.js";
 import { Bar  } from 'react-chartjs-2';
 import { formatDate } from '../utils/utils';
+import '../styles/section.css';
 
 const WeightTracker = ({ weightUpdateLogs }) => {
   Chart.register( CategoryScale,LinearScale,BarController, BarElement, Title, Tooltip, Legend); 
@@ -64,7 +65,8 @@ const WeightTracker = ({ weightUpdateLogs }) => {
     }
 
     return (
-      <div>
+      <div className='section'>
+        <h3>Weight Tracker</h3>
         {renderWeightTrackLogTable()}
         <h3>Weight Changes Over Time</h3>
         <Bar data={data} options={options} />

@@ -28,6 +28,30 @@
         border-bottom: none;
     }
 
+    .add-activity-card {
+        padding: 10px;
+        margin: 10px auto;
+        width: 70%;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+    }
+
+    .optional-section {
+        border-top: 1px solid #ccc;
+        padding-top: 10px;
+        margin-top: 10px;
+    }
+
+    .radio-buttons {
+        display: flex;
+        justify-content: space-evenly;
+    }
+
+    hr {
+        width: 100%;
+        border-bottom: 1px solid #ccc;
+    }
+
     .input-group {
         margin-bottom: 15px;
     }

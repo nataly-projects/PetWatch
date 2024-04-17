@@ -3,12 +3,14 @@ import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMars, faVenus, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { getPetActivityLog, getPetUpcomingEvents, getPetExpensesArrays, getPetWeightTracker, addPetActivity } from '../services/petService';
+import { getPetActivityLog, getPetUpcomingEvents, getPetExpensesArrays, 
+  getPetWeightTracker, getPetNote, addPetActivity } from '../services/petService';
 import WeightTracker from './WeightTracker';
 import NoteSection from './NoteSection';
 import ActivityLog from './ActivityLog';
 import ExpenseTracker from './ExpenseTracker';
 import AddActivityPopup from './AddActivityPopup';
+import { formatDate } from '../utils/utils';
 import '../styles/PetProfile.css';
 
 
@@ -20,6 +22,7 @@ const PetProfile = () => {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [weights, setWeights] = useState([]);
+  const [notes, setNotes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [popupVisible, setPopupVisible] = useState(false);
@@ -30,11 +33,12 @@ const PetProfile = () => {
         const events = await getPetUpcomingEvents(pet._id);
         const petExpenses = await getPetExpensesArrays(pet._id);
         const petWeights = await getPetWeightTracker(pet._id);
-        console.log('####petExpenses: ', petExpenses);
+        const petNotes = await getPetNote(pet._id);
         setActivityLogs(logs);
         setUpcomingEvents(events);
         setExpenses(petExpenses);
         setWeights(petWeights);
+        setNotes(petNotes);
         setLoading(false);
     } catch (error) {
         console.error('Error fetching data:', error);
@@ -70,29 +74,27 @@ const PetProfile = () => {
 
   const handleAddActivityClick = () => {
     setPopupVisible(true);
-};
+  };
 
-const handleCancel = () => {
-  setPopupVisible(false);
-}
-
-const handleActivitySelect = async (selectedActivity, data) => {
-    // Handle the selected activity here
-    console.log('Selected activity:', selectedActivity);
-    console.log('data:', data);
+  const handleCancel = () => {
     setPopupVisible(false);
-    try{
-      await addPetActivity(pet._id, selectedActivity, data);
-      toast.success('Activity added successfully!');
-      fetchData();
-
-    } catch (error) {
-      console.error('Error adding activity:', error);
-      toast.error('Failed to adding activity. Please try again.');
-
   }
 
-};
+  const handleActivitySelect = async (selectedActivity, data) => {
+      // Handle the selected activity here
+      console.log('Selected activity:', selectedActivity);
+      console.log('data:', data);
+      setPopupVisible(false);
+      try{
+        await addPetActivity(pet._id, selectedActivity, data);
+        toast.success('Activity added successfully!');
+        fetchData();
+      } catch (error) {
+        console.error('Error adding activity:', error);
+        toast.error('Failed to adding activity. Please try again.');
+    }
+
+  };
 
 
 
@@ -119,7 +121,7 @@ const handleActivitySelect = async (selectedActivity, data) => {
         <p> Breed: {pet.breed}</p>
         <p> Age: {pet.age} </p>
         <p> Weight: {pet.weight} kg</p>
-        <p> Birthday: {pet.birthday ? pet.chipNumber : 'No Birthday date added'} kg</p>
+        <p> Birthday: {pet.birthday ? formatDate(pet.birthday) : 'No Birthday date added'} </p>
         <p> About {pet.name}: {pet.description}</p>
         <p>Chip Number: {pet.chipNumber ? pet.chipNumber : 'No chip number'}</p>
       
@@ -191,7 +193,6 @@ const handleActivitySelect = async (selectedActivity, data) => {
       </div>
 
       <div className="weight-tracker">
-        <h3>Weight Tracker</h3>
         <WeightTracker weightUpdateLogs={weights}/>
       </div>
 
@@ -215,9 +216,8 @@ const handleActivitySelect = async (selectedActivity, data) => {
       </div>
 
       <div className="notes">
-        <h3>Notes</h3>
          <NoteSection 
-         propsNotes={pet.notes} 
+         notes={notes}
          petId={pet._id} />
       </div>
 

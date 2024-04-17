@@ -22,7 +22,7 @@ const ExpenseActivity = ({ onSave, expenseCategory }) => {
     const handleSave = () => {
         if (validateInputs()) {
             onSave({ 
-                category: expenseCategory.name, 
+                category: expenseCategory.value, 
                 amount, 
                 note: note ? note : null,
                 date 

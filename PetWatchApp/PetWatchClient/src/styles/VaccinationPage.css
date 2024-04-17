@@ -2,7 +2,6 @@
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
-  }
 
   .section {
     margin-bottom: 30px; 
@@ -17,5 +16,8 @@
     list-style-type: none;
     padding-left: 0;
   }
+}
+
+
   
  

@@ -102,9 +102,8 @@ const Dashboard = () => {
       </div>
 
       <div className="notes">
-        <h3>Your Notes</h3>
         <NoteSection 
-        propsNotes={notes} 
+        notes={notes}
         petId={null} />
       </div>
 

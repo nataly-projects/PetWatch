@@ -1,6 +1,6 @@
 .expense-tracker {
-    margin: 20px;
-    padding: 20px;
+    /* margin: 20px; */
+    padding: 10px 20px;
 
     table {
         width: 100%;

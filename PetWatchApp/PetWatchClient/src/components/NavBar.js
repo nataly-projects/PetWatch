@@ -5,16 +5,22 @@ import { faUser, faBell } from "@fortawesome/free-solid-svg-icons";
 import { useSelector  } from "react-redux";
 import logoImage from "../images/logo.png"; 
 import UserPopup from "./UserPopup";
+import NotificationPopup from './notificationPopup';
 import '../styles/NavBar.css';
 
 const NavBar = () => {
     const isLoggedIn = useSelector((state) => state.isLoggedIn);
     const user = useSelector((state) => state.user);
     const [isUserPopupVisible, setUserPopupVisible] = useState(false);
-console.log('user: ', user);
+    const [isNotificationPopupVisible, setNotificationPopupVisible] = useState(false);
+
     const handleUserIconClick = () => {
         setUserPopupVisible(!isUserPopupVisible);
-      };
+    };
+
+    const handleNotificationIconClick = () => {
+        setNotificationPopupVisible(!isNotificationPopupVisible);
+    };
 
     const renderGuestNavBar = () => {
         return (
@@ -47,12 +53,13 @@ console.log('user: ', user);
             <nav className='nav_user'>
                 <div className="limit">
                     <div className="actions">
-                        <FontAwesomeIcon icon={faBell}  />
+                        <FontAwesomeIcon icon={faBell}  onClick={handleNotificationIconClick}/>
                         <div className="user" onClick={handleUserIconClick}>
                             <FontAwesomeIcon icon={faUser}  />
                             <span>{user.fullName}</span>
                         </div>
                         {isUserPopupVisible && <UserPopup onClose={() => setUserPopupVisible(false)} />}
+                        {isNotificationPopupVisible && <NotificationPopup onClose={() => setNotificationPopupVisible(false)} />}
 
                     </div>
                 </div>
