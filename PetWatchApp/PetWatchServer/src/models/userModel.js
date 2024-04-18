@@ -71,9 +71,9 @@ const userSchema = new Schema({
     //     type: String,
     //     default: null
     // },
-    // passVerificationCode: {
-    //    type: String 
-    // },
+    resetCode: {
+       type: String 
+    },
     created_at: {
         type: Date,
         default: Date.now()

@@ -704,7 +704,8 @@ async function updateNoteById (req, res) {
     try {
         const { noteId } = req.params;
         const { noteData } = req.body;
-
+console.log(noteId);
+console.log(noteData);
         const note = await Note.findById(noteId);
         if (!note) {
             return res.status(404).json({ error: 'Note not found' });
@@ -717,15 +718,15 @@ async function updateNoteById (req, res) {
 
         const pet = await Pet.findById(note.pet);
         // Update the corresponding note within the pet notes array
-        const index = pet.notes.findIndex(note => note._id.toString() === noteId);
-        if (index !== -1) {
-            pet.notes[index] = note;
-        }
+        // const index = pet.notes.findIndex(note => note._id.toString() === noteId);
+        // if (index !== -1) {
+        //     pet.notes[index] = note;
+        // }
 
          // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
-            petId: petId,
+            petId: noteData.pet,
             actionType: ActivityLogType.NOTE_EDIT
         });
         await activityLog.save();

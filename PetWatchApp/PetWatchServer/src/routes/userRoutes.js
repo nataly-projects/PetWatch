@@ -15,6 +15,9 @@ router.get('/settings/:userId', userController.getUserAccountSettings);
 router.post('/register', userController.register);
 router.post('/login', userController.login);
 router.post('/change-password', userController.changePassword);
+router.post('/reset-password-request', userController.requestPasswordReset);
+router.post('/reset-password-code', userController.resetPasswordCode);
+router.post('/reset-password', userController.resetPassword);
 
 router.put('/settings/:userId', userController.updateUserAccountSettings);
 
@@ -23,11 +26,7 @@ router.put('/settings/:userId', userController.updateUserAccountSettings);
 
 // router.post('/contact', userController.postContactMessage);
 
-// router.post('/reset-password-request', userController.requestPasswordReset);
 
-// router.post('/reset-password-code', userController.resetPasswordCode);
-
-// router.post('/reset-password', userController.resetPassword);
 
 module.exports = router;
 

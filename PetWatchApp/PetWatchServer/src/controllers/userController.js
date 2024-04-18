@@ -1,7 +1,7 @@
 require('dotenv').config();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
+const {sendResetCodeEmail} = require('../services/mailService');
 const {User} = require('../models/userModel');
 const { ActivityLog } = require('../models/activityLogModel');
 const { validatePhone, validateEmail, validatePassword } = require('../validators/userValidators');
@@ -314,6 +314,78 @@ async function changePassword (req, res) {
     }
 }
 
+async function requestPasswordReset(req, res) {
+  const { email } = req.body;
+  try {
+    // check if the email exists in the db
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ error: 'No user with the provided email was found' });
+    }
+
+    // generate a verification code and store it in the user document
+    const verificationCode = generateVerificationCode();
+    user.resetCode = verificationCode;
+    await user.save();
+
+    // send the verification code to the user's email (use nodemailer)
+    await sendResetCodeEmail(user.email, verificationCode, user.fullName);
+
+    return res.status(200).json({ message: 'Verification code sent successfully' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+function generateVerificationCode() {
+  const codeLength = 6; 
+  const min = Math.pow(10, codeLength - 1);
+  const max = Math.pow(10, codeLength) - 1;
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+async function resetPasswordCode(req, res) {
+  const { email, code } = req.body;
+console.log('resetPasswordCode: ', code, email);
+  try {
+    // get the user (already check if the email exists in the start of the reset password proccess)
+    const user = await User.findOne({ email });
+
+    // check if the code match
+    if (user.resetCode === code) {
+      // code is correct, remove the passwordResetCode from the user document
+      user.resetCode = null;
+      await user.save();
+      return res.status(200).json({ message: 'Code is correct' });
+    } else {
+      return res.status(401).json({ error: 'Sorry, that\'s not the right code. Please try again' });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+async function resetPassword(req, res) {
+  const { email, newPassword } = req.body;
+console.log('resetPassword: ', email, newPassword);
+  try {
+    // find the user by email 
+    const user = await User.findOne({ email});
+
+    // hash and update the user password in the db
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedNewPassword;
+    await user.save();
+    return res.status(200).json({ message: 'Password reset successful' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
 // function genreateSecretKey () {
 //   const secretKey = crypto.randomBytes(32).toString('hex');
 //   // Write the secret key to the .env file
@@ -330,5 +402,8 @@ module.exports = {
     getUserNotes,
     getUserAccountSettings,
     updateUserAccountSettings,
-    changePassword
+    changePassword,
+    requestPasswordReset,
+    resetPasswordCode,
+    resetPassword
 };
