@@ -1,12 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import '../styles/AddActivity.css';
 
-const NoteActivity = ({ onSave, onClose }) => {
+const NoteActivity = ({ onSave, onClose, noteToEdit  }) => {
+    console.log('noteToEdit: ', noteToEdit);
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [errors, setErrors] = useState({});
+
+    useEffect(() => {
+        if (noteToEdit) {
+            setTitle(noteToEdit.title);
+            setContent(noteToEdit.content);
+        }
+    }, [noteToEdit]);
 
     const validateInputs = () => {
         const validationErrors = {};
@@ -22,17 +30,22 @@ const NoteActivity = ({ onSave, onClose }) => {
 
     const handleSave = () => {
         if (validateInputs()) {
-            onSave({ 
-                title,
-                content 
-            });
+            const updatedNote = noteToEdit 
+            ? { ...noteToEdit, title, content } 
+            : { title, content };
+            onSave(updatedNote);
+
+            // onSave({ 
+            //     title,
+            //     content 
+            // });
         } 
     };
 
     return (
         <div className='container'>
             <div className='header'>
-                <h3>Add your note: </h3>   
+                <h3>{noteToEdit ? 'Edit your note' : 'Add your note'}</h3> 
                 <FontAwesomeIcon icon={faTimes} className='close-btn' onClick={onClose}/>
             </div>
             
@@ -55,7 +68,7 @@ const NoteActivity = ({ onSave, onClose }) => {
             />
             {errors.content && <div className="error-message">{errors.content}</div>} 
 
-            <button className='btn' onClick={handleSave}>Save</button>
+            <button className='btn' onClick={handleSave}>{noteToEdit ? 'Save' : 'Update'}</button>
         </div>
     );
 };

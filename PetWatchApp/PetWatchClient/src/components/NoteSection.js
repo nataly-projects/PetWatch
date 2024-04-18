@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
-import { addPetNote } from '../services/petService';
+import { addPetNote, deleteNoteById, updateNoteById } from '../services/petService';
 import { formatDate } from '../utils/utils';
 import NoteActivity from './NoteActivity';
 import '../styles/section.css';
@@ -8,8 +8,8 @@ import '../styles/section.css';
 const NoteSection = ({propsNotes, petId}) => {
 
   const  [notes, setNotes] = useState(propsNotes);
-  const [newNote, setNewNote] = useState('');
-  const [editingNoteId, setEditingNoteId] = useState(null);
+  const [editingNote, setEditingNote] = useState(null);
+  const [editMode, setEditMode] = useState(false);
   const [showAddNoteActivity, setShowAddNoteActivity] = useState(false);
 
   const handleAddNoteClick = () => {
@@ -17,7 +17,6 @@ const NoteSection = ({propsNotes, petId}) => {
   };
 
   const handleAddNote = async (note) => {
-    console.log('handleAddNote: ', note);
     setShowAddNoteActivity(false);
     try {
       const response = await addPetNote(petId, note);
@@ -25,21 +24,38 @@ const NoteSection = ({propsNotes, petId}) => {
       setNotes([...notes, response.note]);
       toast.success('Note added successfully!');
     } catch (error) {
-      console.error('Error while adding pet:', error);
       toast.error('Failed to adding note. Please try again.');
     }
   };
+  
+  const handleEditClick = (note) => {
+    setEditMode(true);
+    setEditingNote(note);
+  }
 
-  const handleEditNote = (id, updatedNote) => {
-    // setNotes(notes.map(note => (note._id === id ? { ...note, note: updatedNote, updatedDate: new Date().toISOString().slice(0, 10) } : note)));
-    //TODO - send the edit note to the petSerivce - editPetNote
-    setEditingNoteId(null);
+  const handleEditNote = async (updatedNote) => {
+    setEditingNote(null);
+    setEditMode(false);
+    console.log('updatedNote: ', updatedNote);
+    
+    try {
+      const response = await updateNoteById(updatedNote);
+      console.log(response);
+      setNotes(notes.map(note => (note._id === updatedNote._id ? updatedNote : note)));
+      toast.success('Note updated successfully!');
+    } catch (error) {
+      toast.error('Failed to updating note. Please try again.');
+    }
   };
 
-  const handleDeleteNote = id => {
-    // setNotes(notes.filter(note => note._id !== id));
-    //TODO - delete the note to the petSerivce - deletePetNote
-
+  const handleDeleteNote = async (id) => {
+    try {
+      await deleteNoteById(id);
+      setNotes(notes.filter(note => note._id !== id));
+      toast.success('Note deleted successfully!');
+    } catch (error) {
+      toast.error('Failed to delete note. Please try again.');
+    }
   };
 
   return (
@@ -65,32 +81,12 @@ const NoteSection = ({propsNotes, petId}) => {
               <td>{formatDate(note.createdDate)}</td>
               <td>{note.updatedDate ? formatDate(note.updatedDate) : '-'}</td>
               {petId !== null && (
-              <>
-                {/* <td>
-                  {editingNoteId === note._id ? (
-                    <textarea
-                      value={note.content}
-                      onChange={e => handleEditNote(note._id, e.target.value)}
-                    />
-                  ) : (
-                    note.note
-                  )}
-                </td> */}
-                {/* <td>
-                  {editingNoteId === note._id ? (
-                    <button onClick={() => handleEditNote(note._id, note.content)}>Save</button>
-                  ) : (
-                    <button className='btn' onClick={() => setEditingNoteId(note._id)}>Edit</button>
-                  )}
-                  <button className='btn' onClick={() => handleDeleteNote(note._id)}>Delete</button>
-                </td> */}
                 <td>
                   <div className='actions'>
-                    <button className='btn' onClick={() => setEditingNoteId(note._id)}>Edit</button>
+                    <button className='btn' onClick={() => handleEditClick(note)}>Edit</button>
                     <button className='btn' onClick={() => handleDeleteNote(note._id)}>Delete</button>
                   </div>          
                 </td>
-            </>
           )}     
             </tr>
           ))}
@@ -105,6 +101,14 @@ const NoteSection = ({propsNotes, petId}) => {
               </div>
             )}
           </>
+        )}
+        { editMode && (
+              <div className='add-activity-card'>
+                <NoteActivity onSave={(data) => handleEditNote(data)} 
+                onClose={() => setEditMode(false)}
+                noteToEdit={editingNote}
+                />
+              </div>
         )}
       </>
       :

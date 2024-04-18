@@ -113,19 +113,17 @@ export const updateUserSettings = async (userId, updateSettings) => {
     try{
         console.log('user id: ', userId);
         console.log('updateSettings: ', updateSettings);
-        // const response = await axios.put(`${BASE_API_URL}/users/settings/${userId}`, updateSettings);
-        // console.log('response from fetchUserNotes: ', response);
-        // if (response && response.data) {
-        //     return response.data;
-        // }
-        // return null;
+        const response = await axios.put(`${BASE_API_URL}/users/settings/${userId}`, updateSettings);
+        console.log('response from fetchUserNotes: ', response);
+        if (response && response.data) {
+            return response.data;
+        }
+        return null;
 
     } catch (error) {
       throw error; 
     }
 }
-
-
 
 
 export const resetPasswordRequest = async (email) => {

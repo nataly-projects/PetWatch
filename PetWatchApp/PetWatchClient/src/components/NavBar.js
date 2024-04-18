@@ -5,7 +5,7 @@ import { faUser, faBell } from "@fortawesome/free-solid-svg-icons";
 import { useSelector  } from "react-redux";
 import logoImage from "../images/logo.png"; 
 import UserPopup from "./UserPopup";
-import NotificationPopup from './notificationPopup';
+import NotificationPopup from './NotificationPopup';
 import '../styles/NavBar.css';
 
 const NavBar = () => {

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
+import ForgotPassword from '../components/ForgotPassword';
 import '../styles/UserProfile.css';
 
 const UserProfile = () => {
@@ -20,6 +21,7 @@ const UserProfile = () => {
   });
   const [deailsErrors, setDetailsErrors] = useState({});
   const [passwordErrors, setPasswordErrors] = useState({});
+  const [showForgotPassword, setShowForgotPassword] = useState(false); 
 
 // details functions
 
@@ -217,11 +219,17 @@ const UserProfile = () => {
             <p>Here you can change your password </p>
             <div className='actions'>
               <button onClick={handleChangePasswordClick}>Change Password</button>
-              <button >Forgot Password</button>
+              <button onClick={() => setShowForgotPassword(true)}>Forgot Password</button>
             </div>
+               {/* Forgot Password modal */}
           </>
         }
       </div>
+        {showForgotPassword && (
+          <ForgotPassword
+          onClose={() => setShowForgotPassword(false)}
+          />
+        )}
     </div>
   );
 };

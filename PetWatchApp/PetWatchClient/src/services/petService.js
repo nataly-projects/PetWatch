@@ -326,9 +326,9 @@ export const getPetExpensesArrays = async (petId) => {
   }
   };
 
-  export const updateNoteById = async (note) => {
+  export const updateNoteById = async (updatedNote) => {
     try {
-      const response = await axios.put(`${BASE_API_URL}/pets/note/${note._id}`, note);
+      const response = await axios.put(`${BASE_API_URL}/pets/note/${updatedNote._id}`, {noteData: updatedNote});
       console.log('response from updateNoteById: ', response);
       if (response && response.data) {
           return response.data;
@@ -339,9 +339,9 @@ export const getPetExpensesArrays = async (petId) => {
     }
   };
 
-  export const deleteNoteById = async (note) => {
+  export const deleteNoteById = async (noteId) => {
     try {
-      const response = await axios.delete(`${BASE_API_URL}/pets/note/${note._id}`);
+      const response = await axios.delete(`${BASE_API_URL}/pets/note/${noteId}`);
       console.log('response from deleteNoteById: ', response);
       if (response && response.data) {
           return response.data;
