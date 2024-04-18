@@ -21,6 +21,9 @@ const VetVisitSchema = new Schema({
         type: Date, 
         required: true 
     },
+    nextDate: { 
+        type: Date, 
+    },
     created_at: {
         type: Date,
         default: Date.now()

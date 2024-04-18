@@ -164,6 +164,9 @@ async function getUserUpcomingEvents (req, res) {
            populate: {path: 'pet',select: 'name'} },
           { path: 'routineCareRecords', 
           match: { nextDate: { $gte: new Date() } },
+          populate: {path: 'pet', select: 'name'} },
+          { path: 'vetVisits', 
+          match: { nextDate: { $gte: new Date() } },
           populate: {path: 'pet', select: 'name'} }
       ]
     });
@@ -186,6 +189,14 @@ async function getUserUpcomingEvents (req, res) {
               details: `Routine Care Type: ${routineCareRecord.activity}`
           });
       });
+
+      pet.vetVisits.forEach(visit => {
+        upcomingEvents.push({
+            ...visit.toObject(),
+            actionType: 'Vet Visit',
+            details: `The Reason: ${visit.reason}`
+        });
+    });
   });
 
     // Sort the combined events by nextDate

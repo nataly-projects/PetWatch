@@ -143,6 +143,10 @@ async function getPetRoutineCare (req, res) {
             path: 'routineCareRecords',
             match: { nextDate: { $gte: new Date() }},
             populate: {path: 'pet',select: 'name'} 
+        }).populate({
+            path: 'vetVisits',
+            match: { nextDate: { $gte: new Date() }},
+            populate: {path: 'pet',select: 'name'} 
         });
 
         console.log('petWithUpcomingEvents: ', petWithUpcomingEvents);
@@ -160,13 +164,21 @@ async function getPetRoutineCare (req, res) {
                 });
             });
       
-            petWithUpcomingEvents.routineCareRecords.forEach(routineCareRecord => {
-                upcomingEvents.push({
-                    ...routineCareRecord.toObject(),
-                    actionType: 'Routine Care',
-                    details: `Routine Care Type: ${routineCareRecord.activity}`
-                });
+        petWithUpcomingEvents.routineCareRecords.forEach(routineCareRecord => {
+            upcomingEvents.push({
+                ...routineCareRecord.toObject(),
+                actionType: 'Routine Care',
+                details: `Routine Care Type: ${routineCareRecord.activity}`
             });
+        });
+
+        petWithUpcomingEvents.vetVisits.forEach(visit => {
+            upcomingEvents.push({
+                ...visit.toObject(),
+                actionType: 'Vet Visit',
+                details: `The Reason: ${visit.reason}`
+            });
+        });
         
 
         // Sort the combined events by nextDate
