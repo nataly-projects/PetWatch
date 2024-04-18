@@ -112,41 +112,49 @@ const AddActivityPopup = ({ onActivitySelect, onClose }) => {
                 <VaccineRecordActivity 
                 onSave={handleSave} 
                 vaccineType={selectedNestedActivity} 
+                onClose={onClose}
                 />}
                 {selectedActivity.name === 'ROUTINE_CARE' && 
                 <RoutineCareActivity 
                 onSave={handleSave} 
                 routineCareType={selectedNestedActivity}
+                onClose={onClose}
                 />} 
                 {selectedActivity.name === 'EXPENSE' && 
                 <ExpenseActivity 
                 onSave={handleSave}
                 expenseCategory={selectedNestedActivity} 
+                onClose={onClose}
                 />} 
                 {selectedActivity.name === 'NOTE' && 
                 <NoteActivity 
                 onSave={handleSave} 
+                onClose={onClose}
                 />}
                 {selectedActivity.name === 'ALLERGY' && 
                 <AllergyActivity 
                 onSave={handleSave} 
+                onClose={onClose}
                 />}
                 {selectedActivity.name === 'MEDICATION' && 
                 <MedicationActivity 
                 onSave={handleSave} 
+                onClose={onClose}
                 />}
                 {selectedActivity.name === 'VET_VISIT' && 
                 <VetVisitActivity 
                 onSave={handleSave} 
+                onClose={onClose}
                 />}
                 {selectedActivity.name === 'OTHER' && 
                 <OtherActivity 
                 onSave={handleSave} 
+                onClose={onClose}
                 />}
             </div>
             }
           
-            <button className='btn' onClick={onClose}>Cancel</button>
+            {/* <button className='btn' onClick={onClose}>Cancel</button> */}
         </div>
     );
 };

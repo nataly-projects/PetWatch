@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import '../styles/AddActivity.css';
 
-const VetVisitActivity = ({ onSave }) => {
+const VetVisitActivity = ({ onSave, onClose }) => {
     const [reason, setReason] = useState('');
     const [note, setNote] = useState('');
     const [date, setDate] = useState('');
+    const [nextDate, setNextDate] = useState('');
     const [examination, setExamination] = useState('');
     const [errors, setErrors] = useState({});
 
@@ -25,6 +28,7 @@ const VetVisitActivity = ({ onSave }) => {
             onSave({ 
                 note: note ? note : null,
                 date, 
+                nextDate: nextDate ? nextDate : null,
                 reason, 
                 examination: examination ? examination : null
             });
@@ -33,8 +37,11 @@ const VetVisitActivity = ({ onSave }) => {
 
     return (
         <div className='container'>
-            <h3>Add Vet Visit:</h3>
-            
+            <div className='header'>
+                <h3>Add Vet Visit:</h3> 
+                <FontAwesomeIcon icon={faTimes} className='close-btn' onClick={onClose}/>
+            </div>
+
             <div className='input-container'>
                 <label className='label'>Visit Reason: </label>
                 <input className='input-field'
@@ -64,6 +71,17 @@ const VetVisitActivity = ({ onSave }) => {
                 required
                 />       
             {errors.date && <div className="error-message">{errors.date}</div>} 
+            </div>
+
+            <div className='input-container'>
+                <label className='label'>Next Date: </label>
+                <input className='input-field'
+                type="datetime-local" 
+                id="appointmentDateTime" 
+                name="appointmentDateTime" 
+                onChange={(event) => setNextDate(event.target.value)} 
+                value={nextDate} 
+                />       
             </div>
 
             <textarea className='textarea-field'

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import '../styles/AddActivity.css';
 
-const NoteActivity = ({ onSave }) => {
+const NoteActivity = ({ onSave, onClose }) => {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [errors, setErrors] = useState({});
@@ -29,8 +31,11 @@ const NoteActivity = ({ onSave }) => {
 
     return (
         <div className='container'>
-            <h3>Add your note: </h3>   
-
+            <div className='header'>
+                <h3>Add your note: </h3>   
+                <FontAwesomeIcon icon={faTimes} className='close-btn' onClick={onClose}/>
+            </div>
+            
             <div className='input-container'>
                 <label className='label'>Title: </label>
                 <input className='input-field'

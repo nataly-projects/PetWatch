@@ -1,32 +1,43 @@
 .container {
-    padding: 20px;
+  padding: 20px;
 
-    .input-container {
-        margin-bottom: 15px;
-      }
-      
-      .label {
-        margin-bottom: 5px;
-      }
-      
-      .input-field {
-        width: 100%;
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-      }
-      
-      .textarea-field {
-        width: 100%;
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        resize: vertical;
-      }
-
-      input:focus, textarea:focus {
-        outline: none;
-        border-color: #007bff;
-    }
+  .input-container {
+    margin-bottom: 15px;
   }
+
+  .header {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+
+  .close-btn {
+    cursor: pointer;
+  }
+    
+  .label {
+    margin-bottom: 5px;
+  }
+    
+  .input-field {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+    
+  .textarea-field {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    resize: vertical;
+  }
+
+  input:focus, textarea:focus {
+    outline: none;
+    border-color: #007bff;
+  }
+}
   

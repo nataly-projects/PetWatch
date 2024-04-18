@@ -1,3 +1,16 @@
 .section {
     padding: 0 20px;
+
+    .add-activity-card {
+        padding: 10px;
+        margin: 10px auto;
+        width: 70%;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+    }
+
+    .actions {
+        display: flex;
+        gap: 5px;
+    }
 }

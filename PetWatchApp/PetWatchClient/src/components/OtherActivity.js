@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import '../styles/AddActivity.css';
 
-const OtherActivity = ({ onSave }) => {
+const OtherActivity = ({ onSave, onClose }) => {
     const [type, setType] = useState('');
     const [note, setNote] = useState('');
     const [date, setDate] = useState('');
@@ -34,7 +36,10 @@ const OtherActivity = ({ onSave }) => {
 
     return (
         <div className='container'>
-            <h3>Add Other Activity: </h3>
+            <div className='header'>
+                <h3>Add Other Activity: </h3>  
+                <FontAwesomeIcon icon={faTimes} className='close-btn' onClick={onClose}/>
+            </div>
 
             <div className='input-container'>
                 <label className='label'>Activity Type: </label>

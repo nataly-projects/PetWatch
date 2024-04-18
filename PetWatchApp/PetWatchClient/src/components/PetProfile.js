@@ -217,7 +217,7 @@ const PetProfile = () => {
 
       <div className="notes">
          <NoteSection 
-         notes={notes}
+         propsNotes={notes}
          petId={pet._id} />
       </div>
 

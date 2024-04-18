@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import '../styles/AddActivity.css';
 
-const MedicationActivity = ({ onSave }) => {
+const MedicationActivity = ({ onSave, onClose }) => {
     const [name, setName] = useState('');
     const [dosage, setDosage] = useState('');
     const [note, setNote] = useState('');
@@ -41,7 +43,11 @@ const MedicationActivity = ({ onSave }) => {
 
     return (
         <div className='container'>
-            <h3>Add Medication: </h3> 
+            <div className='header'>
+                <h3>Add Medication: </h3>   
+                <FontAwesomeIcon icon={faTimes} className='close-btn' onClick={onClose}/>
+            </div>
+            
             <div className='input-container'>
                 <label className='label'>Medication Name: </label>
                 <input className='input-field'
@@ -67,7 +73,7 @@ const MedicationActivity = ({ onSave }) => {
            
 
             <div className='input-container'>
-                <label className='label'>start Date: </label>
+                <label className='label'>Start Date: </label>
                 <input className='input-field'
                 type="datetime-local" 
                 id="appointmentDateTime" 

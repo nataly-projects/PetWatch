@@ -51,7 +51,7 @@ const Sidebar = () => {
   const sideBarItems = [
     {title: 'Main', items: [{text: 'Dashboard', link: '/main/dashboard', icon: faHome} ]},
     {title: 'Pets', items: [{text: 'Pets Section', link: '/main/pets', icon: faPaw} ]},
-    {title: 'Routine Care', items: [{text: 'Activity Log', link: '/main/activity-log', icon: faBook} ]},
+    {title: 'Logs', items: [{text: 'Activity Log', link: '/main/activity-log', icon: faBook} ]},
     {title: 'Expenses', items: [{text: 'Expenses', link: '/main/expenses' , icon: faMoneyCheck} ]},
     {title: 'Info', items: 
     [{text: 'Dogs Care Routine', link: '/main/dog-care' , icon: faDog}, 

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import '../styles/AddActivity.css';
 
-const AllergyActivity = ({ onSave }) => {
+const AllergyActivity = ({ onSave, onClose }) => {
     const [name, setName] = useState('');
     const [note, setNote] = useState('');
     const [date, setDate] = useState('');
@@ -36,8 +38,11 @@ const AllergyActivity = ({ onSave }) => {
 
     return (
         <div className='container'>
-            <h3>Add Allergy: </h3> 
-
+            <div className='header'>
+                <h3>Add Allergy: </h3> 
+                <FontAwesomeIcon icon={faTimes} className='close-btn' onClick={onClose}/>
+            </div>
+            
             <div className='input-container'>
                 <label className='label'>Allergy Name: </label>
                 <input className='input-field'

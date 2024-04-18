@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faSignOutAlt, faEdit, faEye, faCog, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
-import '../styles/UserPopup.css';
+import '../styles/Popup.css';
 
 const UserPopup = ({ onClose }) => {
   const user = useSelector((state) => state.user);

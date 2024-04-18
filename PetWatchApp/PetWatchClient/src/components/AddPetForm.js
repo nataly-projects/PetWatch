@@ -449,7 +449,9 @@ const AddPetForm = () => {
                         <button className='button' onClick={() => handleItemClick(ActivityType.ALLERGY)}> Add new allergy </button>
                             {showAllergyActivity && (
                                 <div className='add-activity-card'>
-                                    <AllergyActivity onSave={(data) => handleActivitySave(ActivityType.ALLERGY, data)} /> 
+                                    <AllergyActivity 
+                                    onSave={(data) => handleActivitySave(ActivityType.ALLERGY, data)} 
+                                    onClose={() => setShowAllergyActivity(false)}/> 
                                 </div>
                             )}
                         
@@ -480,7 +482,9 @@ const AddPetForm = () => {
                             <button className='button' onClick={() => handleItemClick(ActivityType.MEDICATION)}> Add new medication </button>
                             {showMedicationActivity && ( 
                                 <div className='add-activity-card'>
-                                    <MedicationActivity onSave={(data) => handleActivitySave(ActivityType.MEDICATION, data)} /> 
+                                    <MedicationActivity 
+                                    onSave={(data) => handleActivitySave(ActivityType.MEDICATION, data)} 
+                                    onClose={() => setShowMedicationActivity(false)} /> 
                                 </div>
                             )}
                         
@@ -524,7 +528,10 @@ const AddPetForm = () => {
                         </div>
                         {selectedVaccineType && (
                             <div className='add-activity-card'>
-                                <VaccineRecordActivity onSave={(data) => handleActivitySave(ActivityType.VACCINE_RECORD, data)} vaccineType={selectedVaccineType} />
+                                <VaccineRecordActivity 
+                                onSave={(data) => handleActivitySave(ActivityType.VACCINE_RECORD, data)} 
+                                vaccineType={selectedVaccineType} 
+                                onClose={() => setSelectedVaccineType(null)} />
                             </div>
                         )}
                         <p className='optional-section'>You can add this information later in the pet profile. 
@@ -567,7 +574,10 @@ const AddPetForm = () => {
                         </div>
                         {selectedRoutineCareType && (
                             <div className='add-activity-card'>
-                                <RoutineCareActivity onSave={(data) => handleActivitySave(ActivityType.ROUTINE_CARE, data)} routineCareType={selectedRoutineCareType} />
+                                <RoutineCareActivity 
+                                onSave={(data) => handleActivitySave(ActivityType.ROUTINE_CARE, data)} 
+                                routineCareType={selectedRoutineCareType} 
+                                onClose={() => setSelectedRoutineCareType(null)}/>
                             </div>
                         )}
                         <p className='optional-section'>You can add this information later in the pet profile. 
@@ -610,7 +620,11 @@ const AddPetForm = () => {
                         </div>
                         {selectedExpenseType && (
                             <div className='add-activity-card'>
-                                <ExpenseActivity onSave={(data) => handleActivitySave(ActivityType.EXPENSE, data)} expenseCategory={selectedExpenseType} />
+                                <ExpenseActivity 
+                                onSave={(data) => handleActivitySave(ActivityType.EXPENSE, data)} 
+                                expenseCategory={selectedExpenseType} 
+                                onClose={() => setSelectedExpenseType(null)}
+                                />
                             </div>
                         )}
                         <p className='optional-section'>You can add this information later in the pet profile. 
@@ -646,7 +660,10 @@ const AddPetForm = () => {
 
                         {showVetVisitActivity && (
                             <div className='add-activity-card'>
-                                <VetVisitActivity onSave={(data) => handleActivitySave(ActivityType.VET_VISIT, data)} />
+                                <VetVisitActivity 
+                                onSave={(data) => handleActivitySave(ActivityType.VET_VISIT, data)} 
+                                onClose={() => setShowVetVisitActivity(false)}
+                                />
                             </div>
                         )}
                         <p className='optional-section'>You can add this information later in the pet profile. 
@@ -681,7 +698,10 @@ const AddPetForm = () => {
 
                         {showNoteActivity && (
                             <div className='add-activity-card'>
-                                <NoteActivity onSave={(data) => handleActivitySave(ActivityType.NOTE, data)} />
+                                <NoteActivity 
+                                onSave={(data) => handleActivitySave(ActivityType.NOTE, data)} 
+                                onClose={() => setShowNoteActivity(false)}
+                                />
                             </div>
                         )}
                         <p className='optional-section'>You can add this information later in the pet profile. 

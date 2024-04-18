@@ -103,7 +103,7 @@ const Dashboard = () => {
 
       <div className="notes">
         <NoteSection 
-        notes={notes}
+        propsNotes={notes}
         petId={null} />
       </div>
 

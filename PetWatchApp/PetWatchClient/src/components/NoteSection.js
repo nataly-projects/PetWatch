@@ -1,24 +1,32 @@
 import React, { useState } from 'react';
+import { toast } from 'react-toastify';
 import { addPetNote } from '../services/petService';
 import { formatDate } from '../utils/utils';
+import NoteActivity from './NoteActivity';
 import '../styles/section.css';
 
-const NoteSection = ({notes, petId}) => {
+const NoteSection = ({propsNotes, petId}) => {
 
-  // const  [notes, setNotes] = useState(propsNotes);
-  console.log('notes: ', notes);
+  const  [notes, setNotes] = useState(propsNotes);
   const [newNote, setNewNote] = useState('');
   const [editingNoteId, setEditingNoteId] = useState(null);
+  const [showAddNoteActivity, setShowAddNoteActivity] = useState(false);
 
-  const handleAddNote = () => {
-    if (newNote.trim() !== '') {
-      const newNoteObj = {
-        updatedDate: Date.now(),
-        content: newNote
-      };
-      //TODO - send the note to the petSerivce - addPetNote
-      notes = ([...notes, newNoteObj]);
-      setNewNote('');
+  const handleAddNoteClick = () => {
+    setShowAddNoteActivity(true);
+  };
+
+  const handleAddNote = async (note) => {
+    console.log('handleAddNote: ', note);
+    setShowAddNoteActivity(false);
+    try {
+      const response = await addPetNote(petId, note);
+      console.log(response.note);
+      setNotes([...notes, response.note]);
+      toast.success('Note added successfully!');
+    } catch (error) {
+      console.error('Error while adding pet:', error);
+      toast.error('Failed to adding note. Please try again.');
     }
   };
 
@@ -58,7 +66,7 @@ const NoteSection = ({notes, petId}) => {
               <td>{note.updatedDate ? formatDate(note.updatedDate) : '-'}</td>
               {petId !== null && (
               <>
-                <td>
+                {/* <td>
                   {editingNoteId === note._id ? (
                     <textarea
                       value={note.content}
@@ -67,14 +75,20 @@ const NoteSection = ({notes, petId}) => {
                   ) : (
                     note.note
                   )}
-                </td>
-                <td>
+                </td> */}
+                {/* <td>
                   {editingNoteId === note._id ? (
                     <button onClick={() => handleEditNote(note._id, note.content)}>Save</button>
                   ) : (
-                    <button onClick={() => setEditingNoteId(note._id)}>Edit</button>
+                    <button className='btn' onClick={() => setEditingNoteId(note._id)}>Edit</button>
                   )}
-                  <button onClick={() => handleDeleteNote(note._id)}>Delete</button>
+                  <button className='btn' onClick={() => handleDeleteNote(note._id)}>Delete</button>
+                </td> */}
+                <td>
+                  <div className='actions'>
+                    <button className='btn' onClick={() => setEditingNoteId(note._id)}>Edit</button>
+                    <button className='btn' onClick={() => handleDeleteNote(note._id)}>Delete</button>
+                  </div>          
                 </td>
             </>
           )}     
@@ -83,7 +97,14 @@ const NoteSection = ({notes, petId}) => {
         </tbody>
         </table>
         {petId !== null && (
-          <button className='btn' onClick={handleAddNote}>Add Note</button>
+          <>
+            <button className='btn' onClick={handleAddNoteClick}>Add Note</button>
+            {showAddNoteActivity && (
+              <div className='add-activity-card'>
+                <NoteActivity onSave={(data) => handleAddNote(data)} onClose={() => setShowAddNoteActivity(false)}/>
+              </div>
+            )}
+          </>
         )}
       </>
       :

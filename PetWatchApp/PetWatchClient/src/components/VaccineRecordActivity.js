@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import '../styles/AddActivity.css';
 
-const VaccineRecordActivity = ({ onSave, vaccineType }) => {
+const VaccineRecordActivity = ({ onSave, vaccineType, onClose }) => {
     const [note, setNote] = useState('');
     const [date, setDate] = useState('');
     const [nextDate, setNextDate] = useState('');
@@ -34,8 +36,12 @@ const VaccineRecordActivity = ({ onSave, vaccineType }) => {
     };
 
     return (
-        <div className='container'>
-            <h3>Add record for vaccine Type: {vaccineType.value}</h3>        
+        <div className='container'>     
+            <div className='header'>
+                <h3>Add record for vaccine Type: {vaccineType.value}</h3>
+                <FontAwesomeIcon icon={faTimes} className='close-btn' onClick={onClose}/>
+            </div>
+            
             <div className='input-container'>
                 <label className='label'>Date: </label>
                 <input className='input-field'
