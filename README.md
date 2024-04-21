@@ -2,8 +2,10 @@
 PetWatchApp is a web application that helps pet owners keep track of their pets' health, activities, and expenses.
 
 ## Features
-- Dashboard displaying important information such as the number of pets, user expenses, and pet activity log.
-- Ability to add and manage pets, including tracking their age, weight, and other information.
+- Pet Owner Dashboard: Access a comprehensive dashboard displaying all data related to your pet's care and well-being. View detailed logs of your pet's activities, track and manage all pet-related expenses, stay informed about upcoming important events, and keep organized notes and reminders for your pets.
+- Individual Pet Dashboard: Dive into detailed analytics specific to each pet, including expense breakdowns, weight tracking trends, and health information. Monitor your pet's expenses over time, categorizing them by type and month. Keep track of your pet's weight fluctuations over time, enabling you to monitor their health and identify any concerning trends. Store and access essential health information for each pet, including vaccination records, medical history, allergies, and current medications. Easily add new activities and events to your pet's schedule, such as vet appointments, vaccination records, routine care activities, and additional expenses.
+- Pet Management: Ability to add and manage pets, including tracking their age, weight, health information, vaccination record, routine care, expenses, and other information.
+- Customizable Notifications: Set personalized notifications for various events such as medication reminders, upcoming appointments, and important milestones in your pet's life.
 - Expense tracking feature to monitor pet-related expenses.
 - Emergency guide section providing important information on handling pet emergencies.
 - User authentication and account management functionalities.
