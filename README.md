@@ -1,5 +1,6 @@
 # PetWatchApp
-PetWatchApp is a web application that helps pet owners keep track of their pets' health, activities, and expenses.
+PetWatch is a web application designed to streamline pet care management for pet owners. With intuitive features tailored for pet health tracking, appointment scheduling, expense management,
+monitoring vaccination records, tracking routine care activities, or accessing informative guides on pet care, PetWatch offers a comprehensive solution for pet owners.
 
 ## Features
 - Pet Owner Dashboard: Access a comprehensive dashboard displaying all data related to your pet's care and well-being. View detailed logs of your pet's activities, track and manage all pet-related expenses, stay informed about upcoming important events, and keep organized notes and reminders for your pets.
