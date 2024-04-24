@@ -1,8 +1,9 @@
 require('dotenv').config();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const {sendResetCodeEmail} = require('../services/mailService');
+const {sendResetCodeEmail, sendContactEmail} = require('../services/mailService');
 const {User} = require('../models/userModel');
+const {ContactUs} = require('../models/contactUsModel');
 const { ActivityLog } = require('../models/activityLogModel');
 const { validatePhone, validateEmail, validatePassword } = require('../validators/userValidators');
 
@@ -339,6 +340,31 @@ async function requestPasswordReset(req, res) {
   }
 }
 
+async function ContactUsMessage(req, res) {
+  const { messageData } = req.body;
+    try {
+      if (messageData.email) {
+        validateEmail(messageData.email);
+      }
+  
+      const newMessage = new ContactUs({
+        userId: messageData.userId,
+        fullName: messageData.name,
+        email: messageData.email,
+        message: messageData.message,
+      });
+  
+      await newMessage.save();
+
+      // send an email to the company
+      await sendContactEmail(messageData);
+      return res.status(201).json({ message: 'Message sent successfully' });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
 function generateVerificationCode() {
   const codeLength = 6; 
   const min = Math.pow(10, codeLength - 1);
@@ -405,5 +431,6 @@ module.exports = {
     changePassword,
     requestPasswordReset,
     resetPasswordCode,
-    resetPassword
+    resetPassword,
+    ContactUsMessage
 };

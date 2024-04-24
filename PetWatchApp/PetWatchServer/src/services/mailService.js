@@ -14,22 +14,33 @@ const emailKey = process.env.EMAIL_KEY;
     },
   });
 
-  async function sendContactEmail(fullName, userEmail, message) {
+  async function sendContactEmail(messageData) {
     
     // email options
     const mailOptions = {
-      from: userEmail,
+      from: messageData.emil,
       to: appEmail, 
       subject: EMAIL_SUBJECTS.CONTACT_US,
-      html: `
-        <p>New message from: ${fullName}</p>
-        <p>Email: ${userEmail}</p>
-        <p>The message: ${message}</p>
-      `,
+      html: ` 
+      <div style="font-family: Arial, sans-serif; color: #333; background-color: #f5f5f5; padding: 20px;">
+        <div style="background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+          <h2 style="color: #007bff;">New Message From Pet Watch</h2>
+          <p>Message from: ${messageData.name} </p>
+          <p>Email: ${messageData.email}</p>          
+          <p>The message: ${messageData.message}</p>        
+        </div>
+      </div>
+      `
     };
   
     // send the email
-    await transporter.sendMail(mailOptions);
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error sending email:', error);
+      } else {
+        console.log('Email sent:', info.response);
+      }
+    });
   }
 
   async function sendResetCodeEmail(email, verificationCode, userName) {
@@ -37,7 +48,6 @@ const emailKey = process.env.EMAIL_KEY;
       from: appEmail,
       to: email,
       subject: EMAIL_SUBJECTS.PASSWORD_RESET,
-      // text: `Your verification code is: ${verificationCode}`,
       html: ` 
       <div style="font-family: Arial, sans-serif; color: #333; background-color: #f5f5f5; padding: 20px;">
         <div style="background-color: #fff; padding: 20px; border-radius: 5px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">

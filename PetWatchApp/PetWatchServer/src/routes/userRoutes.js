@@ -18,14 +18,12 @@ router.post('/change-password', userController.changePassword);
 router.post('/reset-password-request', userController.requestPasswordReset);
 router.post('/reset-password-code', userController.resetPasswordCode);
 router.post('/reset-password', userController.resetPassword);
+router.post('/contact', userController.ContactUsMessage);
 
 router.put('/settings/:userId', userController.updateUserAccountSettings);
 
 
 // router.put('/:userId', userController.upload.single('imageUrl'), userController.updateUserById);
-
-// router.post('/contact', userController.postContactMessage);
-
 
 
 module.exports = router;
