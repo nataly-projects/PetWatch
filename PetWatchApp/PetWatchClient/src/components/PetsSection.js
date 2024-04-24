@@ -43,9 +43,9 @@ const PetsSection = () => {
     
     if (error) {
         return (
-            <div>
+            <div className='error-container'>
                 <p>Failed to fetch user data. Please try again later.</p>
-                <button onClick={fetchData}>Retry</button>
+                <button className='btn' onClick={fetchData}>Retry</button>
             </div>
         );
     }
@@ -54,7 +54,7 @@ const PetsSection = () => {
         navigate('/add-pet');
       };
 
-  return (
+    return (
     <div className="pets-section-container">
         <h3>Welcome to the Pets Section!</h3>
         <p>Here you can see your pets:</p>
@@ -81,7 +81,7 @@ const PetsSection = () => {
 
         <button className='btn' onClick={handleAddNewPetClick} >Add New Pet</button>
     </div>  
-  );
+    );
 };
 
 export default PetsSection;

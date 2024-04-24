@@ -10,14 +10,11 @@
     margin-top: 24px;
     margin-bottom: 30px;
     width: 70%;
-    background-color: #F8F4EF;
+    background-color: #f9f9f9;
     border-radius: 10px;
-    border: 1px solid #795B4A;
+    border: 1px solid #ccc;
 
-    button:hover {
-      background-color: #4F3E32;
-    }
-
+    
     h1, p {
       color: #795B4A;
     }
@@ -48,7 +45,8 @@
     }
     
     button {
-      background-color: #795B4A;
+      width: 70%;
+      background-color: #007bff;
       color: #fff;
       padding: 10px 20px;
       border: none;
@@ -56,11 +54,6 @@
       cursor: pointer;
     }
   
-    .error-message {
-      margin-top: -10px;
-      color: red;
-      font-size: 15px;
-    }
   }
   
  

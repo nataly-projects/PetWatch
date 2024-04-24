@@ -162,10 +162,9 @@ export const resetPassword = async (email, newPassword) => {
     }
 };
 
-export const sendContactMessage = async (user, fullName, email, message) => {
-    console.log('user service - sendContactMessage ', fullName);
+export const sendContactMessage = async (messageData) => {
     try {
-        const response = await axios.post(`${BASE_API_URL}/users/contact`, {userId: (user ? user._Id : null), fullName, email, message });
+        const response = await axios.post(`${BASE_API_URL}/users/contact`, {messageData});
         console.log(response);
         if (response && response.data) {
             return true;

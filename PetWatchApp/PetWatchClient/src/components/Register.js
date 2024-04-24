@@ -27,8 +27,6 @@ const Register = () => {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const navigate = useNavigate();
 
-    const [isForgotPasswordModalIsOpen, setForgotPasswordModalIsOpen] = useState(false); 
-  console.log('isForgotPasswordModalIsOpen: ', isForgotPasswordModalIsOpen);
 
     useEffect(() => {
       if (!fullNameError && !emailError && !passwordError && !confirmPasswordError && !phoneNumberError) {
@@ -39,7 +37,7 @@ const Register = () => {
     }, [fullName, email, password, confirmPassword, phoneNumber]);
 
     const togglePasswordVisibility = () => {
-    setIsPasswordVisible(!isPasswordVisible);
+      setIsPasswordVisible(!isPasswordVisible);
     };
 
     const clearErrors = () => {
@@ -113,9 +111,9 @@ const Register = () => {
 
     return (
       <div className="login">
-        <div className="title bold text-center">Become a Happy Tails member</div>
-        <div class="secondary-title text-center">
-          Sign up to get the most of Happy Tails website
+        <div className="title bold text-center">Become a Pet Watch member</div>
+        <div className="secondary-title text-center">
+          Sign up to get the most of Pet Watch website
         </div>
         <form onSubmit={handleSubmit} >
           <div className="form">

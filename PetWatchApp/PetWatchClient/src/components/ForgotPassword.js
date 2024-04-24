@@ -121,7 +121,7 @@ const ForgotPassword = ({ onClose }) => {
               onChange={(e) => setEmail(e.target.value)} 
               required
               />
-            {error && <p className="error-message">{error}</p>}
+            {error && <div className="error-message">{error}</div>}
             </div>
         
               <p>An email with rest code will be sent to your email.</p>
@@ -140,13 +140,12 @@ const ForgotPassword = ({ onClose }) => {
               onChange={(e) => setCode(e.target.value)} 
               required
               />
-            {error && <p className="error-message">{error}</p>}
+            {error && <div className="error-message">{error}</div>}
             </div>
-           
-              <button type="button" onClick={handleCodeSubmit}>
-                Continue
-              </button>
-              <p>Enter the verification code you get in the mail</p>
+            <p>Enter the verification code you get in the mail</p>
+            <button type="button" onClick={handleCodeSubmit}>
+              Continue
+            </button>
             </>
           )}
           {step === 3 && (
@@ -169,8 +168,8 @@ const ForgotPassword = ({ onClose }) => {
                 required
               />
             </div>
-             
-              {error && <p className="error-msg">{error}</p>}
+            {error && <div className="error-message">{error}</div>}
+
               <button type="button" onClick={handlePasswordSubmit}>
                 Submit
               </button>

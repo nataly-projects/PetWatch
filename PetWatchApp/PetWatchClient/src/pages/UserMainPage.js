@@ -16,6 +16,7 @@ import PetProfile from '../components/PetProfile';
 import AccountSettings from '../components/AccountSettings';
 import PetsSection from '../components/PetsSection';
 import AddPetForm from '../components/AddPetForm';
+import ContactPage from './ContactPage';
 import '../styles/UserMainPage.css';
 
 
@@ -25,7 +26,7 @@ const UserMainPage = () => {
       <Sidebar />
       <div className="user-main-content">
         <Routes>
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/" element={<Dashboard />} />
           <Route path="/pet-profile/:petId" element={<PetProfile />} />
           <Route path="/dog-care" element={<DogCarePage />} />
           <Route path="/cat-care" element={<CatCarePage />} />
@@ -39,10 +40,7 @@ const UserMainPage = () => {
           <Route path="/user-profile" element={<UserProfile />} />
           <Route path="/pets" element={<PetsSection />} />
           <Route path="/add-pet" element={<AddPetForm />} />
-
-
-           {/*
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />  */}
+          <Route path="/contact-us" element={<ContactPage />} />
         </Routes>
       </div>
     </div>

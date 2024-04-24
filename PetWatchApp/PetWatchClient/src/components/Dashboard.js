@@ -62,9 +62,9 @@ const Dashboard = () => {
 
   if (error) {
     return (
-      <div>
+      <div className='error-container'>
         <p>Failed to fetch user data. Please try again later.</p>
-        <button onClick={fetchData}>Retry</button>
+        <button className='btn' onClick={fetchData}>Retry</button>
       </div>
     );
   }

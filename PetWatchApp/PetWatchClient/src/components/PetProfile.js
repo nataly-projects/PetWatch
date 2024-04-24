@@ -65,9 +65,9 @@ const PetProfile = () => {
 
   if (error) {
     return (
-      <div>
+      <div className='error-container'>
           <p>Failed to fetch pet data. Please try again later.</p>
-          <button onClick={fetchData}>Retry</button>
+          <button className='btn' onClick={fetchData}>Retry</button>
       </div>
     );
   }

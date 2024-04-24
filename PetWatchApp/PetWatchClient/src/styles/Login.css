@@ -8,21 +8,18 @@
   width: 100%;
   background-color: #F8F4EF;
   border-radius: 10px;
-  border: 1px solid #795B4A;
+  border: 1px solid #ccc;
 
   .sign-button {
     height: 50px;
     width: 70%;
     font-size: 16px;
-    padding-top: 16px;
-    color: white;
-    background-color: #795B4A;
+    color: #fff;
+    background-color: #007bff;
     align-items: center;
-  }
-
-  .sign-button:hover {
     cursor: pointer;
-    background-color: #795B4A;
+    border: none;
+    border-radius: 4px;
   }
 
   .forgot-password {
@@ -68,12 +65,6 @@
     color: #795B4A;
     font-size: 16px;
     text-align: center;
-  }
-
-  .error-message {
-    margin-top: -40px;
-    color: red;
-    font-size: 15px;
   }
 
   .input-group {

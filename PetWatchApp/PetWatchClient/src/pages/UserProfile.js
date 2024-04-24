@@ -133,7 +133,7 @@ const UserProfile = () => {
 
   return (
     <div className="user-profile">
-      <h2>Your Profile</h2>
+      <h2>{user.fullName} Profile</h2>
       {editDetailsMode ? (
         <div className="edit-profile">
           {/* add image section */}
@@ -171,7 +171,7 @@ const UserProfile = () => {
         </div>
       ) : (
         <div className="view-profile">
-          <h3>Your Details:</h3>
+          <h3>Details:</h3>
           <p>Full Name: {user.fullName}</p>
           <p>Email: {user.email}</p>
           <p>phone: {user.phone}</p>
@@ -221,10 +221,10 @@ const UserProfile = () => {
               <button onClick={handleChangePasswordClick}>Change Password</button>
               <button onClick={() => setShowForgotPassword(true)}>Forgot Password</button>
             </div>
-               {/* Forgot Password modal */}
           </>
         }
       </div>
+      {/* Forgot Password modal */}
         {showForgotPassword && (
           <ForgotPassword
           onClose={() => setShowForgotPassword(false)}
