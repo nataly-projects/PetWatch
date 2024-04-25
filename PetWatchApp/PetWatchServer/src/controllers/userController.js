@@ -258,6 +258,60 @@ async function getUserAccountSettings (req, res) {
   }
 }
 
+async function updateUserById(req, res) {
+  console.log('updateUserById: ', req.body);
+    const {userId} = req.params; 
+    const { userData } = req.body;
+    // let imagePath = null;
+    // if (req.file && req.file.path) {
+    //   imagePath = req.file.path;
+    // }
+
+    try {
+        // check if the user exists
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        if (userData.email && userData.email != user.email) {
+
+            isValid = validateEmail(userData.email);
+            if (isValid) {
+              // check if the email is already registered
+              const existingUser = await User.findOne({ email });
+                
+              if (existingUser) {
+                return res.status(400).json({ error: 'Email is already registered' });
+              }
+              user.email = userData.email;
+            }
+            return res.status(400).json({ error: 'Email is not valid' });
+        }
+        if (userData.phone && userData.phone != user.phone) {
+            isValid = validatePhone(userData.phone);
+            if (isValid) {
+              user.phone = userData.phone;
+            }
+          return res.status(400).json({ error: 'Phone is not valid' });
+
+        }
+        if (userData.fullName && userData.fullName != user.fullName) {
+            user.fullName = userData.fullName;
+        }
+        // if (imagePath && user.imageUrl != imagePath) {
+        //   user.imageUrl = imagePath;
+        // }
+
+        const updatedUser = await user.save();
+        return res.status(200).json({ message: 'User updated successfully', updatedUser });
+    } catch (error) {
+        console.error(error);
+        return res.status(400).json({ error: error.message });
+    }
+}
+
 async function updateUserAccountSettings (req, res) {
   try {
     const { userId } = req.params;
@@ -288,24 +342,26 @@ async function updateUserAccountSettings (req, res) {
 }
 
 async function changePassword (req, res) {
-  const { email, oldPassword, newPassword } = req.body;
+  console.log('changePassword: ', req.body);
+  const {changePasswordData} = req.body;
+  // const { email, oldPassword, newPassword } = req.body;
   console.log('resetPassword: ', req.body);
     try {
       // find the user by email 
-      const user = await User.findOne({ email});
+      const user = await User.findOne({email: changePasswordData.email});
 
       if (!user) {
         return res.status(401).json({ error: 'No user found with that email' });
       }
 
       // check if the provided password matches the stored hashed password
-      const passwordMatch = await bcrypt.compare(oldPassword, user.password);
+      const passwordMatch = await bcrypt.compare(changePasswordData.oldPassword, user.password);
       if (!passwordMatch) {
         return res.status(401).json({ error: 'Incorrect password' });
       }
 
       // hash and update the user password in the db
-      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+      const hashedNewPassword = await bcrypt.hash(changePasswordData.newPassword, 10);
       user.password = hashedNewPassword;
       await user.save();
       return res.status(200).json({ message: 'Password change successfully' });
@@ -427,6 +483,7 @@ module.exports = {
     getUserUpcomingEvents,
     getUserNotes,
     getUserAccountSettings,
+    updateUserById,
     updateUserAccountSettings,
     changePassword,
     requestPasswordReset,

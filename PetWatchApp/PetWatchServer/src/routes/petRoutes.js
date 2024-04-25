@@ -1,11 +1,12 @@
 const express = require('express');
-
 const petController = require('../controllers/petController');
+const authenticateToken = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-// router.get('/', petController.getPetsByFilters);
-// router.post('/:userId', petController.upload.single('image'), petController.addPet);
+
+// Middleware to authenticate token
+router.use(authenticateToken);
 
 router.get('/user/:userId', petController.getPetsByUserId);
 router.get('/:petId', petController.getPetById);
@@ -30,7 +31,6 @@ router.post('/allergy/:petId', petController.addPetAllergy);
 router.post('/medication/:petId', petController.addPetMedication);
 router.post('/vet-visit/:petId', petController.addPetVetVisit);
 
-
 router.put('/note/:noteId', petController.updateNoteById);
 router.delete('/note/:noteId', petController.deleteNote);
 
@@ -47,5 +47,8 @@ router.delete('/note/:noteId', petController.deleteNote);
 // router.put('/:petId',petController.upload.single('image'),  petController.updatePetById);
 router.put('/:petId',  petController.updatePetById);
 router.delete('/:petId', petController.deletePet);
+
+// router.post('/:userId', petController.upload.single('image'), petController.addPet);
+
 
 module.exports = router;
