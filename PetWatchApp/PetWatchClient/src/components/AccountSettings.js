@@ -1,73 +1,86 @@
 import React, { useState, useEffect  } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom'; 
 import { toast } from 'react-toastify';
 import { updateUserSettings, fetchUserAccountSettings } from '../services/userService';
 import { Currency } from '../utils/utils';
 import '../styles/AccountSettings.css';
 
 const AccountSettings = () => {
-    const user = useSelector(state => state.user);
-    const [loading, setLoading] = useState(true);
-    const [accountSettings, setAccountSettings] = useState({});
-    const [notificationPreferences, setNotificationPreferences] = useState({});
+  const navigate = useNavigate();
+  const user = useSelector(state => state.user);
+  const token = useSelector(state => state.token);
 
-    const [theme, setTheme] = useState('');
-    const [currency, setCurrency] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [accountSettings, setAccountSettings] = useState({});
+  const [notificationPreferences, setNotificationPreferences] = useState({});
+
+  const [theme, setTheme] = useState('');
+  const [currency, setCurrency] = useState('');
 
 
-    useEffect(() => {
-        const fetchAccountSettings = async () => {
-            try {
-                const userAccountSettings  = await fetchUserAccountSettings(user._id);
-                console.log('accountSettings: ', userAccountSettings.accountSettings);
-                setAccountSettings(userAccountSettings.accountSettings);
-                setNotificationPreferences(userAccountSettings.accountSettings.notificationPreferences);
-                setCurrency(userAccountSettings.accountSettings.currency ? userAccountSettings.accountSettings.currency : Currency.ILS.name);
-                setTheme(userAccountSettings.accountSettings.theme ? userAccountSettings.accountSettings.theme : 'light');
+  useEffect(() => {
+      const fetchAccountSettings = async () => {
+          try {
+            const userAccountSettings  = await fetchUserAccountSettings(user._id, token);
+            console.log('accountSettings: ', userAccountSettings.accountSettings);
+            setAccountSettings(userAccountSettings.accountSettings);
+            setNotificationPreferences(userAccountSettings.accountSettings.notificationPreferences);
+            setCurrency(userAccountSettings.accountSettings.currency ? userAccountSettings.accountSettings.currency : Currency.ILS.name);
+            setTheme(userAccountSettings.accountSettings.theme ? userAccountSettings.accountSettings.theme : 'light');
 
-                console.log('notificationPreferences: ', notificationPreferences);
-                setLoading(false);
-            } catch (error) {
-                console.error('Error fetching account settings:', error);
+            console.log('notificationPreferences: ', notificationPreferences);
+            setLoading(false);
+          } catch (error) {
+            if (error.response && error.response.status === 401) {
+              console.error('UNAUTHORIZED_ERROR');
+              setLoading(false);
+              navigate('/login');
             }
-        };
+            console.error('Error fetching account settings:', error);
+          }
+      };
 
-        if (user) {
-            fetchAccountSettings();
-        }
-    }, [user]);
+      if (user) {
+          fetchAccountSettings();
+      }
+  }, [user]);
 
-    const handleNotificationChange = (event) => {
-        const { name, checked } = event.target;
-        setNotificationPreferences(prevState => ({ ...prevState, [name]: checked }));
-    };
+  const handleNotificationChange = (event) => {
+      const { name, checked } = event.target;
+      setNotificationPreferences(prevState => ({ ...prevState, [name]: checked }));
+  };
 
    
-
-    // Function to handle form submission
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-        await updateUserSettings(user._id, {
-            notificationPreferences,
-            theme,
-            currency
-        });
-        toast.success('Account settings updated successfully!');
-        } catch (error) {
-        console.error('Error updating profile:', error);
-        toast.error('Failed to update account settings. Please try again.');
-        }
-    };
-
-    if (loading) {
-      return (
-        <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <div>Loading...</div>
-        </div>
-      );
+  // Function to handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+    await updateUserSettings(user._id, {
+        notificationPreferences,
+        theme,
+        currency
+    }, token);
+    toast.success('Account settings updated successfully!');
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        console.error('UNAUTHORIZED_ERROR');
+        setLoading(false);
+        navigate('/login');
+      }
+      console.error('Error updating profile:', error);
+      toast.error('Failed to update account settings. Please try again.');
     }
+  };
+
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <div>Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className='account-settings-container'>

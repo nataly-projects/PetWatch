@@ -1,6 +1,8 @@
 import axios from 'axios';
 
+
 const BASE_API_URL = process.env.REACT_APP_BASE_API_URL;
+
 
 export const getPetById = async (petId) => {
   try {
@@ -15,15 +17,21 @@ export const getPetById = async (petId) => {
   }
 };
 
-export const getPetsByUserId = async (userId) => {
+export const getPetsByUserId = async (userId, token) => {
+
   try {
-      const response = await axios.get(`${BASE_API_URL}/pets/user/${userId}`);
-      console.log('response from getPetsByUserId: ', response);
-      if (response && response.data) {
-          return response.data;
+    const response = await axios.get(`${BASE_API_URL}/pets/user/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
       }
-      return null;
+    });
+    console.log('response from getPetsByUserId: ', response);
+    if (response && response.data) {
+        return response.data;
+    }
+    return null;
   } catch (error) {
+    console.log(error);
     throw error; 
   }
 };
@@ -54,9 +62,13 @@ export const getPetRoutineCare = async (petId) => {
   }
 };
 
-export const getPetNote = async (petId) => {
+export const getPetNote = async (petId, token) => {
   try {
-      const response = await axios.get(`${BASE_API_URL}/pets/note/${petId}`);
+      const response = await axios.get(`${BASE_API_URL}/pets/note/${petId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       console.log('response from getPetNote: ', response);
       if (response && response.data) {
           return response.data;
@@ -119,9 +131,13 @@ export const getPetVetVisits = async (petId) => {
   }
 };
 
-export const getPetWeightTracker = async (petId) => {
+export const getPetWeightTracker = async (petId, token) => {
   try {
-      const response = await axios.get(`${BASE_API_URL}/pets/weight-track/${petId}`);
+      const response = await axios.get(`${BASE_API_URL}/pets/weight-track/${petId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       console.log('response from getPetWeightTracker: ', response);
       if (response && response.data) {
           return response.data;
@@ -133,9 +149,13 @@ export const getPetWeightTracker = async (petId) => {
 };
 
 
-export const getPetActivityLog = async (petId) => {
+export const getPetActivityLog = async (petId, token) => {
   try {
-      const response = await axios.get(`${BASE_API_URL}/pets/activity/${petId}`);
+      const response = await axios.get(`${BASE_API_URL}/pets/activity/${petId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       console.log('response from getPetActivityLog: ', response);
       if (response && response.data) {
           return response.data;
@@ -146,9 +166,13 @@ export const getPetActivityLog = async (petId) => {
   }
 };
 
-export const getPetUpcomingEvents = async (petId) => {
+export const getPetUpcomingEvents = async (petId, token) => {
   try{ 
-    const response = await axios.get(`${BASE_API_URL}/pets/upcoming/${petId}`);
+    const response = await axios.get(`${BASE_API_URL}/pets/upcoming/${petId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
     console.log('response from getPetUpcomingEvents: ', response);
     if (response && response.data) {
         return response.data;
@@ -159,9 +183,13 @@ export const getPetUpcomingEvents = async (petId) => {
   }
 }
 
-export const getPetExpensesArrays = async (petId) => {
+export const getPetExpensesArrays = async (petId, token) => {
   try{ 
-    const response = await axios.get(`${BASE_API_URL}/pets/expenses-array/${petId}`);
+    const response = await axios.get(`${BASE_API_URL}/pets/expenses-array/${petId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
     console.log('response from getPetExpensesArrays: ', response);
     if (response && response.data) {
         return response.data;
@@ -198,10 +226,14 @@ export const getPetExpensesArrays = async (petId) => {
     }
   };
 
-  export const addPet = async (pet) => {
+  export const addPet = async (pet, token) => {
     console.log('add pet service: ', pet);
     try {
-      const response = await axios.post(`${BASE_API_URL}/pets/${pet.owner}`, {petData: pet});
+      const response = await axios.post(`${BASE_API_URL}/pets/${pet.owner}`, {petData: pet}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       console.log('response from addPet: ', response);
       if (response && response.data) {
           return response.data;
@@ -212,9 +244,13 @@ export const getPetExpensesArrays = async (petId) => {
     }
   };
 
-  export const addPetVaccineRecord = async (petId, vaccinationRecord) => {
+  export const addPetVaccineRecord = async (petId, vaccinationRecord, token) => {
     try {
-      const response = await axios.post(`${BASE_API_URL}/pets/vaccinationRecord/${petId}`, vaccinationRecord);
+      const response = await axios.post(`${BASE_API_URL}/pets/vaccinationRecord/${petId}`, vaccinationRecord, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       console.log('response from addPetVaccineRecord: ', response);
       if (response && response.data) {
           return response.data;
@@ -225,9 +261,13 @@ export const getPetExpensesArrays = async (petId) => {
     }
   };
 
-  export const addPetRoutineCare = async (petId, routineCare) => {
+  export const addPetRoutineCare = async (petId, routineCare, token) => {
     try {
-      const response = await axios.post(`${BASE_API_URL}/pets/routineCare/${petId}`, routineCare);
+      const response = await axios.post(`${BASE_API_URL}/pets/routineCare/${petId}`, routineCare, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       console.log('response from addPetRoutineCare: ', response);
       if (response && response.data) {
           return response.data;
@@ -238,9 +278,13 @@ export const getPetExpensesArrays = async (petId) => {
     }
   };
 
-  export const addPetNote = async (petId, noteData) => {
+  export const addPetNote = async (petId, noteData, token) => {
     try {
-      const response = await axios.post(`${BASE_API_URL}/pets/note/${petId}`, {noteData});
+      const response = await axios.post(`${BASE_API_URL}/pets/note/${petId}`, {noteData}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       console.log('response from addPetNote: ', response);
       if (response && response.data) {
           return response.data;
@@ -251,9 +295,13 @@ export const getPetExpensesArrays = async (petId) => {
     }
   };
 
-  export const addPetExpense = async (petId, expense) => {
+  export const addPetExpense = async (petId, expense, token) => {
     try {
-      const response = await axios.post(`${BASE_API_URL}/pets/expense/${petId}`, expense);
+      const response = await axios.post(`${BASE_API_URL}/pets/expense/${petId}`, expense, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       console.log('response from addPetExpense: ', response);
       if (response && response.data) {
           return response.data;
@@ -264,9 +312,13 @@ export const getPetExpensesArrays = async (petId) => {
     }
   };
 
-  export const addPetAllergy = async (petId, allergyData) => {
+  export const addPetAllergy = async (petId, allergyData, token) => {
     try {
-      const response = await axios.post(`${BASE_API_URL}/pets/allergy/${petId}`, allergyData);
+      const response = await axios.post(`${BASE_API_URL}/pets/allergy/${petId}`, allergyData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       console.log('response from addPetAllergy: ', response);
       if (response && response.data) {
           return response.data;
@@ -277,9 +329,13 @@ export const getPetExpensesArrays = async (petId) => {
     }
   };
 
-  export const addPetMedication = async (petId, medicationData) => {
+  export const addPetMedication = async (petId, medicationData, token) => {
     try {
-      const response = await axios.post(`${BASE_API_URL}/pets/medication/${petId}`, medicationData);
+      const response = await axios.post(`${BASE_API_URL}/pets/medication/${petId}`, medicationData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       console.log('response from addPetMedication: ', response);
       if (response && response.data) {
           return response.data;
@@ -290,9 +346,13 @@ export const getPetExpensesArrays = async (petId) => {
     }
   };
 
-  export const addPetVetVisit = async (petId, vetVisitData) => {
+  export const addPetVetVisit = async (petId, vetVisitData, token) => {
     try {
-      const response = await axios.post(`${BASE_API_URL}/pets/vet-visit/${petId}`, vetVisitData);
+      const response = await axios.post(`${BASE_API_URL}/pets/vet-visit/${petId}`, vetVisitData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       console.log('response from addPetVetVisit: ', response);
       if (response && response.data) {
           return response.data;
@@ -303,32 +363,36 @@ export const getPetExpensesArrays = async (petId) => {
     }
   };
 
-  export const addPetActivity = async (petId, selectedActivity, data) => {
+  export const addPetActivity = async (petId, selectedActivity, data, token) => {
     switch (selectedActivity.name) {
       case 'VACCINE_RECORD':
-          return addPetVaccineRecord(petId, data);
+          return addPetVaccineRecord(petId, data, token);
       case 'ROUTINE_CARE':
-          return addPetRoutineCare(petId, data);
+          return addPetRoutineCare(petId, data, token);
       case 'EXPENSE':
-          return addPetExpense(petId, data);
+          return addPetExpense(petId, data, token);
       case 'NOTE':
-          return addPetNote(petId, data);
+          return addPetNote(petId, data, token);
       case 'ALLERGY':
-          return addPetAllergy(petId, data);
+          return addPetAllergy(petId, data, token);
       case 'MEDICATION':
-          return addPetMedication(petId, data);
+          return addPetMedication(petId, data, token);
       case 'VET_VISIT':
-          return addPetVetVisit(petId, data);
+          return addPetVetVisit(petId, data, token);
       // case 'OTHER':
-      //     return addOtherActivity(petId, data);
+      //     return addOtherActivity(petId, data, token);
       default:
           throw new Error('Invalid activity type');
   }
   };
 
-  export const updateNoteById = async (updatedNote) => {
+  export const updateNoteById = async (updatedNote, token) => {
     try {
-      const response = await axios.put(`${BASE_API_URL}/pets/note/${updatedNote._id}`, {noteData: updatedNote});
+      const response = await axios.put(`${BASE_API_URL}/pets/note/${updatedNote._id}`, {noteData: updatedNote}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       console.log('response from updateNoteById: ', response);
       if (response && response.data) {
           return response.data;
@@ -339,9 +403,13 @@ export const getPetExpensesArrays = async (petId) => {
     }
   };
 
-  export const deleteNoteById = async (noteId) => {
+  export const deleteNoteById = async (noteId, token) => {
     try {
-      const response = await axios.delete(`${BASE_API_URL}/pets/note/${noteId}`);
+      const response = await axios.delete(`${BASE_API_URL}/pets/note/${noteId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       console.log('response from deleteNoteById: ', response);
       if (response && response.data) {
           return response.data;

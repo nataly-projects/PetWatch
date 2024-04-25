@@ -1,11 +1,15 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom'; 
 import { toast } from 'react-toastify';
+import { editUserDetails, changePassword } from '../services/userService';
 import ForgotPassword from '../components/ForgotPassword';
 import '../styles/UserProfile.css';
 
 const UserProfile = () => {
+  const navigate = useNavigate();
   const user = useSelector((state) => state.user);
+  const token = useSelector((state) => state.token);
   const [editDetailsMode, setEditDetailsMode] = useState(false);
   const [changePasswordMode, setChangePasswordMode] = useState(false);
   const [formData, setFormData] = useState({
@@ -14,7 +18,7 @@ const UserProfile = () => {
     phone: user.phone,
   });
   const [changePasswordData, setChangePasswordData] = useState({
-    email: user.email,
+    email: formData.email,
     oldPassword: '',
     newPassword: '',
     confirmPassword: '',
@@ -52,13 +56,20 @@ const UserProfile = () => {
     setEditDetailsMode(true);
   };
 
-  const handleSaveDetailsClick = () => {
-    console.log('Edited details data:', formData);
+  const handleSaveDetailsClick = async () => {
     if (validateDetailsInput()) {
       setEditDetailsMode(false);
-
-      //make the requests
-      //make toast for succes / error
+      try {
+        await editUserDetails(user._id, formData, token); 
+        toast.success('Details updated successfully!');
+      } catch (error) {
+        initFormData();
+        if (error.response && error.response.status === 401) {
+          console.error('UNAUTHORIZED_ERROR');
+          navigate('/login');
+        }
+        console.error('Error fetching data:', error);
+      }
     }
   };
 
@@ -97,18 +108,26 @@ const UserProfile = () => {
     }
     if (!changePasswordData.confirmPassword) {
       validationErrors.confirmPassword = 'Confirm new password is required';
+    } else if( changePasswordData.newPassword !== changePasswordData.confirmPassword) {
+      validationErrors.confirmPassword = 'Passwords do not match';
     }
     setPasswordErrors(validationErrors);
     return Object.keys(validationErrors).length === 0;
   };
 
-  const handleSaveChangePasswordClick = () => {
-    console.log('Edited chaneg password data:', formData);
+  const handleSaveChangePasswordClick = async () => {
     if (validateChanePasswordInput()) {
       setChangePasswordMode(false);
-
-      //make the requests
-      //make toast for succes / error
+      try {
+        await changePassword(changePasswordData, token); 
+        toast.success('Password changed successfully!');
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          console.error('UNAUTHORIZED_ERROR');
+          navigate('/login');
+        }
+        console.error('Error fetching data:', error);
+      }
     }
   };
 
@@ -126,10 +145,6 @@ const UserProfile = () => {
     }));
   };
 
-  const handleChangePasswordClick = () => {
-    console.log('Change password clicked');
-    setChangePasswordMode(true);
-  };
 
   return (
     <div className="user-profile">
@@ -172,9 +187,9 @@ const UserProfile = () => {
       ) : (
         <div className="view-profile">
           <h3>Details:</h3>
-          <p>Full Name: {user.fullName}</p>
-          <p>Email: {user.email}</p>
-          <p>phone: {user.phone}</p>
+          <p>Full Name: {formData.fullName}</p>
+          <p>Email: {formData.email}</p>
+          <p>phone: {formData.phone}</p>
           <button onClick={handleEditDetailsClick}>Edit</button>
         </div>
       )}
@@ -218,7 +233,7 @@ const UserProfile = () => {
           <>
             <p>Here you can change your password </p>
             <div className='actions'>
-              <button onClick={handleChangePasswordClick}>Change Password</button>
+              <button onClick={() =>  setChangePasswordMode(true)}>Change Password</button>
               <button onClick={() => setShowForgotPassword(true)}>Forgot Password</button>
             </div>
           </>

@@ -7,6 +7,7 @@ import '../styles/PetsSection.css';
 
 const PetsSection = () => {
     const user = useSelector((state) => state.user);
+    const token = useSelector((state) => state.token);
     const navigate = useNavigate();
 
     const [pets, setPets] = useState([]);
@@ -15,7 +16,7 @@ const PetsSection = () => {
 
     const fetchData = async () => {
         try {
-            const userPets = await getPetsByUserId(user._id);
+            const userPets = await getPetsByUserId(user._id, token);
             setPets(userPets);
             setLoading(false);
         } catch (error) {

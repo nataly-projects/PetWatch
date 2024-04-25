@@ -1,4 +1,6 @@
 import React, {useState, useEffect} from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom'; 
 import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -17,6 +19,8 @@ import '../styles/PetProfile.css';
 const PetProfile = () => {
   const location = useLocation();
   const { pet, currencySign } = location.state;
+  const navigate = useNavigate();
+  const token = useSelector((state) => state.token);
 
   const [activityLogs, setActivityLogs] = useState([]);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
@@ -29,11 +33,11 @@ const PetProfile = () => {
 
   const fetchData = async () => {
     try {
-        const logs = await getPetActivityLog(pet._id);
-        const events = await getPetUpcomingEvents(pet._id);
-        const petExpenses = await getPetExpensesArrays(pet._id);
-        const petWeights = await getPetWeightTracker(pet._id);
-        const petNotes = await getPetNote(pet._id);
+        const logs = await getPetActivityLog(pet._id, token);
+        const events = await getPetUpcomingEvents(pet._id, token);
+        const petExpenses = await getPetExpensesArrays(pet._id, token);
+        const petWeights = await getPetWeightTracker(pet._id, token);
+        const petNotes = await getPetNote(pet._id, token);
         setActivityLogs(logs);
         setUpcomingEvents(events);
         setExpenses(petExpenses);
@@ -41,6 +45,12 @@ const PetProfile = () => {
         setNotes(petNotes);
         setLoading(false);
     } catch (error) {
+      if (error.response && error.response.status === 401) {
+        console.error('UNAUTHORIZED_ERROR');
+        setError(true);
+        setLoading(false);
+        navigate('/login');
+      }
         console.error('Error fetching data:', error);
         setError(true);
         setLoading(false);
@@ -82,14 +92,16 @@ const PetProfile = () => {
 
   const handleActivitySelect = async (selectedActivity, data) => {
       // Handle the selected activity here
-      console.log('Selected activity:', selectedActivity);
-      console.log('data:', data);
       setPopupVisible(false);
       try{
-        await addPetActivity(pet._id, selectedActivity, data);
+        await addPetActivity(pet._id, selectedActivity, data, token);
         toast.success('Activity added successfully!');
         fetchData();
       } catch (error) {
+        if (error.response && error.response.status === 401) {
+          console.error('UNAUTHORIZED_ERROR');
+          navigate('/login');
+        }
         console.error('Error adding activity:', error);
         toast.error('Failed to adding activity. Please try again.');
     }

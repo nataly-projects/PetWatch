@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom'; 
 import { toast } from 'react-toastify';
 import { addPetNote, deleteNoteById, updateNoteById } from '../services/petService';
 import { formatDate } from '../utils/utils';
@@ -6,6 +8,8 @@ import NoteActivity from './NoteActivity';
 import '../styles/section.css';
 
 const NoteSection = ({propsNotes, petId}) => {
+  const navigate = useNavigate();
+  const token = useSelector((state) => state.token);
 
   const  [notes, setNotes] = useState(propsNotes);
   const [editingNote, setEditingNote] = useState(null);
@@ -19,11 +23,15 @@ const NoteSection = ({propsNotes, petId}) => {
   const handleAddNote = async (note) => {
     setShowAddNoteActivity(false);
     try {
-      const response = await addPetNote(petId, note);
+      const response = await addPetNote(petId, note, token);
       console.log(response.note);
       setNotes([...notes, response.note]);
       toast.success('Note added successfully!');
     } catch (error) {
+      if (error.response && error.response.status === 401) {
+        console.error('UNAUTHORIZED_ERROR');
+        navigate('/login');
+      }
       toast.error('Failed to adding note. Please try again.');
     }
   };
@@ -39,21 +47,29 @@ const NoteSection = ({propsNotes, petId}) => {
     console.log('updatedNote: ', updatedNote);
     
     try {
-      const response = await updateNoteById(updatedNote);
+      const response = await updateNoteById(updatedNote, token);
       console.log(response);
       setNotes(notes.map(note => (note._id === updatedNote._id ? updatedNote : note)));
       toast.success('Note updated successfully!');
     } catch (error) {
+      if (error.response && error.response.status === 401) {
+        console.error('UNAUTHORIZED_ERROR');
+        navigate('/login');
+      }
       toast.error('Failed to updating note. Please try again.');
     }
   };
 
   const handleDeleteNote = async (id) => {
     try {
-      await deleteNoteById(id);
+      await deleteNoteById(id, token);
       setNotes(notes.filter(note => note._id !== id));
       toast.success('Note deleted successfully!');
     } catch (error) {
+      if (error.response && error.response.status === 401) {
+        console.error('UNAUTHORIZED_ERROR');
+        navigate('/login');
+      }
       toast.error('Failed to delete note. Please try again.');
     }
   };

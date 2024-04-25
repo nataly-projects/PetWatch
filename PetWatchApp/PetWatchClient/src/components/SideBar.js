@@ -1,32 +1,38 @@
 import React, {useEffect, useState} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; 
 import { faPaw, faHome, faBook, faDog, faCat, faAmbulance, faMoneyCheck,
   faCog, faRightFromBracket, faSignature, faEye, faMessage  } from '@fortawesome/free-solid-svg-icons';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { fetchUserActivityLog, fetchUserUpcomingEvents, fetchUserExpensesArray } from '../services/userService';
 import logoImage from "../images/logo.png"; 
+import { UNAUTHORIZED_ERROR } from '../utils/utils';
 import '../styles/SideBar.css';
 
 const Sidebar = () => {
   const dispatch = useDispatch();
-  const location = useLocation(); 
-  console.log('location: ', location);
+  const navigate = useNavigate();
   const user = useSelector((state) => state.user);
+  const token = useSelector((state) => state.token);
   const [activityLogs, setActivityLogs] = useState([]);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [expenses, setExpenses] = useState([]);
 
   const fetchData = async () => {
     try {
-        const logs = await fetchUserActivityLog(user._id); 
-        const events = await fetchUserUpcomingEvents(user._id);
-        const userExpenses = await fetchUserExpensesArray(user._id);
+        const logs = await fetchUserActivityLog(user._id, token); 
+        const events = await fetchUserUpcomingEvents(user._id, token);
+        const userExpenses = await fetchUserExpensesArray(user._id, token);
         setActivityLogs(logs);
         setExpenses(userExpenses);
         setUpcomingEvents(events);
     } catch (error) {
-        console.error('Error fetching data:', error);
+      if (error.response && error.response.status === 401) {
+        console.error('UNAUTHORIZED_ERROR');
+        navigate('/login');
+      }
+      console.error('Error fetching data:', error);
     }
   }
 

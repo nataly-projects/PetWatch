@@ -1,5 +1,4 @@
 import axios from 'axios';
-
 const BASE_API_URL = process.env.REACT_APP_BASE_API_URL;
 
 export const loginUser = async (email, password) => {
@@ -41,35 +40,51 @@ export const fetchUserData = async (userId) => {
     }
 };
 
-export const fetchUserActivityLog = async (userId) => {
+export const fetchUserActivityLog = async (userId, token) => {
     try {
-        const response = await axios.get(`${BASE_API_URL}/users/activity/${userId}`);
-        console.log('response from fetchUserActivityLog: ', response);
+        const response = await axios.get(`${BASE_API_URL}/users/activity/${userId}` , {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
         if (response && response.data) {
             return response.data;
         }
         return null;
     } catch (error) {
-      throw error; 
+        console.log(error);
+        throw error; 
     }
 }
 
-export const fetchUserExpensesArray = async (userId) => {
+export const fetchUserExpensesArray = async (userId, token) => {
     try {
-        const response = await axios.get(`${BASE_API_URL}/users/expenses/${userId}`);
-        console.log('response from fetchUserExpensesArray: ', response);
+        const response = await axios.get(`${BASE_API_URL}/users/expenses/${userId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
         if (response && response.data) {
             return response.data;
         }
         return null;
     } catch (error) {
-      throw error; 
+        if (error.response && error.response.status === 401) {
+            console.error('Access forbidden. You do not have permission to access this resource.');
+
+        }
+        console.log(error);
+        throw error; 
     }
 }
 
-export const fetchUserUpcomingEvents = async (userId) => {
+export const fetchUserUpcomingEvents = async (userId, token) => {
     try{
-        const response = await axios.get(`${BASE_API_URL}/users/upcoming/${userId}`);
+        const response = await axios.get(`${BASE_API_URL}/users/upcoming/${userId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
         console.log('response from fetchUserUpcomingEvents: ', response);
         if (response && response.data) {
             return response.data;
@@ -77,13 +92,18 @@ export const fetchUserUpcomingEvents = async (userId) => {
         return null;
 
     } catch (error) {
-      throw error; 
+        console.log(error);
+        throw error; 
     }
 }
 
-export const fetchUserNotes = async (userId) => {
+export const fetchUserNotes = async (userId, token) => {
     try{
-        const response = await axios.get(`${BASE_API_URL}/users/notes/${userId}`);
+        const response = await axios.get(`${BASE_API_URL}/users/notes/${userId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
         console.log('response from fetchUserNotes: ', response);
         if (response && response.data) {
             return response.data;
@@ -91,13 +111,18 @@ export const fetchUserNotes = async (userId) => {
         return null;
 
     } catch (error) {
-      throw error; 
+        console.log(error);
+        throw error; 
     }
 }
 
-export const fetchUserAccountSettings = async (userId) => {
+export const fetchUserAccountSettings = async (userId, token) => {
     try{
-        const response = await axios.get(`${BASE_API_URL}/users/settings/${userId}`);
+        const response = await axios.get(`${BASE_API_URL}/users/settings/${userId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          });
         console.log('response from fetchUserAccountSettings: ', response);
         if (response && response.data) {
             return response.data;
@@ -105,16 +130,18 @@ export const fetchUserAccountSettings = async (userId) => {
         return null;
 
     } catch (error) {
-      throw error; 
+        console.log(error);
+        throw error; 
     }
 }
 
-export const updateUserSettings = async (userId, updateSettings) => {
+export const updateUserSettings = async (userId, updateSettings, token) => {
     try{
-        console.log('user id: ', userId);
-        console.log('updateSettings: ', updateSettings);
-        const response = await axios.put(`${BASE_API_URL}/users/settings/${userId}`, updateSettings);
-        console.log('response from fetchUserNotes: ', response);
+        const response = await axios.put(`${BASE_API_URL}/users/settings/${userId}`, {updateSettings}, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+        });
         if (response && response.data) {
             return response.data;
         }
@@ -175,11 +202,13 @@ export const sendContactMessage = async (messageData) => {
     }
 };
 
-export const editUserDetails = async (userId, formData) => {
+export const editUserDetails = async (userId, userData, token) => {
     try {
-        const response = await axios.put(`${BASE_API_URL}/users/${userId}`, formData, {
+        console.log('editUserDetails: ', userData);
+        const response = await axios.put(`${BASE_API_URL}/users/${userId}`, {userData}, {
             headers: {
-            'Content-Type': 'multipart/form-data',
+            // 'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`
             },
         });
         console.log('response: ', response);
@@ -193,9 +222,13 @@ export const editUserDetails = async (userId, formData) => {
     }
 };
 
-export const changePassword = async (changePasswordData) => {
+export const changePassword = async (changePasswordData, token) => {
     try {
-        const response = await axios.post(`${BASE_API_URL}/users/change-password`, { changePasswordData });
+        const response = await axios.post(`${BASE_API_URL}/users/change-password`, { changePasswordData }, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
         if (response && response.data){
             return true;
         }

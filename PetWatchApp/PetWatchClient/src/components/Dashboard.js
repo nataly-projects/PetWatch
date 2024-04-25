@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom'; 
 import { faPaw, faMoneyCheck } from '@fortawesome/free-solid-svg-icons'; // Importing sample icons
 import { getPetsByUserId } from '../services/petService'; 
 import { fetchUserActivityLog, fetchUserNotes, fetchUserUpcomingEvents, fetchUserExpensesArray, fetchUserAccountSettings } from '../services/userService';
@@ -12,7 +13,9 @@ import NoteSection from './NoteSection';
 import '../styles/Dashboard.css';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const user = useSelector((state) => state.user);
+  const token = useSelector((state) => state.token);
 
   const [pets, setPets] = useState([]);
   const [activityLogs, setActivityLogs] = useState([]);
@@ -25,12 +28,12 @@ const Dashboard = () => {
 
   const fetchData = async () => {
     try {
-        const userPets = await getPetsByUserId(user._id);
-        const logs = await fetchUserActivityLog(user._id); 
-        const notes = await fetchUserNotes(user._id); 
-        const events = await fetchUserUpcomingEvents(user._id);
-        const userExpenses = await fetchUserExpensesArray(user._id);
-        const userAccountSettings  = await fetchUserAccountSettings(user._id);
+        const userPets = await getPetsByUserId(user._id, token);
+        const logs = await fetchUserActivityLog(user._id, token); 
+        const notes = await fetchUserNotes(user._id, token); 
+        const events = await fetchUserUpcomingEvents(user._id, token);
+        const userExpenses = await fetchUserExpensesArray(user._id, token);
+        const userAccountSettings  = await fetchUserAccountSettings(user._id, token);
         setPets(userPets);
         setActivityLogs(logs);
         setNotes(notes);
@@ -39,9 +42,15 @@ const Dashboard = () => {
         setCurrency(userAccountSettings.accountSettings.currency);
         setLoading(false);
     } catch (error) {
-        console.error('Error fetching data:', error);
+      if (error.response && error.response.status === 401) {
+        console.error('UNAUTHORIZED_ERROR');
         setError(true);
         setLoading(false);
+        navigate('/login');
+      }
+      console.error('Error fetching data:', error);
+      setError(true);
+      setLoading(false);
     }
   };
 

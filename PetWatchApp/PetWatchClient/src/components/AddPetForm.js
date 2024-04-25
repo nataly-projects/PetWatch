@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash} from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom'; 
 import { toast } from 'react-toastify';
 import { RoutineCareActivityItems, VaccineRecordType, ActivityType, ExpenseCategory } from '../utils/utils';
 import VaccineRecordActivity from './VaccineRecordActivity';
@@ -16,7 +17,9 @@ import { addPet } from '../services/petService';
 import '../styles/AddPetForm.css';
 
 const AddPetForm = () => {
+    const navigate = useNavigate();
     const user = useSelector((state) => state.user);
+    const token = useSelector((state) => state.token);
 
     const [basicDetails, setBasicDetails] = useState({
         name: '',
@@ -80,9 +83,13 @@ const AddPetForm = () => {
         const newPet = createPetObject();
         console.log('submit newPet: ', newPet);
         try{
-            await addPet(newPet);
+            await addPet(newPet, token);
             toast.success('Pet added successfully!');
           } catch (error) {
+            if (error.response && error.response.status === 401) {
+                console.error('UNAUTHORIZED_ERROR');
+                navigate('/login');
+            }
             console.error('Error while adding pet:', error);
             toast.error('Failed to adding pet. Please try again.');
         }
