@@ -6,6 +6,10 @@ const {User} = require('../models/userModel');
 const {ContactUs} = require('../models/contactUsModel');
 const { ActivityLog } = require('../models/activityLogModel');
 const { validatePhone, validateEmail, validatePassword } = require('../validators/userValidators');
+const { RoutineCareRecord } = require('../models/routineCareRecordModel');
+const { VaccinationRecord } = require('../models/vaccinationRecordModel');
+const { VetVisit } = require('../models/vetVisitModel');
+
 
 async function getUserById(req, res) {
     const {userId} = req.params;
@@ -13,7 +17,7 @@ async function getUserById(req, res) {
         const user = await User.findById(userId);
 
         if (!user) {
-            return res.status(404).json({ error: 'User not found' });
+          return res.status(404).json({ error: 'User not found' });
         }
         res.status(200).json({user});
     } catch (error) {
@@ -103,7 +107,6 @@ async function getUserExpensesArrays (req, res) {
         }
       }
     });
-  console.log('userWithPetsAndExpenses: ', userWithPetsAndExpenses);
 
   const allExpenses = userWithPetsAndExpenses.pets.reduce((accumulatedExpenses, pet) => {
     return accumulatedExpenses.concat(pet.expenses);
@@ -468,6 +471,51 @@ console.log('resetPassword: ', email, newPassword);
   }
 }
 
+async function getUserPetsActivitiesForMonth(req, res) {
+  try {
+    const year = parseInt(req.params.year);
+    const month = parseInt(req.params.month);
+    const userId = req.params.userId;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    const petIds = user.pets;
+
+    // Fetch activities for each table
+    const vetVisits = await VetVisit.find({
+      $or: [
+        { date: { $gte: new Date(year, month - 1, 1), $lt: new Date(year, month, 1) } },
+        { nextDate: { $gte: new Date(year, month - 1, 1), $lt: new Date(year, month, 1) } }
+      ],
+      pet: { $in: petIds }
+    }).populate('pet');
+    const routineCare = await RoutineCareRecord.find({
+      $or: [
+        { date: { $gte: new Date(year, month - 1, 1), $lt: new Date(year, month, 1) } },
+        { nextDate: { $gte: new Date(year, month - 1, 1), $lt: new Date(year, month, 1) } }
+      ],
+        pet: { $in: petIds }
+    }).populate('pet');
+    const vaccinationRecords = await VaccinationRecord.find({
+        $or: [
+            { date: { $gte: new Date(year, month - 1, 1), $lt: new Date(year, month, 1) } },
+            { nextDate: { $gte: new Date(year, month - 1, 1), $lt: new Date(year, month, 1) } }
+        ],
+        pet: { $in: petIds }
+    }).populate('pet');
+
+    // Combine activities from all tables
+    const activities = [...vetVisits, ...routineCare, ...vaccinationRecords];
+    res.status(200).json(activities);
+    
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
 // function genreateSecretKey () {
 //   const secretKey = crypto.randomBytes(32).toString('hex');
 //   // Write the secret key to the .env file
@@ -483,6 +531,7 @@ module.exports = {
     getUserUpcomingEvents,
     getUserNotes,
     getUserAccountSettings,
+    getUserPetsActivitiesForMonth,
     updateUserById,
     updateUserAccountSettings,
     changePassword,

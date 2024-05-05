@@ -21,6 +21,7 @@ router.get('/expenses/:userId', userController.getUserExpensesArrays);
 router.get('/upcoming/:userId', userController.getUserUpcomingEvents);
 router.get('/notes/:userId', userController.getUserNotes);
 router.get('/settings/:userId', userController.getUserAccountSettings);
+router.get('/calendar-activities/:userId/:year/:month', userController.getUserPetsActivitiesForMonth);
 
 router.post('/change-password', userController.changePassword);
 

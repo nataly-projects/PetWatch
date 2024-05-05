@@ -67,10 +67,10 @@ const userSchema = new Schema({
         enum: Object.values(Currency),
         default: Currency.ILS
     },
-    // imageUrl: {
-    //     type: String,
-    //     default: null
-    // },
+    imageUrl: {
+        type: String,
+        default: null
+    },
     resetCode: {
        type: String 
     },

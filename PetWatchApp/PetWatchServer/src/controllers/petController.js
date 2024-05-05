@@ -13,8 +13,6 @@ const  {ActivityLogType, VaccineRecordType, RoutineCareActivity, ExpenseCategory
 async function getPetsByUserId(req, res) {
     try {
         const { userId } = req.params;
-console.log('getPetsByUserId');
-        // const pets = await Pet.find({ owner: userId }).populate('category');
         const user = await User.findById(userId).populate({
             path: 'pets',
                 populate: [
