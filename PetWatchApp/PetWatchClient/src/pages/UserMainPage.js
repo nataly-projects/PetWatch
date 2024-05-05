@@ -17,6 +17,7 @@ import AccountSettings from '../components/AccountSettings';
 import PetsSection from '../components/PetsSection';
 import AddPetForm from '../components/AddPetForm';
 import ContactPage from './ContactPage';
+import Calendar from '../components/Calendar';
 import '../styles/UserMainPage.css';
 
 
@@ -41,6 +42,7 @@ const UserMainPage = () => {
           <Route path="/pets" element={<PetsSection />} />
           <Route path="/add-pet" element={<AddPetForm />} />
           <Route path="/contact-us" element={<ContactPage />} />
+          <Route path="/calendar" element={<Calendar />} />
         </Routes>
       </div>
     </div>

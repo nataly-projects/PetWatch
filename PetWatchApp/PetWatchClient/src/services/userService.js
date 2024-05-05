@@ -238,3 +238,20 @@ export const changePassword = async (changePasswordData, token) => {
     }
 };
 
+export const fetchUserPetsActivitiesForMonth = async (userId, token, year, month) => {
+    try {
+        const response = await axios.get(`${BASE_API_URL}/users/calendar-activities/${userId}/${year}/${month}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        if (response && response.data){
+            return response.data
+        }
+        return null;
+    } catch (error) {
+        console.log(error);
+       throw error;
+    }
+};
+

@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; 
 import { faPaw, faHome, faBook, faDog, faCat, faAmbulance, faMoneyCheck,
-  faCog, faRightFromBracket, faSignature, faEye, faMessage  } from '@fortawesome/free-solid-svg-icons';
+  faCog, faRightFromBracket, faSignature, faEye, faMessage, faCalendar  } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import { fetchUserActivityLog, fetchUserUpcomingEvents, fetchUserExpensesArray } from '../services/userService';
 import logoImage from "../images/logo.png"; 
@@ -59,6 +59,7 @@ const Sidebar = () => {
     {title: 'Pets', items: [{text: 'Pets Section', link: '/main/pets', icon: faPaw} ]},
     {title: 'Logs', items: [{text: 'Activity Log', link: '/main/activity-log', icon: faBook} ]},
     {title: 'Expenses', items: [{text: 'Expenses', link: '/main/expenses' , icon: faMoneyCheck} ]},
+    {title: 'Calendar', items: [{text: 'Calendar', link: '/main/calendar' , icon: faCalendar} ]},
     {title: 'Info', items: [
     {text: 'Dogs Care Routine', link: '/main/dog-care' , icon: faDog}, 
     {text: 'Dog Guide', link: '/main/dog-guide' , icon: faDog}, 

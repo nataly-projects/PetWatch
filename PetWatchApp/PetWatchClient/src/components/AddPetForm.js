@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash} from '@fortawesome/free-solid-svg-icons';
+import { faTimes, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom'; 
+import { useDropzone } from 'react-dropzone';
 import { toast } from 'react-toastify';
 import { RoutineCareActivityItems, VaccineRecordType, ActivityType, ExpenseCategory } from '../utils/utils';
 import VaccineRecordActivity from './VaccineRecordActivity';
@@ -12,6 +13,7 @@ import MedicationActivity from './MedicationActivity';
 import ExpenseActivity from './ExpenseActivity';
 import VetVisitActivity from './VetVisitActivity';
 import NoteActivity from './NoteActivity';
+import petDefaultImage from '../images/paw.png';
 import { formatDate } from '../utils/utils';
 import { addPet } from '../services/petService';
 import '../styles/AddPetForm.css';
@@ -20,12 +22,13 @@ const AddPetForm = () => {
     const navigate = useNavigate();
     const user = useSelector((state) => state.user);
     const token = useSelector((state) => state.token);
+    const [selectedImageProfile, setSelectedImageProfile] = useState(null);
+    const [additionalPhotos, setAdditionalPhotos] = useState([]); 
 
     const [basicDetails, setBasicDetails] = useState({
         name: '',
         species: '',
-        breed: ''
-    });
+        breed: ''    });
     const [additionalDetails, setAdditionalDetails] = useState({
         age: '',
         weight: '',
@@ -71,10 +74,45 @@ const AddPetForm = () => {
             expenses: expensesRecord,
             notes: notesRecord,
             vetVisits: vetVisitsRecord,
-            owner: user._id
+            owner: user._id,
+            image: selectedImageProfile ? selectedImageProfile : null,
+            additionalImages: additionalPhotos
         };
         return pet;
     };
+
+    const onProfileImageDrop = (acceptedFiles) => {
+        console.log(acceptedFiles);
+        if (acceptedFiles && acceptedFiles.length > 0) {
+            const selectedImage = acceptedFiles[0];
+            setSelectedImageProfile(selectedImage);
+        }
+    };
+
+    const onAdditionalPhotosDrop = (acceptedFiles) => {
+        if (acceptedFiles && acceptedFiles.length > 0) {
+            const newPhotos = acceptedFiles[0];
+            const updatedAdiitionalPhotos = [...additionalPhotos, newPhotos];
+            setAdditionalPhotos(updatedAdiitionalPhotos);
+        }
+    };
+
+    const profileImageDropzone = useDropzone({
+        onDrop: onProfileImageDrop,
+        accept: {
+            'image/*': ['.jpeg', '.jpg', '.png'],
+        },
+        multiple: false,
+    });
+    
+    const additionalPhotosDropzone = useDropzone({
+        onDrop: onAdditionalPhotosDrop,
+        accept: {
+            'image/*': ['.jpeg', '.jpg', '.png'],
+        },
+        multiple: true,
+    });
+
 
     // Function to handle form submission
     const handleSubmit = async (e) => {
@@ -233,6 +271,10 @@ const AddPetForm = () => {
         }
     };
 
+    const handleDeletePhoto = (indexToDelete) => {
+        setAdditionalPhotos((prevPhotos) => prevPhotos.filter((photo, index) => index !== indexToDelete));
+    };
+
     // Function to move to the next section
     const handleNext = () => {
 
@@ -247,7 +289,7 @@ const AddPetForm = () => {
                 setCurrentSection(currentSection + 1);
             }
         }
-        else if (currentSection < 9) {
+        else if (currentSection < 10) {
             if (currentSection === 4) {
                 setShowAllergyActivity(false);
                 setShowMedicationActivity(false);
@@ -305,7 +347,17 @@ const AddPetForm = () => {
                     {currentSection === 1 && (
                     <div className="form-section">
                         <h3>Section 1: Basic Details</h3>
-                        
+                        <div className="pet-image-container">
+                            <label> Pet image:</label>
+                            <img className="pet-image"
+                            src={ (selectedImageProfile ? URL.createObjectURL(selectedImageProfile) : petDefaultImage)} 
+                            alt="Pet Profile Image" 
+                            />
+                            <div className="upload-overlay"  {...profileImageDropzone.getRootProps()}>
+                                <input  {...profileImageDropzone.getInputProps()} />
+                                <p>Drag & drop an image here, or click to select one</p>
+                            </div>
+                        </div>
                         <div className="input-group">
                             <label>Name:</label>
                             <input
@@ -717,12 +769,42 @@ const AddPetForm = () => {
                     )}
 
                     {/* Section 10 - Adiitional photos */}
+                    {currentSection === 10 && (
+                    <div className="form-section">
+                        <h3>Section 10: Gallery</h3>
+                        {additionalPhotos.length > 0 && (
+                            <>
+                            <h4>{basicDetails.name} Photos: </h4>
+                            <div className="additional-photos">
+                                {additionalPhotos.map((photo, index) => (
+                                <div key={index} className="additional-photo-wrapper">
+                                    <img
+                                    key={index}
+                                    className="additional-photo"
+                                    src={URL.createObjectURL(photo)}
+                                    alt={`Additional Photo ${index + 1}`}
+                                    />
+                                    <FontAwesomeIcon icon={faTimes} className='delete-photo-icon' onClick={() => handleDeletePhoto(index)}/>
+                                </div>
+                                ))}
+                            </div>
+                            </>
+                        )}
+                        {/* <h4>Add another photo: </h4> */}
+                        <div className="upload-overlay" {...additionalPhotosDropzone.getRootProps()}>
+                            <input {...additionalPhotosDropzone.getInputProps()} />
+                            <p>Drag 'n' drop an image here, or click to select one</p>
+                        </div>
+                        <p className='optional-section'>You can add this information later in the pet profile. 
+                            However, it's important to add all pet info for tracking and analysis.</p>
+                    </div>
+                    )}
 
                     {/* Navigation buttons */}
                     <div className="navigation-buttons">
                         {currentSection > 1 && <button type="button" onClick={handlePrevious}>Previous</button>}
-                        {currentSection < 9 && <button type="button" onClick={handleNext}>Next</button>}
-                        {currentSection === 9 && <button type="submit">Submit</button>}
+                        {currentSection < 10 && <button type="button" onClick={handleNext}>Next</button>}
+                        {currentSection === 10 && <button type="submit">Submit</button>}
                     </div>
                 </form>
             </div>
