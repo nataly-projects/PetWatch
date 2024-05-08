@@ -4,6 +4,9 @@
 - Install dependencies - npm install
 - Start the client - npm start
 
+## Swagger Documentation
+You can access the Swagger documentation for the PetWatch Server API by navigating to [http://localhost:5001/api-docs](http://localhost:5001/api-docs) in your browser.
+
 ## Dependencies
 - express: Web framework for Node.js.
 - mongoose: MongoDB object modeling tool.

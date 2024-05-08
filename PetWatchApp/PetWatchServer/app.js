@@ -3,7 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-
+const swaggerSetup = require('./swagger');
 const mongoUser = process.env.MONGO_USERNAME;
 const mongoPass = process.env.MONGO_PASSWORD;
 console.log(mongoUser);
@@ -36,14 +36,22 @@ db.once('open', function () {
     console.log('Connected to the database');  
 });
 
-//bodyParser setup
-// app.use(bodyParser.urlencoded({extended: true}));
-// app.use(bodyParser.json());
 
+//bodyParser setup
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
+
+// serve uploaded images statically
+app.use('/uploads', express.static('uploads'));
+
+// app.use('/api-docs', swaggerUi.serve);
+// app.get('/api-docs', swaggerUi.setup(swaggerSpec));
+swaggerSetup(app);
 app.use(express.json());
 
 // API routes
 app.use('/api', appRoutes);
+// swaggerSetup(app);
 
 
 app.listen(PORT, () => {

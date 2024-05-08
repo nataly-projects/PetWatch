@@ -96,7 +96,12 @@ const Currency = Object.freeze({
     KWD: 'KWD',
     QAR: 'QAR',
     VND: 'VND',
-  });
+});
+
+const muletrImageOptions = Object.freeze({
+    PET_PROFILE_IMAGE: 'image',
+    PET_ADIITIONAL_IMAGE: 'additionalImages',
+});
   
   
 module.exports = {

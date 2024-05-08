@@ -311,7 +311,7 @@ async function updateUserById(req, res) {
         return res.status(200).json({ message: 'User updated successfully', updatedUser });
     } catch (error) {
         console.error(error);
-        return res.status(400).json({ error: error.message });
+        return res.status(500).json({ error: error.message });
     }
 }
 
@@ -540,3 +540,939 @@ module.exports = {
     resetPassword,
     ContactUsMessage
 };
+
+/**
+ * @swagger
+ * paths:
+ *   /users/{userId}:
+ *     get:
+ *       summary: Get user by ID
+ *       tags:
+ *        - User
+ *       description: Retrieve a user by their ID.
+ *       parameters:
+ *         - in: path
+ *           name: userId
+ *           required: true
+ *           description: ID of the user to retrieve
+ *           schema:
+ *             type: string
+ *       responses:
+ *         200:
+ *           description: Successfully retrieved the user
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/components/schemas/User'
+ *         404:
+ *           description: User not found
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   error:
+ *                     type: string
+ *                     example: User not found.
+ *         500:
+ *           description: Internal server error
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   error:
+ *                     type: string
+ *                     example: Internal server error.
+ *     put:
+ *       summary: Update user by ID
+ *       tags:
+ *        - User
+ *       parameters:
+ *        - in: path
+ *          name: userId
+ *          required: true
+ *          schema:
+ *            type: string
+ *          description: ID of the user to update
+ *        - in: body
+ *          name: userData
+ *          required: true
+ *          schema:
+ *            $ref: '#/components/schemas/User'
+ *       responses:
+ *        200:
+ *          description: User updated successfully
+ *          content:
+ *            application/json:
+ *              schema:
+ *                $ref: '#/components/schemas/User'
+ *        404:
+ *          description: User not found
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  error:
+ *                    type: string
+  *       500:
+ *          description: Internal server error
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  error:
+ *                    type: string
+ *                    example: Internal server error.
+ * 
+ *   /users/register:
+ *     post:
+ *       summary: Register a new user
+ *       tags:
+ *        - User
+ *       description: Register a new user with the provided information.
+ *       requestBody:
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 fullName:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 phone:
+ *                   type: string
+ *                 password:
+ *                   type: string
+ *               required:
+ *                 - fullName
+ *                 - email
+ *                 - phone
+ *                 - password
+ *       responses:
+ *         200:
+ *           description: User registered successfully
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   message:
+ *                     type: string
+ *                     example: User signed up successfully
+ *                   user:
+ *                     $ref: '#/components/schemas/User'
+ *         400:
+ *           description: Bad request
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   error:
+ *                     type: string
+ *                     example: Email is already registered.
+ *         500:
+ *           description: Internal server error
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   error:
+ *                     type: string
+ *                     example: Internal server error.
+ * 
+ *   /users/login:
+ *     post:
+ *       summary: Login
+ *       tags:
+ *        - User
+ *       description: Login with email and password.
+ *       requestBody:
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 email:
+ *                   type: string
+ *                 password:
+ *                   type: string
+ *               required:
+ *                 - email
+ *                 - password
+ *       responses:
+ *         200:
+ *           description: Login successful
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   message:
+ *                     type: string
+ *                     example: Login successful
+ *                   user:
+ *                     $ref: '#/components/schemas/User'
+ *                   token:
+ *                     type: string
+ *                     example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+ *         401:
+ *           description: Unauthorized
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   error:
+ *                     type: string
+ *                     example: Incorrect password
+ *         404:
+ *           description: User not found
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   error:
+ *                     type: string
+ *                     example: No user found with that email
+ *         500:
+ *           description: Internal server error
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   error:
+ *                     type: string
+ *                     example: Internal server error.
+ * 
+ *   /users/{userId}/activity-log:
+ *     get:
+ *       summary: Get user activity log
+ *       tags:
+ *        - User
+ *       description: Retrieve activity log for a user by their ID.
+ *       parameters:
+ *         - in: path
+ *           name: userId
+ *           required: true
+ *           description: ID of the user to retrieve activity log for
+ *           schema:
+ *             type: string
+ *       responses:
+ *         200:
+ *           description: Successfully retrieved the user activity log
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: array
+ *                 items:
+ *                   $ref: '#/components/schemas/ActivityLog'
+ *         404:
+ *           description: User not found
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   error:
+ *                     type: string
+ *                     example: User not found.
+ *         500:
+ *           description: Internal server error
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   error:
+ *                     type: string
+ *                     example: Internal server error.
+ * 
+ *   /users/{userId}/expenses:
+ *     get:
+ *       summary: Get user expenses
+ *       tags:
+ *        - User
+ *       description: Retrieve expenses for a user by their ID.
+ *       parameters:
+ *         - in: path
+ *           name: userId
+ *           required: true
+ *           description: ID of the user to retrieve expenses for
+ *           schema:
+ *             type: string
+ *       responses:
+ *         200:
+ *           description: Successfully retrieved the user expenses
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   allExpenses:
+ *                     type: array
+ *                     items:
+ *                       $ref: '#/components/schemas/Expense'
+ *                   petExpensesData:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         petName:
+ *                           type: string
+ *                         totalExpenses:
+ *                           type: number
+ *                   monthlyExpensesChartData:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         month:
+ *                           type: number
+ *                         amount:
+ *                           type: number
+ *                   categoryExpensesChartData:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         category:
+ *                           type: string
+ *                         amount:
+ *                           type: number
+ *         404:
+ *           description: User not found
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   error:
+ *                     type: string
+ *                     example: User not found.
+ *         500:
+ *           description: Internal server error
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   error:
+ *                     type: string
+ *                     example: Internal server error.
+ * 
+ *   /users/{userId}/upcoming-events:
+ *     get:
+ *       summary: Get user upcoming events
+ *       tags:
+ *        - User
+ *       description: Retrieve upcoming events for a user by their ID.
+ *       parameters:
+ *         - in: path
+ *           name: userId
+ *           required: true
+ *           description: ID of the user to retrieve upcoming events for
+ *           schema:
+ *             type: string
+ *       responses:
+ *         200:
+ *           description: Successfully retrieved the user upcoming events
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   nextDate:
+ *                     type: string
+ *                     format: date-time
+ *                     description: The date of the upcoming event
+ *                   actionType:
+ *                     type: string
+ *                     description: The type of action for the event (Vaccine, Routine Care, Vet Visit, etc.)
+ *                   details:
+ *                     type: string
+ *                     description: Additional details about the event
+ *         404:
+ *           description: User not found
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   error:
+ *                     type: string
+ *                     example: User not found.
+ *         500:
+ *           description: Internal server error
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   error:
+ *                     type: string
+ *                     example: Internal server error.
+ * 
+ *   /users/{userId}/notes:
+ *     get:
+ *       summary: Get user notes
+ *       tags:
+ *        - User
+ *       description: Retrieve notes for a user by their ID.
+ *       parameters:
+ *         - in: path
+ *           name: userId
+ *           required: true
+ *           description: ID of the user to retrieve notes for
+ *           schema:
+ *             type: string
+ *       responses:
+ *         200:
+ *           description: Successfully retrieved the user notes
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: array
+ *                 items:
+ *                   $ref: '#/components/schemas/Note'
+ *         404:
+ *           description: User not found
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   error:
+ *                     type: string
+ *                     example: User not found.
+ *         500:
+ *           description: Internal server error
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   error:
+ *                     type: string
+ *                     example: Internal server error.
+ * 
+ *   /users/{userId}/account-settings:
+ *     get:
+ *       summary: Get user account settings
+ *       tags:
+ *        - User
+ *       description: Retrieve account settings for a user by their ID.
+ *       parameters:
+ *        - in: path
+ *          name: userId
+ *          required: true
+ *          description: ID of the user to retrieve account settings for
+ *          schema:
+ *            type: string
+ *       responses:
+ *         200:
+ *           description: Successfully retrieved the user account settings
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   message:
+ *                     type: string
+ *                     example: User account settings retrieved successfully
+ *                   accountSettings:
+ *                     type: object
+ *                     properties:
+ *                       notificationPreferences:
+ *                         type: object
+ *                         properties:
+ *                           email:
+ *                             type: boolean
+ *                             example: true
+ *                           sms:
+ *                             type: boolean
+ *                             example: true
+ *                       theme:
+ *                         type: string
+ *                         example: dark
+ *                       currency:
+ *                         type: string
+ *                         example: USD
+ *         404:
+ *           description: User not found
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   error:
+ *                     type: string
+ *                     example: User not found.
+ *         500:
+ *           description: Internal server error
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   error:
+ *                     type: string
+ *                     example: Internal server error.
+ * 
+ *   /users/{userId}/settings:
+ *     put:
+ *       summary: "Update user account settings"
+ *       tags:
+ *         - "User"
+ *       parameters:
+ *        - in: "path"
+ *          name: "userId"
+ *          required: true
+ *          description: "ID of the user to update settings"
+ *          type: "string"
+ *        - in: "body"
+ *          name: "updateSettings"
+ *          required: true
+ *          description: "New user account settings"
+ *          schema:
+ *            $ref: "#/components/schemas/User"
+ *       responses:
+ *         200:
+ *           description: "User account settings updated successfully"
+ *           schema:
+ *             type: object
+ *             properties:
+ *                message:
+ *                   type: string
+ *                   example: User account settings updated successfully
+ *         404:
+ *           description: "User not found"
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   error:
+ *                     type: string
+ *                     example: User not found.
+ *         500:
+ *           description: "Internal server error"
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 type: object
+ *                 properties:
+ *                   error:
+ *                     type: string
+ *                     example: Internal server error.
+ *
+*   /users/{userId}/change-password:
+*     put:
+*       summary: "Change user password"
+*       tags:
+*         - "User"
+*       parameters:
+*        - in: "path"
+*          name: "userId"
+*          required: true
+*          description: "ID of the user to change password"
+*          type: "string"
+*        - in: "body"
+*          name: "changePasswordData"
+*          required: true
+*          description: "New and old passwords"
+*          schema:
+*            $ref: "#/components/schemas/User"
+*       responses:
+*         200:
+*           description: "User password updated successfully"
+*           schema:
+*             type: object
+*             properties:
+*                message:
+*                   type: string
+*                   example: User password updated successfully
+*         401:
+*           description: "Unauthorized: Incorrect password or user not found"
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: "Unauthorized: Incorrect password or user not found"
+*         404:
+*           description: "User not found"
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: User not found.
+*         500:
+*           description: "Internal server error"
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Internal server error.
+*
+*   /users/{userId}/request-password-reset:
+*     post:
+*       summary: "Request password reset"
+*       tags:
+*         - "User"
+*       parameters:
+*         - in: "path"
+*           name: "userId"
+*           required: true
+*           description: "ID of the user requesting password reset"
+*           type: "string"
+*       requestBody:
+*         required: true
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 email:
+*                   type: string
+*       responses:
+*         200:
+*           description: "Verification code sent successfully"
+*           schema:
+*             type: object
+*             properties:
+*               message:
+*                 type: string
+*                 example: Verification code sent successfully
+*         404:
+*           description: "No user with the provided email was found"
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: No user with the provided email was found
+*         500:
+*           description: "Internal server error"
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Internal server error
+*  
+*   /users/reset-password-code:
+*     post:
+*       summary: "Reset Password Code"
+*       tags:
+*         - "User"
+*       requestBody:
+*         required: true
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 email:
+*                   type: string
+*                 code:
+*                   type: string
+*       responses:
+*         200:
+*           description: "Code is correct"
+*           schema:
+*             type: object
+*             properties:
+*               message:
+*                 type: string
+*                 example: Code is correct
+*         401:
+*           description: "Unauthorized: Incorrect code"
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Sorry, that's not the right code. Please try again
+*         500:
+*           description: "Internal server error"
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Internal server error
+* 
+*   /users/reset-password:
+*     post:
+*       summary: "Reset Password"
+*       tags:
+*         - "User"
+*       requestBody:
+*         required: true
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 email:
+*                   type: string
+*                 newPassword:
+*                   type: string
+*       responses:
+*         200:
+*           description: "Password reset successful"
+*           schema:
+*             type: object
+*             properties:
+*               message:
+*                 type: string
+*                 example: Password reset successful
+*         500:
+*           description: "Internal server error"
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Internal server error
+* 
+*   /users/contact-us-message:
+*     post:
+*       summary: "Contact Us Message"
+*       tags:
+*         - "User"
+*       requestBody:
+*         required: true
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 messageData:
+*                   type: object
+*                   properties:
+*                     userId:
+*                       type: string
+*                     name:
+*                       type: string
+*                     email:
+*                       type: string
+*                     message:
+*                       type: string
+*       responses:
+*         201:
+*           description: "Message sent successfully"
+*           schema:
+*             type: object
+*             properties:
+*               message:
+*                 type: string
+*                 example: Message sent successfully
+*         500:
+*           description: "Internal server error"
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Internal server error
+*
+*   /users/{userId}/pets-activities/{year}/{month}:
+*     get:
+*       summary: "Get user's pets activities for a specific month"
+*       tags:
+*         - "User"
+*       parameters:
+*         - in: "path"
+*           name: "userId"
+*           required: true
+*           description: "ID of the user to get activities"
+*           type: "string"
+*         - in: "path"
+*           name: "year"
+*           required: true
+*           description: "Year for the activities"
+*           type: "integer"
+*         - in: "path"
+*           name: "month"
+*           required: true
+*           description: "Month for the activities"
+*           type: "integer"
+*       responses:
+*         200:
+*           description: "User's pets activities retrieved successfully"
+*           content:
+*             application/json:
+*               schema:
+*                 type: array
+*                 items:
+*                   $ref: "#/components/schemas/Activity"
+*         404:
+*           description: "User not found"
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: User not found
+*         500:
+*           description: "Internal server error"
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Internal server error
+* 
+ * components:
+ *   schemas:
+ *     User:
+ *       type: object
+ *       properties:
+ *         fullName:
+ *           type: string
+ *         email:
+ *           type: string
+ *         phone:
+ *           type: string
+ *         password:
+ *           type: string
+ *         pets:
+ *           type: array
+ *           items:
+ *             type: string
+ *         totalExpenses:
+ *           type: number
+ *         notificationPreferences:
+ *           type: object
+ *           properties:
+ *             email:
+ *               type: boolean
+ *             vaccineTime:
+ *               type: boolean
+ *             routineCareTime:
+ *               type: boolean
+ *         theme:
+ *           type: string
+ *         currency:
+ *           type: string
+ *         imageUrl:
+ *           type: string
+ *         resetCode:
+ *           type: string
+ *         created_at:
+ *           type: string
+ *           format: date-time
+ *
+ *     Note:
+ *       type: object
+ *       properties:
+ *         pet:
+ *           type: string
+ *         createdDate:
+ *           type: string
+ *           format: date-time
+ *         updatedDate:
+ *           type: string
+ *           format: date-time
+ *         title:
+ *           type: string
+ *         content:
+ *           type: string
+ *
+ *     ActivityLog:
+ *       type: object
+ *       properties:
+ *         userId:
+ *           type: string
+ *         petId:
+ *           type: string
+ *         actionType:
+ *           type: string
+ *           enum:
+ *             - vaccine record added
+ *             - routine care added
+ *             - expense added
+ *             - allergy added
+ *             - medication added
+ *             - vet visit added
+ *             - note added
+ *             - pet added
+ *             - pet edit
+ *             - pet weight update
+ *             - pet delete
+ *             - note edit
+ *             - note delete
+ *             - profile edit
+ *         details:
+ *           type: string
+ *         created_at:
+ *           type: string
+ *           format: date-time
+ *
+ *     Expense:
+ *       type: object
+ *       properties:
+ *         pet:
+ *           type: string
+ *         category:
+ *           type: string
+ *           enum:
+ *             - Food
+ *             - Medication
+ *             - vaccinations
+ *             - VetVisit
+ *             - Insurance
+ *             - Routine Care
+ *             - Toyes
+ *             - Related Products
+ *             - Home Products
+ *             - Training
+ *             - Other
+ *         amount:
+ *           type: number
+ *         note:
+ *           type: string
+ *         date:
+ *           type: string
+ *           format: date-time
+ *         created_at:
+ *           type: string
+ *           format: date-time
+ */

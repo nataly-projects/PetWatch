@@ -1,7 +1,6 @@
 const express = require('express');
 const petController = require('../controllers/petController');
 const authenticateToken = require('../middleware/authMiddleware');
-
 const router = express.Router();
 
 
@@ -16,13 +15,15 @@ router.get('/note/:petId', petController.getPetNote);
 router.get('/expense/:petId', petController.getPetExpense);
 router.get('/activity/:petId', petController.getPetActivityLog);
 router.get('/upcoming/:petId', petController.getPetUpcomingEvents);
-router.get('/expenses-array/:petId', petController.getPetExpensesArrays);
 router.get('/weight-track/:petId', petController.getPetWeightTracker);
 router.get('/allergy/:petId', petController.getPetAllergies);
 router.get('/medication/:petId', petController.getPetMedications);
 router.get('/vet-visit/:petId', petController.getPetVetVisits);
+const { singleImageUpload, multipleImagesUpload } = petController;
 
-router.post('/:userId', petController.addPet);
+router.post('/:userId',singleImageUpload, petController.addPet);
+router.post('/additional-images/:petId',multipleImagesUpload, petController.uploadAdditionalImageToNewPet);
+
 router.post('/vaccinationRecord/:petId', petController.addPetVaccineRecord);
 router.post('/routineCare/:petId', petController.addPetRoutineCare);
 router.post('/note/:petId', petController.addPetNote);
