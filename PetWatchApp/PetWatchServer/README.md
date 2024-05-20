@@ -11,6 +11,7 @@ You can access the Swagger documentation for the PetWatch Server API by navigati
 - express: Web framework for Node.js.
 - mongoose: MongoDB object modeling tool.
 - jsonwebtoken: Implementation of JSON Web Tokens for user authentication.
+- swagger-jsdoc: Library to generate Swagger/OpenAPI documentation from JSDoc comments.
 - Other dependencies as specified in package.json.
 ## Available Scripts
 

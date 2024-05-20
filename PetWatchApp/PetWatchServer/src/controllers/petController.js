@@ -1130,624 +1130,1686 @@ module.exports = {
 };
 
 /**
- * @swagger
- *paths:
-*  /pets/{petId}/vaccinationRecord:
-*    get:
-*      summary: Get vaccination records for a pet by ID
-*      tags:
-*        - Pet
-*      description: Retrieve vaccination records for a pet by its unique identifier.
-*      parameters:
-*        - in: path
-*          name: petId
-*          required: true
-*          description: ID of the pet to retrieve vaccination records for
-*          schema:
-*            type: string
-*      responses:
-*        200:
-*          description: Successfully retrieved the vaccination records
-*          content:
-*            application/json:
-*              schema:
-*                type: array
-*                items:
-*                  $ref: '#/components/schemas/VaccinationRecord'
-*        404:
-*          description: Pet not found
-*          content:
-*            application/json:
-*              schema:
-*                type: object
-*                properties:
-*                  error:
-*                    type: string
-*                    example: Pet not found.
-*        500:
-*          description: Internal server error
-*          content:
-*            application/json:
-*              schema:
-*                type: object
-*                properties:
-*                  error:
-*                    type: string
-*                    example: Internal server error.
+* @swagger
+* paths:
+*   /pets/vaccinationRecord/{petId}:
+*     get:
+*       summary: Get vaccination records for a pet by ID
+*       tags:
+*         - Pet
+*       description: Retrieve vaccination records for a pet by its unique identifier.
+*       parameters:
+*         - in: path
+*           name: petId
+*           required: true
+*           description: ID of the pet to retrieve vaccination records for
+*           schema:
+*             type: string
+*       responses:
+*         200:
+*           description: Successfully retrieved the vaccination records
+*           content:
+*             application/json:
+*               schema:
+*                 type: array
+*                 items:
+*                   $ref: '#/components/schemas/VaccinationRecord'
+*         404:
+*           description: Pet not found
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Pet not found.
+*         500:
+*           description: Internal server error
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Internal server error.
+*     post:
+*       summary: Add a new vaccine record for a pet
+*       tags:
+*         - Pet
+*       parameters:
+*         - in: path
+*           name: petId
+*           required: true
+*           schema:
+*             type: string
+*             description: ID of the pet to add the vaccine record for
+*         - in: body
+*           name: body
+*           required: true
+*           schema:
+*             $ref: '#/components/schemas/VaccineRecord'
+*       responses:
+*         201:
+*           description: Vaccine record added successfully
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   message:
+*                     type: string
+*                     description: Success message
+*                   vaccinationRecord:
+*                     $ref: '#/components/schemas/VaccinationRecord'
+*         404:
+*            description: Pet not found
+*            content:
+*              application/json:
+*                schema:
+*                  type: object
+*                  properties:
+*                    error:
+*                      type: string
+*                      example: Pet not found.
+*         500:
+*            description: Internal server error
+*            content:
+*              application/json:
+*                schema:
+*                  type: object
+*                  properties:
+*                    error:
+*                      type: string
+*                      example: Internal server error.
 *
-*  /pets/{petId}/routineCare:
-*    get:
-*      summary: Get routine care records for a pet by ID
-*      tags:
-*        - Pet
-*      description: Retrieve routine care records for a pet by its unique identifier.
-*      parameters:
-*        - in: path
-*          name: petId
-*          required: true
-*          description: ID of the pet to retrieve routine care records for
-*          schema:
-*            type: string
-*      responses:
-*        200:
-*          description: Successfully retrieved the routine care records
-*          content:
-*            application/json:
-*              schema:
-*                type: array
-*                items:
-*                  $ref: '#/components/schemas/RoutineCareRecord'
-*        404:
-*          description: Pet not found
-*          content:
-*            application/json:
-*              schema:
-*                type: object
+*   /pets/routineCare/{petId}:
+*     get:
+*       summary: Get routine care records for a pet by ID
+*       tags:
+*         - Pet
+*       description: Retrieve routine care records for a pet by its unique identifier.
+*       parameters:
+*         - in: path
+*           name: petId
+*           required: true
+*           description: ID of the pet to retrieve routine care records for
+*           schema:
+*             type: string
+*       responses:
+*         200:
+*           description: Successfully retrieved the routine care records
+*           content:
+*             application/json:
+*               schema:
+*                 type: array
+*                 items:
+*                   $ref: '#/components/schemas/RoutineCareRecord'
+*         404:
+*           description: Pet not found
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Pet not found.
+*         500:
+*           description: Internal server error
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Internal server error.
+*     post:
+*       summary: Add a new routine care record for a pet
+*       tags:
+*         - Pet
+*       parameters:
+*         - in: path
+*           name: petId
+*           required: true
+*           schema:
+*             type: string
+*             description: ID of the pet to add the routine care record for
+*         - in: body
+*           name: body
+*           required: true
+*           schema:
+*             $ref: '#/components/schemas/RoutineCareRecord'
+*       responses:
+*         201:
+*           description: Routine care record added successfully
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   message:
+*                     type: string
+*                     description: Success message
+*                   routineCareRecord:
+*                     $ref: '#components/schemas/RoutineCareRecord'
+*         404:
+*            description: Pet not found
+*            content:
+*              application/json:
+*                schema:
+*                  type: object
 *                properties:
-*                  error:
-*                    type: string
-*                    example: Pet not found.
-*        500:
-*          description: Internal server error
-*          content:
-*            application/json:
-*              schema:
-*                type: object
-*                properties:
-*                  error:
-*                    type: string
-*                    example: Internal server error.
+*                   error:
+*                      type: string
+*                      example: Pet not found.
+*         500:
+*            description: Internal server error
+*            content:
+*              application/json:
+*                schema:
+*                  type: object
+*                  properties:
+*                    error:
+*                      type: string
+*                      example: Internal server error.
 *
-*  /users/{userId}/pets:
-*    get:
-*      summary: "Get pets by user ID"
-*      tags:
-*        - "User"
-*      parameters:
-*        - in: "path"
-*          name: "userId"
-*          required: true
-*          description: "ID of the user to get pets for"
-*          type: "string"
-*      responses:
-*        200:
-*          description: "Successfully retrieved pets"
-*          content:
-*            application/json:
-*              schema:
-*                type: array
-*                items:
-*                  $ref: "#/components/schemas/Pet"
-*        404:
-*          description: "User not found"
-*          content:
-*            application/json:
-*              schema:
-*                type: object
-*                properties:
-*                  error:
-*                    type: string
-*                    example: User not found
-*        500:
-*          description: "Internal server error"
-*          content:
-*            application/json:
-*              schema:
-*                type: object
-*                properties:
-*                  error:
-*                    type: string
-*                    example: Internal server error
-*  /pets/{petId}:
-*    get:
-*      summary: "Get pet by ID"
-*      tags:
-*        - "Pet"
-*      parameters:
-*        - in: "path"
-*          name: "petId"
-*          required: true
-*          description: "ID of the pet to retrieve"
-*          type: "string"
-*      responses:
-*        200:
-*          description: "Successfully retrieved pet"
-*          content:
-*            application/json:
-*              schema:
-*                $ref: "#/components/schemas/Pet"
-*        404:
-*          description: "Pet not found"
-*          content:
-*            application/json:
-*              schema:
-*                type: object
-*                properties:
-*                  error:
-*                    type: string
-*                    example: Pet not found.
-*        500:
-*          description: "Internal server error"
-*          content:
-*            application/json:
-*              schema:
-*                type: object
-*                properties:
-*                  error:
-*                    type: string
-*                    example: Internal server error
+*   /pets/user/{userId}:
+*     get:
+*       summary: "Get pets by user ID"
+*       tags:
+*         - "User"
+*       parameters:
+*         - in: "path"
+*           name: "userId"
+*           required: true
+*           description: "ID of the user to get pets for"
+*           type: "string"
+*       responses:
+*         200:
+*           description: "Successfully retrieved pets"
+*           content:
+*             application/json:
+*               schema:
+*                 type: array
+*                 items:
+*                   $ref: "#/components/schemas/Pet"
+*         404:
+*           description: "User not found"
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: User not found
+*         500:
+*           description: "Internal server error"
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Internal server error
+*
+*   /pets/{userId}:
+*     post:
+*       summary: Add a new pet
+*       tags:
+*         - Pet
+*       parameters:
+*         - in: path
+*           name: userId
+*           required: true
+*           schema:
+*             type: string
+*             description: ID of the user to add the pet for
+*         - in: formData
+*           name: newPet
+*           required: true
+*           schema:
+*             type: string
+*             description: JSON string representing the new pet
+*         - in: formData
+*           name: file
+*           required: true
+*           schema:
+*             type: file
+*             description: Image file of the new pet
+*       responses:
+*         201:
+*           description: Pet added successfully
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   message:
+*                     type: string
+*                     description: Success message
+*                   pet:
+*                     $ref: '#/components/schemas/Pet'
+*         500:
+*           description: Internal server error
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Internal server error.
+*
+*   /pets/{petId}:
+*     get:
+*       summary: "Get pet by ID"
+*       tags:
+*         - "Pet"
+*       parameters:
+*         - in: "path"
+*           name: "petId"
+*           required: true
+*           description: "ID of the pet to retrieve"
+*           type: "string"
+*       responses:
+*         200:
+*           description: "Successfully retrieved pet"
+*           content:
+*             application/json:
+*               schema:
+*                 $ref: "#/components/schemas/Pet"
+*         404:
+*           description: "Pet not found"
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Pet not found.
+*         500:
+*           description: "Internal server error"
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Internal server error
+*     put:
+*       summary: Update a pet by ID
+*       tags:
+*         - Pet
+*       async: true
+*       parameters:
+*       requestBody:
+*         description: The data for the new note
+*         required: true
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 petId:
+*                   type: string
+*                 name:
+*                   type: string
+*                 species:
+*                   type: string
+*                 breed:
+*                   type: string
+*                 age:
+*                   type: number
+*                 weight:
+*                   type: number
+*                 description:
+*                   type: string
+*                 chipNumber:
+*                   type: string
+*       responses:
+*         200:
+*           description: Pet updated successfully
+*           content:
+*               schema:
+*                 type: object
+*                 properties:
+*                   message:
+*                     type: string
+*                   pet:
+*                     $ref: '#/components/schemas/Pet'
+*         404:
+*           description: Pet not found
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Pet not found.
+*         500:
+*           description: Internal server error
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                      type: string
+*                      example: Internal server error.
+*     delete:
+*       summary: Delete a pet by ID
+*       tags:
+*         - Pet
+*       async: true
+*       parameters:
+*       responses:
+*         200:
+*           description: Pet deleted successfully
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   message:
+*                     type: string
+*         404:
+*           description: Pet not found
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Pet not found.
+*         500:
+*           description: Internal server error
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Internal server error.
 * 
- *  /pets/{petId}/note:
- *   get:
- *     summary: Get notes for a pet by ID
- *     tags:
- *       - Pet
- *     description: Retrieve notes for a pet by its unique identifier.
- *     parameters:
- *       - in: path
- *         name: petId
- *         required: true
- *         description: ID of the pet to retrieve notes for
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Successfully retrieved the notes
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Note'
- *       404:
- *         description: Pet not found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: Pet not found.
- *       500:
- *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: Internal server error.
- * 
- * /pets/{petId}/expense:
- *   get:
- *     summary: Get expenses for a pet by ID
- *     tags:
- *       - Pet
- *     description: Retrieve expenses for a pet by its unique identifier.
- *     parameters:
- *       - in: path
- *         name: petId
- *         required: true
- *         description: ID of the pet to retrieve expenses for
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Successfully retrieved the expenses
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/Expense'
- *       404:
- *         description: Pet not found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: Pet not found.
- *       500:
- *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: Internal server error.
- * 
- * /pets/{petId}/activityLog:
- *   get:
- *     summary: Get activity logs for a pet by ID
- *     tags:
- *       - Pet
- *     description: Retrieve activity logs for a pet by its unique identifier.
- *     parameters:
- *       - in: path
- *         name: petId
- *         required: true
- *         description: ID of the pet to retrieve activity logs for
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Successfully retrieved the activity logs
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/ActivityLog'
- *       404:
- *         description: Pet not found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: Pet not found.
- *       500:
- *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: Internal server error.
- *  
- * /pets/{petId}/weightTracker:
- *   get:
- *     summary: Get weight tracker logs for a pet by ID
- *     tags:
- *       - Pet
- *     description: Retrieve weight tracker logs for a pet by its unique identifier.
- *     parameters:
- *       - in: path
- *         name: petId
- *         required: true
- *         description: ID of the pet to retrieve weight tracker logs for
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: Successfully retrieved the weight tracker logs
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 $ref: '#/components/schemas/ActivityLog'
- *       404:
- *         description: Pet not found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: Pet not found.
- *       500:
- *         description: Internal server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *                   example: Internal server error.
- * 
- * /pets/{petId}/upcomingEvents:
- *  get:
- *   summary: Get upcoming events for a pet by ID
- *   tags:
- *     - Pet
- *   description: Retrieve upcoming events for a pet by its unique identifier.
- *   parameters:
- *     - in: path
- *       name: petId
- *       required: true
- *       description: ID of the pet to retrieve upcoming events for
- *       schema:
- *         type: string
- *   responses:
- *     200:
- *       description: Successfully retrieved the user upcoming events
- *       content:
- *         application/json:
- *           schema:
- *             type: array
- *             items:
- *               type: object
- *               properties:
- *                 nextDate:
- *                   type: string
- *                   format: date-time
- *                   description: The date of the upcoming event
- *                 actionType:
- *                   type: string
- *                   description: The type of action for the event (Vaccine, Routine Care, Vet Visit, etc.)
- *                 details:
- *                   type: string
- *                   description: Additional details about the event
- *     404:
- *       description: Pet not found
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               error:
- *                 type: string
- *                 example: Pet not found.
- *     500:
- *       description: Internal server error
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               error:
- *                 type: string
- *                 example: Internal server error.
- * 
- * /pets/{petId}/expensesArrays:
- *  get:
- *   summary: Get expenses arrays for a pet by ID
- *   tags:
- *     - Pet
- *   description: Retrieve different arrays of expenses data for a pet by its unique identifier.
- *   parameters:
- *     - in: path
- *       name: petId
- *       required: true
- *       description: ID of the pet to retrieve expenses arrays for
- *       schema:
- *         type: string
- *   responses:
- *     200:
- *       description: Successfully retrieved the expenses arrays
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               allExpenses:
- *                 type: array
- *                 items:
- *                   $ref: '#/components/schemas/Expense'
- *                 description: Array of all expenses for the pet
- *               monthlyExpensesChartData:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     month:
- *                       type: number
- *                       description: Month index (1-12)
- *                     amount:
- *                       type: number
- *                       description: Total expenses for the month
- *                 description: Array of monthly expenses data
- *               categoryExpensesChartData:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     category:
- *                       type: string
- *                       description: Expense category
- *                     amount:
- *                       type: number
- *                       description: Total expenses for the category
- *                 description: Array of category expenses data
- *     404:
- *       description: Pet not found
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               error:
- *                 type: string
- *                 example: Pet not found.
- *     500:
- *       description: Internal server error
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               error:
- *                 type: string
- *                 example: Internal server error.
- * 
+*   /pets/note/{petId}:
+*     get:
+*       summary: Get notes for a pet by ID
+*       tags:
+*         - Pet
+*       description: Retrieve notes for a pet by its unique identifier.
+*       parameters:
+*         - in: path
+*           name: petId
+*           required: true
+*           description: ID of the pet to retrieve notes for
+*           schema:
+*             type: string
+*       responses:
+*         200:
+*           description: Successfully retrieved the notes
+*           content:
+*             application/json:
+*               schema:
+*                 type: array
+*                 items:
+*                   $ref: '#/components/schemas/Note'
+*         404:
+*           description: Pet not found
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Pet not found.
+*         500:
+*           description: Internal server error
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Internal server error.
+*     post:
+*       summary: Add a note for a pet
+*       tags:
+*         - Pet
+*       async: true
+*       parameters:
+*         - in: path
+*           name: petId
+*           required: true
+*           description: ID of the pet to retrieve notes for
+*           schema:
+*             type: string
+*       requestBody:
+*         description: The data for the new note
+*         required: true
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 petId:
+*                   type: string
+*                 noteData:
+*                   type: object
+*       responses:
+*         201:
+*           description: Note added successfully
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   message:
+*                     type: string
+*                   note:
+*                     $ref: '#/components/schemas/Note'
+*         404:
+*           description: Pet not found
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Pet not found.
+*         500:
+*           description: Internal server error
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Internal server error.
+*
+*   /pets/note/{noteId}:
+*     put:
+*       summary: Update a note by ID
+*       tags:
+*         - Pet
+*       async: true
+*       parameters:
+*         - in: path
+*           name: noteId
+*           required: true
+*           description: ID of the note
+*           schema:
+*             type: string
+*       requestBody:
+*         description: The updated note data
+*         required: true
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 noteId:
+*                   type: string
+*                 noteData:
+*                   type: object
+*       responses:
+*         200:
+*           description: Note updated successfully
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   message:
+*                     type: string
+*                   note:
+*                     $ref: '#/components/schemas/Note'
+*         404:
+*           description: Pet not found
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Pet not found.
+*         500:
+*           description: Internal server error
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Internal server error.
+*     delete:
+*       summary: Delete a note by ID
+*       tags:
+*         - Pet
+*       async: true
+*       parameters:
+*         - in: path
+*           name: noteId
+*           required: true
+*           description: ID of the note
+*           schema:
+*             type: string
+*       responses:
+*         200:
+*           description: Note deleted successfully
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   message:
+*                     type: string
+*         404:
+*           description: Pet not found
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Pet not found.
+*         500:
+*           description: Internal server error
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Internal server error.
+* 
+*   /pets/expense/{petId}:
+*     get:
+*       summary: Get expenses for a pet by ID
+*       tags:
+*         - Pet
+*       description: Retrieve expenses for a pet by its unique identifier.
+*       parameters:
+*         - in: path
+*           name: petId
+*           required: true
+*           description: ID of the pet to retrieve expenses for
+*           schema:
+*             type: string
+*       responses:
+*         200:
+*           description: Successfully retrieved the expenses
+*           content:
+*             application/json:
+*               schema:
+*                 type: array
+*                 items:
+*                   $ref: '#/components/schemas/Expense'
+*         404:
+*           description: Pet not found
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Pet not found.
+*         500:
+*           description: Internal server error
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Internal server error.
+*     post:
+*       summary: Add an expense for a pet
+*       tags:
+*         - Pet
+*       async: true
+*       parameters:
+*       requestBody:
+*         description: The data for the new expense
+*         required: true
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 petId:
+*                   type: string
+*                 category:
+*                   type: string
+*                 amount:
+*                   type: number
+*                 note:
+*                   type: string
+*                 date:
+*                   type: string
+*       responses:
+*         201:
+*           description: Expense added successfully
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   message:
+*                     type: string
+*                   expense:
+*                     $ref: '#/components/schemas/Expense'
+*         404:
+*           description: Pet not found
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Pet not found.
+*         500:
+*           description: Internal server error
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Internal server error.
+* 
+*   /pets/activity/{petId}:
+*     get:
+*       summary: Get activity logs for a pet by ID
+*       tags:
+*         - Pet
+*       description: Retrieve activity logs for a pet by its unique identifier.
+*       parameters:
+*         - in: path
+*           name: petId
+*           required: true
+*           description: ID of the pet to retrieve activity logs for
+*           schema:
+*             type: string
+*       responses:
+*         200:
+*           description: Successfully retrieved the activity logs
+*           content:
+*             application/json:
+*               schema:
+*                 type: array
+*                 items:
+*                   $ref: '#/components/schemas/ActivityLog'
+*         404:
+*           description: Pet not found
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Pet not found.
+*         500:
+*           description: Internal server error
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Internal server error.
+*  
+*   /pets/weight-track/{petId}:
+*     get:
+*       summary: Get weight tracker logs for a pet by ID
+*       tags:
+*         - Pet
+*       description: Retrieve weight tracker logs for a pet by its unique identifier.
+*       parameters:
+*         - in: path
+*           name: petId
+*           required: true
+*           description: ID of the pet to retrieve weight tracker logs for
+*           schema:
+*             type: string
+*       responses:
+*         200:
+*           description: Successfully retrieved the weight tracker logs
+*           content:
+*             application/json:
+*               schema:
+*                 type: array
+*                 items:
+*                   $ref: '#/components/schemas/ActivityLog'
+*         404:
+*           description: Pet not found
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Pet not found.
+*         500:
+*           description: Internal server error
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Internal server error.
+* 
+*   /pets/upcoming/{petId}:
+*    get:
+*     summary: Get upcoming events for a pet by ID
+*     tags:
+*       - Pet
+*     description: Retrieve upcoming events for a pet by its unique identifier.
+*     parameters:
+*       - in: path
+*         name: petId
+*         required: true
+*         description: ID of the pet to retrieve upcoming events for
+*         schema:
+*           type: string
+*     responses:
+*       200:
+*         description: Successfully retrieved the user upcoming events
+*         content:
+*           application/json:
+*             schema:
+*               type: array
+*               items:
+*                 type: object
+*                 properties:
+*                   nextDate:
+*                     type: string
+*                     format: date-time
+*                     description: The date of the upcoming event
+*                   actionType:
+*                     type: string
+*                     description: The type of action for the event (Vaccine, Routine Care, Vet Visit, etc.)
+*                   details:
+*                     type: string
+*                     description: Additional details about the event
+*       404:
+*         description: Pet not found
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 error:
+*                   type: string
+*                   example: Pet not found.
+*       500:
+*         description: Internal server error
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 error:
+*                   type: string
+*                   example: Internal server error.
+* 
+*   /pets/expenses-array/{petId}:
+*    get:
+*     summary: Get expenses arrays for a pet by ID
+*     tags:
+*       - Pet
+*     description: Retrieve different arrays of expenses data for a pet by its unique identifier.
+*     parameters:
+*       - in: path
+*         name: petId
+*         required: true
+*         description: ID of the pet to retrieve expenses arrays for
+*         schema:
+*           type: string
+*     responses:
+*       200:
+*         description: Successfully retrieved the expenses arrays
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 allExpenses:
+*                   type: array
+*                   items:
+*                     $ref: '#/components/schemas/Expense'
+*                   description: Array of all expenses for the pet
+*                 monthlyExpensesChartData:
+*                   type: array
+*                   items:
+*                     type: object
+*                     properties:
+*                       month:
+*                         type: number
+*                         description: Month index (1-12)
+*                       amount:
+*                         type: number
+*                         description: Total expenses for the month
+*                   description: Array of monthly expenses data
+*                 categoryExpensesChartData:
+*                   type: array
+*                   items:
+*                     type: object
+*                     properties:
+*                       category:
+*                         type: string
+*                         description: Expense category
+*                       amount:
+*                         type: number
+*                         description: Total expenses for the category
+*                   description: Array of category expenses data
+*       404:
+*         description: Pet not found
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 error:
+*                   type: string
+*                   example: Pet not found.
+*       500:
+*         description: Internal server error
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 error:
+*                   type: string
+*                   example: Internal server error.
+* 
+*   /pets/allergy/{petId}:
+*     get:
+*       summary: Retrieve allergies of a pet
+*       tags:
+*         - Pet
+*       parameters:
+*         - in: path
+*           name: petId
+*           required: true
+*           schema:
+*             type: string
+*             description: ID of the pet to retrieve allergies for
+*       responses:
+*         200:
+*           description: Successful response
+*           content:
+*             application/json:
+*               schema:
+*                 type: array
+*                 items:
+*                   $ref: '#/components/schemas/Allergy'
+*         404:  
+*            description: Pet not found
+*            content:
+*              application/json:
+*                schema:
+*                  type: object
+*                  properties:
+*                    error:
+*                      type: string
+*                      example: Pet not found.
+*         500:
+*            description: Internal server error
+*            content:
+*              application/json:
+*                schema:
+*                  type: object
+*                  properties:
+*                    error:
+*                      type: string
+*                      example: Internal server error.
+*     post:
+*       summary: Add an allergy for a pet
+*       tags:
+*         - Pet
+*       async: true
+*       parameters:
+*       requestBody:
+*         description: The data for the new allergy
+*         required: true
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 petId:
+*                   type: string
+*                 allergyData:
+*                   type: object
+*       responses:
+*         201:
+*           description: Allergy added successfully
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   message:
+*                     type: string
+*                   allergy:
+*                     $ref: '#/components/schemas/Allergy'
+*         404:
+*           description: Pet not found
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Pet not found.
+*         500:
+*           description: Internal server error
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Internal server error.
+*
+*   /pets/medication/{petId}:
+*     get:
+*       summary: Retrieve medications of a pet
+*       tags:
+*         - Pet
+*       parameters:
+*         - in: path
+*           name: petId
+*           required: true
+*           schema:
+*             type: string
+*             description: ID of the pet to retrieve medications for
+*       responses:
+*         200:
+*           description: Successful response
+*           content:
+*             application/json:
+*               schema:
+*                 type: array
+*                 items:
+*                   $ref: '#/components/schemas/Medication'
+*         404:
+*            description: Pet not found
+*            content:
+*              application/json:
+*                schema:
+*                  type: object
+*                  properties:
+*                    error:
+*                      type: string
+*                      example: Pet not found.
+*         500:
+*            description: Internal server error
+*            content:
+*              application/json:
+*                schema:
+*                  type: object
+*                  properties:
+*                    error:
+*                      type: string
+*                      example: Internal server error.
+*     post:
+*       summary: Add a medication for a pet
+*       tags:
+*         - Pet
+*       async: true
+*       parameters:
+*       requestBody:
+*         description: The data for the new medication
+*         required: true
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 petId:
+*                   type: string
+*                 medicationData:
+*                   type: object
+*       responses:
+*         201:
+*           description: Medication added successfully
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   message:
+*                     type: string
+*                   medication:
+*                     $ref: '#/components/schemas/Medication'
+*         404:
+*           description: Pet not found
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Pet not found.
+*         500:
+*           description: Internal server error
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Internal server error.
+*
+*   /pets/additional-images/{petId}:
+*     post:
+*       summary: Upload additional images to a new pet
+*       tags:
+*         - Pet
+*       parameters:
+*         - in: path
+*           name: petId
+*           required: true
+*           schema:
+*             type: string
+*             description: ID of the pet to upload additional images for
+*         - in: formData
+*           name: files
+*           required: true
+*           schema:
+*             type: file
+*             description: Additional image files to upload
+*       responses:
+*         201:
+*           description: Additional images added successfully
+*         500:
+*            description: Internal server error
+*            content:
+*              application/json:
+*                schema:
+*                  type: object
+*                  properties:
+*                    error:
+*                      type: string
+*                      example: Internal server error.
+* 
+*
+*   /pets/allergy/{allergyId}:
+*     put:
+*       summary: Update an allergy by ID
+*       tags:
+*         - Pet
+*       async: true
+*       parameters:
+*       requestBody:
+*         description: The updated allergy data
+*         required: true
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 noteId:
+*                   type: string
+*                 content:
+*                   type: object
+*       responses:
+*         200:
+*           description: Allergy updated successfully
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   message:
+*                     type: string
+*                   allergy:
+*                     $ref: '#/components/schemas/Allergy'
+*         404:
+*           description: Pet not found
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Pet not found.
+*         500:
+*           description: Internal server error
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Internal server error.
+*   delete:
+*       summary: Delete an allergy by ID
+*       tags:
+*         - Pet
+*       async: true
+*       parameters:
+*       responses:
+*         200:
+*           description: Allergy deleted successfully
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   message:
+*                     type: string
+*         404:
+*           description: Pet not found
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Pet not found.
+*         500:
+*           description: Internal server error
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Internal server error.
+*
+*   /pets/medication/{medicationId}:
+*     put:
+*       summary: Update a medication by ID
+*       tags:
+*         - Pet
+*       async: true
+*       parameters:
+*       requestBody:
+*         description: The updated medication data
+*         required: true
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 noteId:
+*                   type: string
+*                 content:
+*                   type: object
+*       responses:
+*         200:
+*           description: Medication updated successfully
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   message:
+*                     type: string
+*                   medication:
+*                     $ref: '#/components/schemas/Medication'
+*         404:
+*           description: Pet not found
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Pet not found.
+*         500:
+*           description: Internal server error
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Internal server error.
+*     delete:
+*       summary: Delete a medication by ID
+*       tags:
+*         - Pet
+*       async: true
+*       parameters:
+*       responses:
+*         200:
+*           description: Medication deleted successfully
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   message:
+*                     type: string
+*         404:
+*           description: Pet not found
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Pet not found.
+*         500:
+*           description: Internal server error
+*           content:
+*             application/json:
+*               schema:
+*                 type: object
+*                 properties:
+*                   error:
+*                     type: string
+*                     example: Internal server error.
+*
+*   /pets/vet-visit/{petId}:
+*     get:
+*       summary: Retrieve vet visits of a pet
+*       tags:
+*         - Pet
+*       parameters:
+*         - in: path
+*           name: petId
+*           required: true
+*           schema:
+*             type: string
+*             description: ID of the pet to retrieve vet visits for
+*       responses:
+*         200:
+*           description: Successful response
+*           content:
+*             application/json:
+*               schema:
+*                 type: array
+*                 items:
+*                   $ref: '#/components/schemas/VetVisit'
+*         404:
+*            description: Pet not found
+*            content:
+*              application/json:
+*                schema:
+*                  type: object
+*                  properties:
+*                    error:
+*                      type: string
+*                      example: Pet not found.
+*         500:
+*            description: Internal server error
+*            content:
+*              application/json:
+*                schema:
+*                  type: object
+*                  properties:
+*                    error:
+*                      type: string
+*                      example: Internal server error.
+*     post:
+*      summary: Add a vet visit for a pet
+*      tags:
+*        - Pet
+*      async: true
+*      parameters:
+*      requestBody:
+*        description: The data for the new vet visit
+*        required: true
+*        content:
+*            schema:
+*              type: object
+*              properties:
+*                petId:
+*                  type: string
+*                vetVisitData:
+*                  type: object
+*      responses:
+*        201:
+*          description: Vet visit added successfully
+*          content:
+*            application/json:
+*              schema:
+*                type: object
+*                properties:
+*                  message:
+*                    type: string
+*                  vetVisit:
+*                    $ref: '#/components/schemas/VetVisit'
+*        404:
+*          description: Pet not found
+*          content:
+*            application/json:
+*              schema:
+*                type: object
+*                properties:
+*                  error:
+*                    type: string
+*                    example: Pet not found.
+*        500:
+*          description: Internal server error
+*          content:
+*            application/json:
+*              schema:
+*                type: object
+*                properties:
+*                  error:
+*                    type: string
+*                    example: Internal server error.
+*
+*
+*   /pets/vet-visit/{vetId}:
+*     put:
+*      summary: Update a vet visit by ID
+*      tags:
+*        - Pet
+*      async: true
+*      parameters:
+*      requestBody:
+*        description: The updated vet visit data
+*        required: true
+*        content:
+*          application/json:
+*            schema:
+*              type: object
+*              properties:
+*                noteId:
+*                  type: string
+*                content:
+*                  type: object
+*      responses:
+*        200:
+*          description: Vet visit updated successfully
+*          content:
+*              schema:
+*                type: object
+*                properties:
+*                  message:
+*                    type: string
+*                  vetVisit:
+*                    $ref: '#/components/schemas/VetVisit'
+*        404:
+*          description: Pet not found
+*          content:
+*            application/json:
+*              schema:
+*                type: object
+*                properties:
+*                  error:
+*                    type: string
+*                    example: Pet not found.
+*        500:
+*          description: Internal server error
+*          content:
+*            application/json:
+*              schema:
+*                type: object
+*                properties:
+*                  error:
+*                    type: string
+*                    example: Internal server error.
+*     delete:
+*      summary: Delete a vet visit by ID
+*      tags:
+*        - Pet
+*      async: true
+*      parameters:
+*      responses:
+*        200:
+*           description: Vet visit deleted successfully
+*           content:
+*             application/json:
+*               schema:
+*                type: object
+*               properties:
+*                  message:
+*                    type: string
+*        404:
+*          description: Pet not found
+*          content:
+*            application/json:
+*              schema:
+*                type: object
+*                properties:
+*                  error:
+*                    type: string
+*                    example: Pet not found.
+*        500:
+*          description: Internal server error
+*          content:
+*            application/json:
+*              schema:
+*                type: object
+*                properties:
+*                  error:
+*                    type: string
+*                    example: Internal server error.
+*
+*
 * components:
-*  schemas:
-*    VaccinationRecord:
-*      type: object
-*      properties:
-*        pet:
-*          type: string
-*          description: ID of the pet associated with this vaccination record
-*        vaccineType:
-*          type: string
-*          enum: 
-*            - DHPP
-*            - Rabies
-*            - Vaccination against Esophagus Worms
-*            - Flea and Tick Treatment
-*            - Deworming
-*            - FVRCP
-*            - FeLV
-*            - Other
-*          description: Type of vaccine
-*        note:
-*          type: string
-*          description: Additional note for the vaccination record
-*        date:
-*          type: string
-*          format: date-time
-*          description: Date of vaccination
-*        nextDate:
-*          type: string
-*          format: date-time
-*          description: Next vaccination date
-*        created_at:
-*          type: string
-*          format: date-time
-*          description: Date of creation
+*   schemas:
+*     VaccinationRecord:
+*       type: object
+*       properties:
+*         pet:
+*           type: string
+*           description: ID of the pet associated with this vaccination record
+*         vaccineType:
+*           type: string
+*           enum: 
+*             - DHPP
+*             - Rabies
+*             - Vaccination against Esophagus Worms
+*             - Flea and Tick Treatment
+*             - Deworming
+*             - FVRCP
+*             - FeLV
+*             - Other
+*           description: Type of vaccine
+*         note:
+*           type: string
+*           description: Additional note for the vaccination record
+*         date:
+*           type: string
+*           format: date-time
+*           description: Date of vaccination
+*         nextDate:
+*           type: string
+*           format: date-time
+*           description: Next vaccination date
+*         created_at:
+*           type: string
+*           format: date-time
+*           description: Date of creation
 *
-*    RoutineCareRecord:
-*      type: object
-*      properties:
-*        pet:
-*          type: string
-*          description: ID of the pet associated with this routine care record
-*        activity:
-*          type: string
-*          enum:
-*            - Feeding
-*            - Training
-*            - Brushing
-*            - Bathing
-*            - Nail trimming
-*            - Ear cleaning
-*            - Teeth brushing
-*            - Weighing
-*            - Other
-*          description: Type of routine care activity
-*        note:
-*          type: string
-*          description: Additional note for the routine care record
-*        cost:
-*          type: number
-*          description: Cost associated with the routine care activity
-*        date:
-*          type: string
-*          format: date-time
-*          description: Date of routine care activity
-*        nextDate:
-*          type: string
-*          format: date-time
-*          description: Next scheduled date for routine care activity
-*        created_at:
-*          type: string
-*          format: date-time
-*          description: Date of creation
+*     RoutineCareRecord:
+*       type: object
+*       properties:
+*         pet:
+*           type: string
+*           description: ID of the pet associated with this routine care record
+*         activity:
+*           type: string
+*           enum:
+*             - Feeding
+*             - Training
+*             - Brushing
+*             - Bathing
+*             - Nail trimming
+*             - Ear cleaning
+*             - Teeth brushing
+*             - Weighing
+*             - Other
+*           description: Type of routine care activity
+*         note:
+*           type: string
+*           description: Additional note for the routine care record
+*         cost:
+*           type: number
+*           description: Cost associated with the routine care activity
+*         date:
+*           type: string
+*           format: date-time
+*           description: Date of routine care activity
+*         nextDate:
+*           type: string
+*           format: date-time
+*           description: Next scheduled date for routine care activity
+*         created_at:
+*           type: string
+*           format: date-time
+*           description: Date of creation
 *
-*    Pet:
-*      type: object
-*      properties:
-*        name:
-*          type: string
-*          description: Name of the pet
-*        age:
-*          type: number
-*          description: Age of the pet
-*        species:
-*          type: string
-*          enum:
-*            - MALE
-*            - FEMALE
-*          description: Species of the pet
-*        breed:
-*          type: string
-*          description: Breed of the pet
-*        weight:
-*          type: number
-*          description: Weight of the pet
-*        description:
-*          type: string
-*          description: Description of the pet
-*        birthday:
-*          type: string
-*          format: date
-*          description: Birthday of the pet
-*        image:
-*          type: string
-*          description: Image URL of the pet
-*        chipNumber:
-*          type: string
-*          description: Chip number of the pet
-*        medications:
-*          type: array
-*          items:
-*            type: string
-*          description: Array of medication IDs associated with the pet
-*        allergies:
-*          type: array
-*          items:
-*            type: string
-*          description: Array of allergy IDs associated with the pet
-*        vetVisits:
-*          type: array
-*          items:
-*            type: string
-*          description: Array of vet visit IDs associated with the pet
-*        additionalImages:
-*          type: array
-*          items:
-*            type: string
-*          description: Array of additional image URLs of the pet
-*        owner:
-*          type: string
-*          description: ID of the user who owns the pet
-*        vaccinationRecords:
-*          type: array
-*          items:
-*            type: string
-*          description: Array of vaccination record IDs associated with the pet
-*        routineCareRecords:
-*          type: array
-*          items:
-*            type: string
-*          description: Array of routine care record IDs associated with the pet
-*        notes:
-*          type: array
-*          items:
-*            type: string
-*          description: Array of note IDs associated with the pet
-*        expenses:
-*          type: array
-*          items:
-*            type: string
-*          description: Array of expense IDs associated with the pet
-*        created_at:
-*          type: string
-*          format: date-time
-*          description: Date of creation
+*     VetVisit:
+*       type: object
+*       properties:
+*         id:
+*           type: string
+*           description: ID of the vet visit
+*         date:
+*           type: string
+*           format: date
+*           description: Date of the vet visit
+*         reason:
+*           type: string
+*           description: Reason for the vet visit
 *
- */
+*     Allergy:
+*       type: object
+*       properties:
+*         id:
+*           type: string
+*           description: ID of the allergy
+*         name:
+*           type: string
+*           description: Name of the allergy
+*
+*     Medication:
+*       type: object
+*       properties:
+*         id:
+*           type: string
+*           description: ID of the medication
+*         name:
+*           type: string
+*           description: Name of the medication 
+*
+*     Pet:
+*       type: object
+*       properties:
+*         name:
+*           type: string
+*           description: Name of the pet
+*         age:
+*           type: number
+*           description: Age of the pet
+*         species:
+*           type: string
+*           enum:
+*             - MALE
+*             - FEMALE
+*           description: Species of the pet
+*         breed:
+*           type: string
+*           description: Breed of the pet
+*         weight:
+*           type: number
+*           description: Weight of the pet
+*         description:
+*           type: string
+*           description: Description of the pet
+*         birthday:
+*           type: string
+*           format: date
+*           description: Birthday of the pet
+*         image:
+*           type: string
+*           description: Image URL of the pet
+*         chipNumber:
+*           type: string
+*           description: Chip number of the pet
+*         medications:
+*           type: array
+*           items:
+*             type: string
+*           description: Array of medication IDs associated with the pet
+*         allergies:
+*           type: array
+*           items:
+*             type: string
+*           description: Array of allergy IDs associated with the pet
+*         vetVisits:
+*           type: array
+*           items:
+*             type: string
+*           description: Array of vet visit IDs associated with the pet
+*         additionalImages:
+*           type: array
+*           items:
+*             type: string
+*           description: Array of additional image URLs of the pet
+*         owner:
+*           type: string
+*           description: ID of the user who owns the pet
+*         vaccinationRecords:
+*           type: array
+*           items:
+*             type: string
+*           description: Array of vaccination record IDs associated with the pet
+*         routineCareRecords:
+*           type: array
+*           items:
+*             type: string
+*           description: Array of routine care record IDs associated with the pet
+*         notes:
+*           type: array
+*           items:
+*             type: string
+*           description: Array of note IDs associated with the pet
+*         expenses:
+*           type: array
+*           items:
+*             type: string
+*           description: Array of expense IDs associated with the pet
+*         created_at:
+*           type: string
+*           format: date-time
+*           description: Date of creation
+*/
