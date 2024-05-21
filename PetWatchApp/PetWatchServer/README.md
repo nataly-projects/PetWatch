@@ -1,11 +1,9 @@
 # Getting Started with PetWatch Server
 ## Server setup:
+- Clone the repository
 - Navigate to the client directory - cd PetWatchServer
 - Install dependencies - npm install
 - Start the client - npm start
-
-## Swagger Documentation
-You can access the Swagger documentation for the PetWatch Server API by navigating to [http://localhost:5001/api-docs-ui](http://localhost:5001/api-docs-ui) in your browser.
 
 ## Dependencies
 - express: Web framework for Node.js.
@@ -13,6 +11,11 @@ You can access the Swagger documentation for the PetWatch Server API by navigati
 - jsonwebtoken: Implementation of JSON Web Tokens for user authentication.
 - swagger-jsdoc: Library to generate Swagger/OpenAPI documentation from JSDoc comments.
 - Other dependencies as specified in package.json.
+
+## API Documentation
+The API documentation is provided using Swagger. Swagger UI allows you to explore the API endpoints and test them directly from your browser.
+You can access the API documentation for the PetWatch Server API by navigating to [http://localhost:5001/api-docs-ui](http://localhost:5001/api-docs-ui) in your browser.
+
 ## Available Scripts
 
 In the project directory, you can run:

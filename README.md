@@ -23,6 +23,7 @@ monitoring vaccination records, tracking routine care activities, or accessing i
 - MongoDB: NoSQL database management system.
 - Mongoose: MongoDB object modeling tool.
 - JSON Web Tokens (JWT): Implementation of JSON Web Tokens for user authentication.
+- Swagger: For the Api Documentation.
 
 # Getting Started
 ## Prerequisites
@@ -37,6 +38,14 @@ monitoring vaccination records, tracking routine care activities, or accessing i
   - MONGO_USERNAME=your-mongo-username
   - MONGO_PASSWORD=your-mongo-password
   - JWT_SECRET_KEY=your-jwt-secret-key
+ 
+## API Documentation
+
+The backend API is documented using Swagger. You can explore the API using the Swagger UI.
+
+### Accessing Swagger UI
+
+Once the server is running, you can access the Swagger UI at the following URL: [http://localhost:5001/api-docs-ui](http://localhost:5001/api-docs-ui)
 
 The client will be served at http://localhost:3000 and the server will run at http://localhost:5001.
 

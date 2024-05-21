@@ -1,5 +1,6 @@
 # Getting Started with PetWatch Client
 ## Client setup:
+- Clone the repository
 - Navigate to the client directory - cd PetWatchClient
 - Install dependencies - npm install
 - Start the client - npm start
