@@ -3,6 +3,17 @@ const PetSpecies = Object.freeze({
     FEMALE: 'FEMALE',
 });
 
+const ActivityType = Object.freeze({
+    VACCINE_RECORD:'Vaccine Record',
+    ROUTINE_CARE:'Routine Care',
+    EXPENSE:'Expense',
+    ALLERGY:'Allergy',
+    MEDICATION:'Medication',
+    VET_VISIT:'Vet Visit',
+    NOTE:'Note',
+    WEIGHT: 'Weight'
+  });
+
 const VaccineRecordType = Object.freeze({
     DHPP: 'DHPP',
     RABIES: 'Rabies',
@@ -46,8 +57,14 @@ const ActivityLogType = Object.freeze({
     ROUTINE_CARE_ADDED: 'routine care added',
     EXPENSE_ADDED: 'expense added',
     ALLERGY_ADDED: 'allergy added',
+    ALLERGY_EDIT: 'allergy edit',
+    ALLERGY_DELETE: 'allergy delete',
     MEDICATION_ADDED: 'medication added',
+    MEDICATION_EDIT: 'medication edit',
+    MEDICATION_DELETE: 'medication delete',
     VET_VISIT_ADDED: 'vet visit added',
+    VET_VISIT_EDIT: 'vet visit edit',
+    VET_VISIT_DELETE: 'vet visit delete',
     NOTE_ADDED: 'note added',
     PET_ADDED: 'pet added',
     PET_EDIT: 'pet edit',
@@ -106,6 +123,7 @@ const muletrImageOptions = Object.freeze({
   
 module.exports = {
     PetSpecies, 
+    ActivityType,
     VaccineRecordType,
     ExpenseCategory,
     RoutineCareActivity,

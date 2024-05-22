@@ -9,7 +9,8 @@ const { VetVisit } = require('../models/vetVisitModel');
 const { Note } = require('../models/noteModel');
 const { Expense } = require('../models/expenseModel');
 const { ActivityLog } = require('../models/activityLogModel');
-const  {ActivityLogType, VaccineRecordType, RoutineCareActivity, ExpenseCategory } = require('../utils/enums');
+const  {ActivityLogType, ActivityType, VaccineRecordType, RoutineCareActivity, ExpenseCategory } = require('../utils/enums');
+const { all } = require('../routes/userRoutes');
 
 // Set up storage configuration for single image upload
 const storage = multer.diskStorage({
@@ -170,14 +171,10 @@ async function getPetNote (req, res) {
         console.log('petWithUpcomingEvents: ', petWithUpcomingEvents);
         const upcomingEvents = [];
 
-        // const upcomingEvents = [...petWithUpcomingEvents.vaccinationRecords, ...petWithUpcomingEvents.routineCareRecords];
-
-
-        
         petWithUpcomingEvents.vaccinationRecords.forEach(vaccineRecord => {
                 upcomingEvents.push({
                     ...vaccineRecord.toObject(),
-                    actionType: 'Vaccine',
+                    actionType: 'Vaccine Record',
                     details: `Vaccine Type: ${vaccineRecord.vaccineType}`
                 });
             });
@@ -396,6 +393,7 @@ console.log('petData: ', petData);
         // const weightActivityLog = new ActivityLog({
         //     userId: newPet.owner, 
         //     petId: newPet._id,
+        //     type: ActivityType.WEIGHT,
         //     actionType: ActivityLogType.PET_WEIGHT_UPDATE,
         //     details: `update weight to ${newPet.weight} `
         // });
@@ -473,6 +471,7 @@ async function addPetVaccineRecord (req, res) {
         const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: petId,
+            type: ActivityType.VACCINE_RECORD,
             actionType: ActivityLogType.VACCINE_RECORD_ADDED,
             details: note ? `vaccine type: ${VaccineRecordType[vaccineType]}.\n your note: ${note}` :  `vaccine type: ${VaccineRecordType[vaccineType]}`
         });
@@ -518,6 +517,7 @@ async function addPetRoutineCare (req, res) {
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: petId,
+            type: ActivityType.ROUTINE_CARE,
             actionType: ActivityLogType.ROUTINE_CARE_ADDED,
             details: note ? `routine care type: ${RoutineCareActivity[activity]}.\n your note: ${note}` :  `routine care type: ${RoutineCareActivity[activity]}`
 
@@ -556,6 +556,7 @@ async function addPetNote (req, res) {
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: petId,
+            type: ActivityType.NOTE,
             actionType: ActivityLogType.NOTE_ADDED,
             details: noteData.content
         });
@@ -596,6 +597,7 @@ async function addPetExpense (req, res) {
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: petId,
+            type: ActivityType.EXPENSE,
             actionType: ActivityLogType.EXPENSE_ADDED,
             details: note ? `expense type: ${ExpenseCategory[category]}.\n your note: ${note}` :  `expense type: ${ExpenseCategory[category]}`
 
@@ -646,6 +648,7 @@ console.log('addPetAllergy: ', allergyData);
         const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: petId,
+            type: ActivityType.ALLERGY,
             actionType: ActivityLogType.ALLERGY_ADDED,
             details: allergy.note ? `Allergy name: ${allergy.name}.\n The treatment: ${allergy.treatment}\n your note: ${allergy.note}` :  `Allergy name: ${allergy.name}\n The treatment: ${allergy.treatment}`
         });
@@ -691,6 +694,7 @@ console.log('addPetMedication: ', medicationData);
         const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: petId,
+            type: ActivityType.MEDICATION,
             actionType: ActivityLogType.MEDICATION_ADDED,
             details: medication.note ? `Medication name: ${medication.name}.\n The dosage: ${medication.dosage}\n start date:${new Date(medication.startDate).toLocaleDateString()} - end date:${new Date(medication.endDate).toLocaleDateString()}\n your note: ${medication.note}` :
               `Medication name: ${medication.name}.\n The dosage: ${medication.dosage}\n start date:${new Date(medication.startDate).toLocaleDateString()} - end date:${new Date(medication.endDate).toLocaleDateString()}`
@@ -736,6 +740,7 @@ console.log('addPetVetVisit: ', vetVisitData);
         const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: petId,
+            type: ActivityType.VET_VISIT,
             actionType: ActivityLogType.VET_VISIT_ADDED,
             details: vetVisit.note ? `Visit Reason: ${vetVisit.reason}\n${vetVisit.examination ? `Examination: ${vetVisit.examination}` : ''}\nyour note: ${vetVisit.note}` :
              `Visit Reason: ${vetVisit.reason}}\n${vetVisit.examination ? `Examination: ${vetVisit.examination}` : ''}`
@@ -776,6 +781,7 @@ console.log(noteData);
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: noteData.pet,
+            type: ActivityType.NOTE,
             actionType: ActivityLogType.NOTE_EDIT
         });
         await activityLog.save();
@@ -804,6 +810,7 @@ async function deleteNote (req, res) {
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: pet._id,
+            type: ActivityType.NOTE,
             actionType: ActivityLogType.NOTE_DELETE
         });
         await activityLog.save();
@@ -816,34 +823,37 @@ async function deleteNote (req, res) {
 
 async function updateAllergyById (req, res) {
     try {
-        const { noteId } = req.params;
-        const { content } = req.body;
+        const { alleryId } = req.params;
+        const { allergyData } = req.body;
 
-        const note = await Note.findById(noteId);
-        if (!note) {
-            return res.status(404).json({ error: 'Note not found' });
+        const allergy = await Allergy.findById(alleryId);
+        if (!allergy) {
+            return res.status(404).json({ error: 'Allergy not found' });
         }
 
-        note.content = content;
-        note.updatedDate = Date.now();
-        await note.save();
+        allergy.note = allergyData.note;
+        allergy.treatment = allergyData.treatment;
+        allergy.date = allergyData.date;
+        allergy.name = allergyData.name;
+        await allergy.save();
 
-        const pet = await Pet.findById(note.pet);
+        const pet = await Pet.findById(allergy.pet);
         // Update the corresponding note within the pet notes array
-        const index = pet.notes.findIndex(note => note._id.toString() === noteId);
+        const index = pet.allergies.findIndex(allergy => allergy._id.toString() === alleryId);
         if (index !== -1) {
-            pet.notes[index] = note;
+            pet.allergies[index] = allergy;
         }
 
          // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
-            petId: petId,
-            actionType: ActivityLogType.NOTE_EDIT
+            petId: allergy.pet,
+            type: ActivityType.ALLERGY, 
+            actionType: ActivityLogType.ALLERGY_EDIT
         });
         await activityLog.save();
 
-        res.status(200).json({ message: 'Note updated successfully', note });
+        res.status(200).json({ message: 'Allergy updated successfully', allergy });
     } catch (error) {
         console.error('Error updating note:', error);
         res.status(500).json({ error: 'Error while updating note, please try again later' });
@@ -852,22 +862,23 @@ async function updateAllergyById (req, res) {
 
 async function deleteAllergy (req, res) {
     try {
-        const { noteId } = req.params;
-        const note = await Note.findByIdAndDelete(noteId);
-        if (!note) {
-            return res.status(404).json({ error: 'Note not found' });
+        const { allergyId } = req.params;
+        const allergy = await Allergy.findByIdAndDelete(allergyId);
+        if (!allergy) {
+            return res.status(404).json({ error: 'Allergy not found' });
         }
         // Remove from the pet notes array
-        const pet = await Pet.findById(note.pet);
-        pet.notes = pet.notes.filter(petNote => petNote.toString() !== noteId );
-        console.log('pet notes: ', pet.notes);
+        const pet = await Pet.findById(allergy.pet);
+        pet.allergies = pet.allergies.filter(allergy => allergy.toString() !== allergyId );
+        console.log('pet allergies: ', pet.allergies);
         await pet.save();
 
          // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: pet._id,
-            actionType: ActivityLogType.NOTE_DELETE
+            type: ActivityType.ALLERGY,
+            actionType: ActivityLogType.ALLERGY_DELETE
         });
         await activityLog.save();
 
@@ -879,34 +890,37 @@ async function deleteAllergy (req, res) {
 
 async function updateMedicationById (req, res) {
     try {
-        const { noteId } = req.params;
-        const { content } = req.body;
+        const { medicationId } = req.params;
+        const { medicationData } = req.body;
 
-        const note = await Note.findById(noteId);
-        if (!note) {
-            return res.status(404).json({ error: 'Note not found' });
+        const medication = await Medication.findById(medicationId);
+        if (!medication) {
+            return res.status(404).json({ error: 'Medication not found' });
         }
 
-        note.content = content;
-        note.updatedDate = Date.now();
-        await note.save();
+        medication.note = medicationData.note;
+        medication.dosage = medicationData.dosage;
+        medication.startDate = medicationData.startDate;
+        medication.endDate = medicationData.endDate;
+        medication.name = medicationData.name;
+        await medication.save();
 
-        const pet = await Pet.findById(note.pet);
-        // Update the corresponding note within the pet notes array
-        const index = pet.notes.findIndex(note => note._id.toString() === noteId);
+        const pet = await Pet.findById(medication.pet);
+        const index = pet.medications.findIndex(med => med._id.toString() === medicationId);
         if (index !== -1) {
-            pet.notes[index] = note;
+            pet.medications[index] = medication;
         }
 
          // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
-            petId: petId,
-            actionType: ActivityLogType.NOTE_EDIT
+            petId: medication.pet,
+            type: ActivityType.MEDICATION,
+            actionType: ActivityLogType.MEDICATION_EDIT
         });
         await activityLog.save();
 
-        res.status(200).json({ message: 'Note updated successfully', note });
+        res.status(200).json({ message: 'Medication updated successfully', medication });
     } catch (error) {
         console.error('Error updating note:', error);
         res.status(500).json({ error: 'Error while updating note, please try again later' });
@@ -915,22 +929,23 @@ async function updateMedicationById (req, res) {
 
 async function deleteMedication (req, res) {
     try {
-        const { noteId } = req.params;
-        const note = await Note.findByIdAndDelete(noteId);
-        if (!note) {
-            return res.status(404).json({ error: 'Note not found' });
+        const { medicationId } = req.params;
+        const medication = await Medication.findByIdAndDelete(medicationId);
+        if (!medication) {
+            return res.status(404).json({ error: 'Medication not found' });
         }
         // Remove from the pet notes array
-        const pet = await Pet.findById(note.pet);
-        pet.notes = pet.notes.filter(petNote => petNote.toString() !== noteId );
-        console.log('pet notes: ', pet.notes);
+        const pet = await Pet.findById(medication.pet);
+        pet.medications = pet.notes.filter(med => med.toString() !== medication );
+        console.log('pet medications: ', pet.medications);
         await pet.save();
 
          // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: pet._id,
-            actionType: ActivityLogType.NOTE_DELETE
+            type: ActivityType.MEDICATION,
+            actionType: ActivityLogType.MEDICATION_DELETE
         });
         await activityLog.save();
 
@@ -942,34 +957,37 @@ async function deleteMedication (req, res) {
 
 async function updateVetVisitById (req, res) {
     try {
-        const { noteId } = req.params;
-        const { content } = req.body;
+        const { visitId } = req.params;
+        const { visitData } = req.body;
 
-        const note = await Note.findById(noteId);
-        if (!note) {
-            return res.status(404).json({ error: 'Note not found' });
+        const visit = await VetVisit.findById(visitId);
+        if (!visit) {
+            return res.status(404).json({ error: 'Visit not found' });
         }
 
-        note.content = content;
-        note.updatedDate = Date.now();
-        await note.save();
+        visit.note = visitData.note;
+        visit.reason = visitData.reason;
+        visit.examination = visitData.examination;
+        visit.date = visitData.date;
+        await visit.save();
 
-        const pet = await Pet.findById(note.pet);
+        const pet = await Pet.findById(visit.pet);
         // Update the corresponding note within the pet notes array
-        const index = pet.notes.findIndex(note => note._id.toString() === noteId);
+        const index = pet.vetVisits.findIndex(visit => visit._id.toString() === visitId);
         if (index !== -1) {
-            pet.notes[index] = note;
+            pet.vetVisits[index] = visit;
         }
 
          // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
-            petId: petId,
-            actionType: ActivityLogType.NOTE_EDIT
+            petId: visit.pet,
+            type: ActivityType.VET_VISIT,
+            actionType: ActivityLogType.VET_VISIT_EDIT
         });
         await activityLog.save();
 
-        res.status(200).json({ message: 'Note updated successfully', note });
+        res.status(200).json({ message: 'Visit updated successfully', visit });
     } catch (error) {
         console.error('Error updating note:', error);
         res.status(500).json({ error: 'Error while updating note, please try again later' });
@@ -978,22 +996,23 @@ async function updateVetVisitById (req, res) {
 
 async function deleteVetVisit (req, res) {
     try {
-        const { noteId } = req.params;
-        const note = await Note.findByIdAndDelete(noteId);
-        if (!note) {
-            return res.status(404).json({ error: 'Note not found' });
+        const { visitId } = req.params;
+        const visit = await VetVisit.findByIdAndDelete(visitId);
+        if (!visit) {
+            return res.status(404).json({ error: 'Visit not found' });
         }
         // Remove from the pet notes array
-        const pet = await Pet.findById(note.pet);
-        pet.notes = pet.notes.filter(petNote => petNote.toString() !== noteId );
-        console.log('pet notes: ', pet.notes);
+        const pet = await Pet.findById(visit.pet);
+        pet.vetVisits = pet.notes.filter(visit => visit.toString() !== visitId );
+        console.log('pet vetVisits: ', pet.vetVisits);
         await pet.save();
 
          // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: pet._id,
-            actionType: ActivityLogType.NOTE_DELETE
+            type: ActivityType.VET_VISIT,
+            actionType: ActivityLogType.VET_VISIT_DELETE
         });
         await activityLog.save();
 
@@ -1029,6 +1048,7 @@ async function updatePetById(req, res) {
             const weightActivityLog = new ActivityLog({
                 userId: pet.owner, 
                 petId: petId,
+                type: ActivityType.WEIGHT,
                 actionType: ActivityLogType.PET_WEIGHT_UPDATE,
                 details: `update weight to ${weight} `
             });

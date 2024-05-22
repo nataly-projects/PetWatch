@@ -181,7 +181,8 @@ async function getUserUpcomingEvents (req, res) {
       pet.vaccinationRecords.forEach(vaccineRecord => {
           upcomingEvents.push({
               ...vaccineRecord.toObject(),
-              actionType: 'Vaccine',
+              petId: vaccineRecord.pet,
+              actionType: 'Vaccine Record',
               details: `Vaccine Type: ${vaccineRecord.vaccineType}`
           });
       });
@@ -189,6 +190,7 @@ async function getUserUpcomingEvents (req, res) {
       pet.routineCareRecords.forEach(routineCareRecord => {
           upcomingEvents.push({
               ...routineCareRecord.toObject(),
+              petId: routineCareRecord.pet,
               actionType: 'Routine Care',
               details: `Routine Care Type: ${routineCareRecord.activity}`
           });
@@ -197,6 +199,7 @@ async function getUserUpcomingEvents (req, res) {
       pet.vetVisits.forEach(visit => {
         upcomingEvents.push({
             ...visit.toObject(),
+            petId: visit.pet,
             actionType: 'Vet Visit',
             details: `The Reason: ${visit.reason}`
         });
@@ -754,7 +757,7 @@ module.exports = {
  *                     type: string
  *                     example: Internal server error.
  * 
- *   /users/{userId}/activity-log:
+ *   /users/activity/{userId}/:
  *     get:
  *       summary: Get user activity log
  *       tags:
@@ -797,7 +800,7 @@ module.exports = {
  *                     type: string
  *                     example: Internal server error.
  * 
- *   /users/{userId}/expenses:
+ *   /users/expenses/{userId}:
  *     get:
  *       summary: Get user expenses
  *       tags:
@@ -870,7 +873,7 @@ module.exports = {
  *                     type: string
  *                     example: Internal server error.
  * 
- *   /users/{userId}/upcoming-events:
+ *   /users/upcoming/{userId}:
  *     get:
  *       summary: Get user upcoming events
  *       tags:
@@ -924,7 +927,7 @@ module.exports = {
  *                     type: string
  *                     example: Internal server error.
  * 
- *   /users/{userId}/notes:
+ *   /users/notes/{userId}:
  *     get:
  *       summary: Get user notes
  *       tags:
@@ -967,7 +970,7 @@ module.exports = {
  *                     type: string
  *                     example: Internal server error.
  * 
- *   /users/{userId}/account-settings:
+ *   /users/settings/{userId}:
  *     get:
  *       summary: Get user account settings
  *       tags:
@@ -1029,8 +1032,6 @@ module.exports = {
  *                   error:
  *                     type: string
  *                     example: Internal server error.
- * 
- *   /users/{userId}/settings:
  *     put:
  *       summary: "Update user account settings"
  *       tags:
@@ -1076,8 +1077,9 @@ module.exports = {
  *                   error:
  *                     type: string
  *                     example: Internal server error.
+ * 
  *
-*   /users/{userId}/change-password:
+*   /users/change-password:
 *     put:
 *       summary: "Change user password"
 *       tags:
@@ -1134,7 +1136,7 @@ module.exports = {
 *                     type: string
 *                     example: Internal server error.
 *
-*   /users/{userId}/request-password-reset:
+*   /users/reset-password-request:
 *     post:
 *       summary: "Request password reset"
 *       tags:
@@ -1266,7 +1268,7 @@ module.exports = {
 *                     type: string
 *                     example: Internal server error
 * 
-*   /users/contact-us-message:
+*   /users/contact:
 *     post:
 *       summary: "Contact Us Message"
 *       tags:
@@ -1309,7 +1311,7 @@ module.exports = {
 *                     type: string
 *                     example: Internal server error
 *
-*   /users/{userId}/pets-activities/{year}/{month}:
+*   /users/calendar-activities/{userId}/{year}/{month}:
 *     get:
 *       summary: "Get user's pets activities for a specific month"
 *       tags:
