@@ -2,11 +2,8 @@ import axios from 'axios';
 const BASE_API_URL = process.env.REACT_APP_BASE_API_URL;
 
 export const loginUser = async (email, password) => {
-    console.log('user service - loginUser');
     try {
       const response = await axios.post(`${BASE_API_URL}/users/login`, {email, password});
-      console.log(response);
-
       if (response && response.data) {
         return response.data;
       }
@@ -17,11 +14,8 @@ export const loginUser = async (email, password) => {
 };
 
 export const signupUser = async (fullName, email, phone, password) => {
-    console.log('user service - signupUser');
     try {
         const response = await axios.post(`${BASE_API_URL}/users/register`, { fullName, email, phone, password });
-        console.log(response);
-
         if (response && response.data) {
             return response.data;
         }
@@ -52,7 +46,6 @@ export const fetchUserActivityLog = async (userId, token) => {
         }
         return null;
     } catch (error) {
-        console.log(error);
         throw error; 
     }
 }
@@ -71,9 +64,7 @@ export const fetchUserExpensesArray = async (userId, token) => {
     } catch (error) {
         if (error.response && error.response.status === 401) {
             console.error('Access forbidden. You do not have permission to access this resource.');
-
         }
-        console.log(error);
         throw error; 
     }
 }
@@ -85,14 +76,12 @@ export const fetchUserUpcomingEvents = async (userId, token) => {
               Authorization: `Bearer ${token}`
             }
           });
-        console.log('response from fetchUserUpcomingEvents: ', response);
         if (response && response.data) {
             return response.data;
         }
         return null;
 
     } catch (error) {
-        console.log(error);
         throw error; 
     }
 }
@@ -104,14 +93,12 @@ export const fetchUserNotes = async (userId, token) => {
               Authorization: `Bearer ${token}`
             }
           });
-        console.log('response from fetchUserNotes: ', response);
         if (response && response.data) {
             return response.data;
         }
         return null;
 
     } catch (error) {
-        console.log(error);
         throw error; 
     }
 }
@@ -123,14 +110,12 @@ export const fetchUserAccountSettings = async (userId, token) => {
               Authorization: `Bearer ${token}`
             }
           });
-        console.log('response from fetchUserAccountSettings: ', response);
         if (response && response.data) {
             return response.data;
         }
         return null;
 
     } catch (error) {
-        console.log(error);
         throw error; 
     }
 }
@@ -192,7 +177,6 @@ export const resetPassword = async (email, newPassword) => {
 export const sendContactMessage = async (messageData) => {
     try {
         const response = await axios.post(`${BASE_API_URL}/users/contact`, {messageData});
-        console.log(response);
         if (response && response.data) {
             return true;
         }  
@@ -204,20 +188,17 @@ export const sendContactMessage = async (messageData) => {
 
 export const editUserDetails = async (userId, userData, token) => {
     try {
-        console.log('editUserDetails: ', userData);
         const response = await axios.put(`${BASE_API_URL}/users/${userId}`, {userData}, {
             headers: {
             // 'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${token}`
             },
         });
-        console.log('response: ', response);
         if (response && response.data.updatedUser) {
             return response.data.updatedUser;
         }
         return null;
     } catch (error) {
-        console.log(error);
         throw error;
     }
 };
@@ -250,7 +231,6 @@ export const fetchUserPetsActivitiesForMonth = async (userId, token, year, month
         }
         return null;
     } catch (error) {
-        console.log(error);
        throw error;
     }
 };

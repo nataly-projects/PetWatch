@@ -1,45 +1,64 @@
 .expense-tracker {
-    /* margin: 20px; */
-    padding: 10px 20px;
+  /* margin: 20px; */
+  padding: 10px 20px;
 
-    table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-      
-      th, td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: left;
-      }
-      
-      th {
-        background-color: #f2f2f2;
-      }
-      
-      tr:nth-child(even) {
-        background-color: #f2f2f2;
-      }
-      
-      tr:hover {
-        background-color: #ddd;
-      }
-
-      .chart-container {
-        margin-bottom: 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
     
-    .chart-wrapper {
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        padding: 20px;
-        background-color: #f9f9f9;
-        width: 500px; 
-        height: 500px;
+  th {
+    background-color: #f2f2f2;
+  }
+  
+  tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+  
+  tr:hover {
+    background-color: #ddd;
+  }
+
+  .chart-container {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .chart-wrapper {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    width: 500px; 
+    height: 500px;
+  }
+
+  .filter-section {
+    width: 100%;
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+
+    .input-container {
+        display: flex;
+        align-items: baseline;
+        gap: 5px;
     }
+
+    .input-field {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+  }
 }
 
 

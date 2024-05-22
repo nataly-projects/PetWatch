@@ -212,6 +212,7 @@ const PetProfile = () => {
         <ExpenseTracker 
         expenses={expenses}
         from={'pet'}
+        petName={pet.name}
         currencySign={currencySign}
       />
         

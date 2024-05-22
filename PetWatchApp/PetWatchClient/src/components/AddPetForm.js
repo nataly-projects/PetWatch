@@ -15,7 +15,7 @@ import VetVisitActivity from './VetVisitActivity';
 import NoteActivity from './NoteActivity';
 import petDefaultImage from '../images/paw.png';
 import { formatDate } from '../utils/utils';
-import { addPet } from '../services/petService';
+import { addPet, addPetAdditionalImages } from '../services/petService';
 import '../styles/AddPetForm.css';
 
 const AddPetForm = () => {
@@ -74,9 +74,7 @@ const AddPetForm = () => {
             expenses: expensesRecord,
             notes: notesRecord,
             vetVisits: vetVisitsRecord,
-            owner: user._id,
-            image: selectedImageProfile ? selectedImageProfile : null,
-            additionalImages: additionalPhotos
+            owner: user._id
         };
         return pet;
     };
@@ -119,10 +117,22 @@ const AddPetForm = () => {
         e.preventDefault();
 
         const newPet = createPetObject();
-        console.log('submit newPet: ', newPet);
+        const formData = new FormData();
+        formData.append('newPet', JSON.stringify(newPet));
+        formData.append('image', (selectedImageProfile ? selectedImageProfile : null));
+
         try{
-            await addPet(newPet, token);
+            const response = await addPet(formData, token, newPet.owner);
             toast.success('Pet added successfully!');
+            if (response.pet && additionalPhotos.length > 0 ) {
+                console.log('there is additional images! ', response.pet);
+                const formData = new FormData();
+                // Append additional images one by one
+                additionalPhotos.forEach((image) => {
+                    formData.append('additionalImages', image);
+                });
+                await addPetAdditionalImages(formData, token, response.pet._id);
+            }
           } catch (error) {
             if (error.response && error.response.status === 401) {
                 console.error('UNAUTHORIZED_ERROR');

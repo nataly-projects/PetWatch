@@ -15,6 +15,7 @@ router.get('/note/:petId', petController.getPetNote);
 router.get('/expense/:petId', petController.getPetExpense);
 router.get('/activity/:petId', petController.getPetActivityLog);
 router.get('/upcoming/:petId', petController.getPetUpcomingEvents);
+router.get('/expenses-array/:petId', petController.getPetExpensesArrays);
 router.get('/weight-track/:petId', petController.getPetWeightTracker);
 router.get('/allergy/:petId', petController.getPetAllergies);
 router.get('/medication/:petId', petController.getPetMedications);

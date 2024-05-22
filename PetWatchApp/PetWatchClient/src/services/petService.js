@@ -7,7 +7,6 @@ const BASE_API_URL = process.env.REACT_APP_BASE_API_URL;
 export const getPetById = async (petId) => {
   try {
       const response = await axios.get(`${BASE_API_URL}/pets/${petId}`);
-      console.log('response from getPetById: ', response);
       if (response && response.data) {
           return response.data;
       }
@@ -25,13 +24,11 @@ export const getPetsByUserId = async (userId, token) => {
         Authorization: `Bearer ${token}`
       }
     });
-    console.log('response from getPetsByUserId: ', response);
     if (response && response.data) {
         return response.data;
     }
     return null;
   } catch (error) {
-    console.log(error);
     throw error; 
   }
 };
@@ -39,7 +36,6 @@ export const getPetsByUserId = async (userId, token) => {
 export const getPetVaccinationRecord = async (petId) => {
   try {
       const response = await axios.get(`${BASE_API_URL}/pets/vaccinationRecord/${petId}`);
-      console.log('response from getPetVaccinationRecord: ', response);
       if (response && response.data) {
           return response.data;
       }
@@ -52,7 +48,6 @@ export const getPetVaccinationRecord = async (petId) => {
 export const getPetRoutineCare = async (petId) => {
   try {
       const response = await axios.get(`${BASE_API_URL}/pets/routineCare/${petId}`);
-      console.log('response from getPetRoutineCare: ', response);
       if (response && response.data) {
           return response.data;
       }
@@ -69,7 +64,6 @@ export const getPetNote = async (petId, token) => {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log('response from getPetNote: ', response);
       if (response && response.data) {
           return response.data;
       }
@@ -82,7 +76,6 @@ export const getPetNote = async (petId, token) => {
 export const getPetExpense = async (petId) => {
   try {
       const response = await axios.get(`${BASE_API_URL}/pets/expense/${petId}`);
-      console.log('response from getPetExpense: ', response);
       if (response && response.data) {
           return response.data;
       }
@@ -95,7 +88,6 @@ export const getPetExpense = async (petId) => {
 export const getPetAllergies = async (petId) => {
   try {
       const response = await axios.get(`${BASE_API_URL}/pets/allergy/${petId}`);
-      console.log('response from getPetAllergies: ', response);
       if (response && response.data) {
           return response.data;
       }
@@ -108,7 +100,6 @@ export const getPetAllergies = async (petId) => {
 export const getPetMedications = async (petId) => {
   try {
       const response = await axios.get(`${BASE_API_URL}/pets/medication/${petId}`);
-      console.log('response from getPetMedications: ', response);
       if (response && response.data) {
           return response.data;
       }
@@ -121,7 +112,6 @@ export const getPetMedications = async (petId) => {
 export const getPetVetVisits = async (petId) => {
   try {
       const response = await axios.get(`${BASE_API_URL}/pets/vet-visit/${petId}`);
-      console.log('response from getPetVetVisits: ', response);
       if (response && response.data) {
           return response.data;
       }
@@ -138,7 +128,6 @@ export const getPetWeightTracker = async (petId, token) => {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log('response from getPetWeightTracker: ', response);
       if (response && response.data) {
           return response.data;
       }
@@ -156,7 +145,6 @@ export const getPetActivityLog = async (petId, token) => {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log('response from getPetActivityLog: ', response);
       if (response && response.data) {
           return response.data;
       }
@@ -173,7 +161,6 @@ export const getPetUpcomingEvents = async (petId, token) => {
         Authorization: `Bearer ${token}`
       }
     });
-    console.log('response from getPetUpcomingEvents: ', response);
     if (response && response.data) {
         return response.data;
     }
@@ -190,7 +177,6 @@ export const getPetExpensesArrays = async (petId, token) => {
         Authorization: `Bearer ${token}`
       }
     });
-    console.log('response from getPetExpensesArrays: ', response);
     if (response && response.data) {
         return response.data;
     }
@@ -203,7 +189,6 @@ export const getPetExpensesArrays = async (petId, token) => {
   export const deletePet = async (petId) => {
     try {
         const response = await axios.delete(`${BASE_API_URL}/pets/${petId}`);
-        console.log('response from deletePet: ', response);
         if (response && response.data) {
             return response.data;
         }
@@ -216,7 +201,6 @@ export const getPetExpensesArrays = async (petId, token) => {
   export const updatePetById = async (pet) => {
     try {
       const response = await axios.put(`${BASE_API_URL}/pets/${pet._id}`, {petData: pet});
-      console.log('response from updatePetById: ', response);
       if (response && response.data) {
           return response.data;
       }
@@ -226,15 +210,31 @@ export const getPetExpensesArrays = async (petId, token) => {
     }
   };
 
-  export const addPet = async (pet, token) => {
-    console.log('add pet service: ', pet);
+  export const addPet = async (petData, token, userId) => {
     try {
-      const response = await axios.post(`${BASE_API_URL}/pets/${pet.owner}`, {petData: pet}, {
+      const response = await axios.post(`${BASE_API_URL}/pets/${userId}`, petData, {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
         }
       });
-      console.log('response from addPet: ', response);
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+  };
+
+  export const addPetAdditionalImages = async (images, token, petId) => {
+    try {
+      const response = await axios.post(`${BASE_API_URL}/pets/additional-images/${petId}`, images, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data'
+        }
+      });
       if (response && response.data) {
           return response.data;
       }
@@ -251,7 +251,6 @@ export const getPetExpensesArrays = async (petId, token) => {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log('response from addPetVaccineRecord: ', response);
       if (response && response.data) {
           return response.data;
       }
@@ -268,7 +267,6 @@ export const getPetExpensesArrays = async (petId, token) => {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log('response from addPetRoutineCare: ', response);
       if (response && response.data) {
           return response.data;
       }
@@ -285,7 +283,6 @@ export const getPetExpensesArrays = async (petId, token) => {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log('response from addPetNote: ', response);
       if (response && response.data) {
           return response.data;
       }
@@ -302,7 +299,6 @@ export const getPetExpensesArrays = async (petId, token) => {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log('response from addPetExpense: ', response);
       if (response && response.data) {
           return response.data;
       }
@@ -319,7 +315,6 @@ export const getPetExpensesArrays = async (petId, token) => {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log('response from addPetAllergy: ', response);
       if (response && response.data) {
           return response.data;
       }
@@ -336,7 +331,6 @@ export const getPetExpensesArrays = async (petId, token) => {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log('response from addPetMedication: ', response);
       if (response && response.data) {
           return response.data;
       }
@@ -353,7 +347,6 @@ export const getPetExpensesArrays = async (petId, token) => {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log('response from addPetVetVisit: ', response);
       if (response && response.data) {
           return response.data;
       }
@@ -393,7 +386,7 @@ export const getPetExpensesArrays = async (petId, token) => {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log('response from updateNoteById: ', response);
+
       if (response && response.data) {
           return response.data;
       }
@@ -410,7 +403,6 @@ export const getPetExpensesArrays = async (petId, token) => {
           Authorization: `Bearer ${token}`
         }
       });
-      console.log('response from deleteNoteById: ', response);
       if (response && response.data) {
           return response.data;
       }

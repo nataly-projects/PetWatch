@@ -91,7 +91,7 @@ export const RoutineCareActivityItems = [
 export const ExpenseCategory = [
   { name: 'FOOD', icon: faUtensils, value: 'Food' },
   { name: 'MEDICATION', icon: faCapsules, value: 'Medication' },
-  { name: 'VACCINATION', icon: faSyringe, value: 'Vaccinations' },
+  { name: 'VACCINATION', icon: faSyringe, value: 'Vaccination' },
   { name: 'VET_VISIT', icon: faHospital, value: 'Vet Visit' },
   { name: 'INSURANCE', icon: faMoneyBillAlt, value: 'Insurance' },
   { name: 'ROUTINE_CARE', icon: faHeartbeat, value: 'Routine Care' },
@@ -114,6 +114,20 @@ export const ActivityTypeObject = [
   { name: 'OTHER', icon: faEllipsisH, value: 'Other', items: false }
 ];
 
+export const ExpensesType = {
+  FOOD:'Food',
+  MEDICATION:'Medication',
+  VACCINATION:'Vaccination',
+  INSURANCE:'Insurance',
+  ROUTINE_CARE:'Routine Care',
+  VET_VISIT:'Vet Visit',
+  TOYS:'Toys',
+  HOME_PRODUCTS: 'Home Products',
+  RELATED_PRODUCTS: 'Related Products',
+  TRAINING: 'Training',
+  OTHER: 'Other'
+};
+
 export const ActivityType = {
   VACCINE_RECORD:'Vaccine Record',
   ROUTINE_CARE:'Routine Care',
@@ -121,8 +135,11 @@ export const ActivityType = {
   ALLERGY:'Allergy',
   MEDICATION:'Medication',
   VET_VISIT:'Vet Visit',
-  NOTE:'Note'
+  NOTE:'Note',
+  WEIGHT: 'Weight'
 };
+
+
 
 export const Currency = {
   USD: { name: 'USD - United States Dollar', value:'USD', sign: '$' },

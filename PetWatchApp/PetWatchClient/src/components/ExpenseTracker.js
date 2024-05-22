@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 import {Chart, ArcElement, Tooltip, Legend} from 'chart.js'
 import { Pie } from 'react-chartjs-2'; 
 import { formatDate } from '../utils/utils';
 import { Currency } from '../utils/utils';
+import FilterSection from './FilterSection';
+import { ExpensesType } from '../utils/utils';
+import ExportToCSVButton from './ExportToCSVButton copy';
 import '../styles/ExpenseTracker.css';
 
-const ExpenseTracker = ({expenses, from}) => {
+const ExpenseTracker = ({expenses, from, petName}) => {
     const currencySign = Currency[useSelector((state) => state.user.currency)].sign;
 
     const location = useLocation();
@@ -17,10 +20,18 @@ const ExpenseTracker = ({expenses, from}) => {
         from = location.state.from;
     }
 
-    
+    const [categoryFilter, setCategoryFilter] = useState('');
+    const [startDateFilter, setStartDateFilter] = useState('');
+    const [endDateFilter, setEndDateFilter] = useState('');
+    const [minAmountFilter, setMinAmountFilter] = useState('');
+
+    const handleCategoryChange = (event) => setCategoryFilter(event.target.value);
+    const handleStartDateChange = (event) => setStartDateFilter(event.target.value);
+    const handleEndDateChange = (event) => setEndDateFilter(event.target.value);
+    const handleMinAmountChange = (event) => setMinAmountFilter(event.target.value);
+
+
     Chart.register(ArcElement, Tooltip, Legend);
-
-
     const pieChartOptions = { 
         plugins: {
             legend: {
@@ -32,15 +43,28 @@ const ExpenseTracker = ({expenses, from}) => {
         },
         responsive: true,
         maintainAspectRatio: false
-     };
+    };
 
-     
     const {  allExpenses, monthlyExpensesChartData, categoryExpensesChartData } = expenses;
+
+    const filteredExpenses = allExpenses.filter((expense) => {
+        console.log('expense: ', expense);
+        const expenseDate = new Date(expense.date);
+        const startDate = startDateFilter ? new Date(startDateFilter) : null;
+        const endDate = endDateFilter ? new Date(endDateFilter) : null;
+        const minAmount = minAmountFilter ? parseFloat(minAmountFilter) : null;
+
+        return (!categoryFilter || expense.category === categoryFilter) &&
+            (!startDate || expenseDate >= startDate.setHours(0, 0, 0, 0)) &&
+            (!endDate || expenseDate <= endDate.setHours(23, 59, 59, 999)) &&
+            (!minAmount || expense.amount >= minAmount);
+    });
 
     const renderExpensesTable = () => {
         return (
             (allExpenses.length > 0 ?
-                <table>
+                <>
+                      <table>
                 <thead>
                     <tr>
                         <th>Date</th>
@@ -50,7 +74,7 @@ const ExpenseTracker = ({expenses, from}) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {allExpenses.map(expense => (
+                    {filteredExpenses.map(expense => (
                         <tr key={expense._id}>
                             <td>{formatDate(expense.date)}</td>
                             {from === 'user' && <td>{expense.pet.name}</td>}
@@ -60,6 +84,14 @@ const ExpenseTracker = ({expenses, from}) => {
                     ))}
                 </tbody>
                 </table>
+                <ExportToCSVButton className='btn'
+                petName={petName}
+                data={filteredExpenses} 
+                filename={petName == null ? "expenses.csv" : petName +"-expenses.csv"}
+                isExpense={true}
+                />
+                </>
+          
                 :
                 <p>No expenses yet.</p>
             )
@@ -92,7 +124,20 @@ const ExpenseTracker = ({expenses, from}) => {
     return (
         <div className="expense-tracker">
             <h3>{from === 'user' ? 'Your Expense Tracker': 'Expenses' }</h3>
-
+            <FilterSection
+                filterType={categoryFilter}
+                handleTypeChange={handleCategoryChange}
+                startDate={startDateFilter}
+                handleStartDateChange={handleStartDateChange}
+                endDate={endDateFilter}
+                handleEndDateChange={handleEndDateChange}
+                category={categoryFilter}
+                handleCategoryChange={handleCategoryChange}
+                minAmount={minAmountFilter}
+                handleMinAmountChange={handleMinAmountChange}
+                selectOptions={ExpensesType}
+                isExpenseFilter={true}
+            />
             {renderExpensesTable()}
             { allExpenses.length > 0 ?
             <>
