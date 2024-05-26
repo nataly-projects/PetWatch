@@ -11,6 +11,10 @@ const Schema = mongoose.Schema;
 
 
 const petSchema = new Schema({
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    },
     name: {
         type: String,
         required: true
@@ -49,30 +53,9 @@ const petSchema = new Schema({
     chipNumber: {
         type: String,
     },
-    medications: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Medication',
-    }],
-    allergies: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Allergy',
-    }],
-    vetVisits: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'VetVisit',
-    }],
     additionalImages: [{
         type: String,
     }],
-    // category: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'Category',
-    //     required: true
-    // },
-    owner: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-    },
     vaccinationRecords: [{ 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'VaccinationRecord' 
@@ -88,6 +71,26 @@ const petSchema = new Schema({
     expenses: [{ 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Expense' 
+    }],
+    medications: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Medication',
+    }],
+    allergies: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Allergy',
+    }],
+    vetVisits: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'VetVisit',
+    }],
+    emergencyContacts: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'EmergencyContact',
+    }],
+    mealPlanner: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'MealPlanner',
     }],
     created_at: {
         type: Date,

@@ -20,6 +20,8 @@ router.get('/weight-track/:petId', petController.getPetWeightTracker);
 router.get('/allergy/:petId', petController.getPetAllergies);
 router.get('/medication/:petId', petController.getPetMedications);
 router.get('/vet-visit/:petId', petController.getPetVetVisits);
+router.get('/meal/:petId', petController.getPetMealPlanner);
+router.get('/contact/:petId', petController.getPetEmergencyContacts);
 const { singleImageUpload, multipleImagesUpload } = petController;
 
 router.post('/:userId',singleImageUpload, petController.addPet);
@@ -32,6 +34,8 @@ router.post('/expense/:petId', petController.addPetExpense);
 router.post('/allergy/:petId', petController.addPetAllergy);
 router.post('/medication/:petId', petController.addPetMedication);
 router.post('/vet-visit/:petId', petController.addPetVetVisit);
+router.post('/meal/:petId', petController.addPetMealPlanner);
+router.post('/contact/:petId', petController.addPetEmergencyContacts);
 
 router.put('/note/:noteId', petController.updateNoteById);
 router.delete('/note/:noteId', petController.deleteNote);
@@ -45,12 +49,14 @@ router.delete('/note/:noteId', petController.deleteNote);
 // router.put('/vet-visit/:vetVisitId', petController.);
 // router.delete('/vet-visit/:vetVisitId', petController.);
 
+router.put('/meal/:mealId', petController.updateMealPlannerById);
+router.delete('/meal/:mealId', petController.deleteMealPlanner);
+
+router.put('/contact/:contactId', petController.updateEmergencyContactById);
+router.delete('/contact/:contactId', petController.deleteEmergencyContact);
 
 // router.put('/:petId',petController.upload.single('image'),  petController.updatePetById);
 router.put('/:petId',  petController.updatePetById);
 router.delete('/:petId', petController.deletePet);
-
-// router.post('/:userId', petController.upload.single('image'), petController.addPet);
-
 
 module.exports = router;

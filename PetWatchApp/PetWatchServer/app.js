@@ -2,11 +2,11 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const path = require('path');
 const cors = require('cors');
 const swaggerSetup = require('./swagger');
 const mongoUser = process.env.MONGO_USERNAME;
 const mongoPass = process.env.MONGO_PASSWORD;
-console.log(mongoUser);
 const appRoutes = require('./src/routes/appRoutes');
 
 const mongoUri = `mongodb+srv://${mongoUser}:${mongoPass}@petwatch.bfebbx2.mongodb.net/`;
@@ -42,17 +42,13 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 // serve uploaded images statically
-app.use('/uploads', express.static('uploads'));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// app.use('/api-docs', swaggerUi.serve);
-// app.get('/api-docs', swaggerUi.setup(swaggerSpec));
 swaggerSetup(app);
 app.use(express.json());
 
 // API routes
 app.use('/api', appRoutes);
-// swaggerSetup(app);
-
 
 app.listen(PORT, () => {
   console.log(`Server is up and running on port ${PORT}`);

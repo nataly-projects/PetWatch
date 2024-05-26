@@ -9,6 +9,8 @@ const { VetVisit } = require('../models/vetVisitModel');
 const { Note } = require('../models/noteModel');
 const { Expense } = require('../models/expenseModel');
 const { ActivityLog } = require('../models/activityLogModel');
+const { MealPlanner } = require('../models/mealPlannerModel');
+const { EmergencyContact } = require('../models/emergencyContactModel');
 const  {ActivityLogType, ActivityType, VaccineRecordType, RoutineCareActivity, ExpenseCategory } = require('../utils/enums');
 const { all } = require('../routes/userRoutes');
 
@@ -164,7 +166,7 @@ async function getPetNote (req, res) {
             populate: {path: 'pet',select: 'name'} 
         }).populate({
             path: 'vetVisits',
-            match: { nextDate: { $gte: new Date() }},
+            match: { date: { $gte: new Date() }},
             populate: {path: 'pet',select: 'name'} 
         });
 
@@ -172,12 +174,12 @@ async function getPetNote (req, res) {
         const upcomingEvents = [];
 
         petWithUpcomingEvents.vaccinationRecords.forEach(vaccineRecord => {
-                upcomingEvents.push({
-                    ...vaccineRecord.toObject(),
-                    actionType: 'Vaccine Record',
-                    details: `Vaccine Type: ${vaccineRecord.vaccineType}`
-                });
+            upcomingEvents.push({
+                ...vaccineRecord.toObject(),
+                actionType: 'Vaccine Record',
+                details: `Vaccine Type: ${vaccineRecord.vaccineType}`
             });
+        });
       
         petWithUpcomingEvents.routineCareRecords.forEach(routineCareRecord => {
             upcomingEvents.push({
@@ -190,12 +192,12 @@ async function getPetNote (req, res) {
         petWithUpcomingEvents.vetVisits.forEach(visit => {
             upcomingEvents.push({
                 ...visit.toObject(),
+                nextDate: visit.date,
                 actionType: 'Vet Visit',
                 details: `The Reason: ${visit.reason}`
             });
         });
         
-
         // Sort the combined events by nextDate
         upcomingEvents.sort((a, b) => a.nextDate - b.nextDate);
         res.status(200).json(upcomingEvents);
@@ -211,7 +213,6 @@ async function getPetNote (req, res) {
       const petWithExpenses = await Pet.findById(petId).populate('expenses');
       const allExpenses = petWithExpenses.expenses;
 
-  console.log('petWithExpenses: ', petWithExpenses);
       const monthlyExpensesData = {};
       const categoryExpensesData = {};
   
@@ -287,6 +288,35 @@ async function getPetVetVisits (req, res) {
     }
 }
 
+async function getPetMealPlanner (req, res) {
+    try {
+        const { petId } = req.params;
+
+        const pet = await Pet.findById(petId).populate('mealPlanner');
+        if (!pet) {
+        return res.status(404).json({ error: 'Pet not found' });
+        }
+        res.status(200).json(pet.mealPlanner);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+async function getPetEmergencyContacts (req, res) {
+    try {
+        const { petId } = req.params;
+
+        const pet = await Pet.findById(petId).populate('emergencyContacts');
+        if (!pet) {
+            return res.status(404).json({ error: 'Pet not found' });
+        }
+        res.status(200).json(pet.emergencyContacts);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
 async function addPet (req, res) {
     try {
         console.log('add pet');
@@ -294,120 +324,182 @@ async function addPet (req, res) {
         const {newPet} = req.body;
         const imagePath = req.file.path;
         
-console.log('file: ', req.file);
-console.log('newPet: ', newPet);
-const petData = JSON.parse(newPet);
-console.log('petData: ', petData);
+        const petData = JSON.parse(newPet);
         let medicationIds, allergyIds, vaccinationIds, noteIds, rouineCareIds, expenseIds, vetVisitIds = [];
 
-        // const newPet = new Pet({
-        //     name: petData.name,
-        //     age: petData.age,
-        //     birthday: petData.birthday,
-        //     breed: petData.breed,
-        //     chipNumber: petData.chip,
-        //     description: petData.description,
-        //     owner: petData.owner,
-        //     species: petData.species,
-        //     weight: petData.weight,
-        //     image: imagePath,
-        // });
-        // console.log('new pet: ', newPet);
-        // await newPet.save();
-        // const pet = newPet._id;
+        const newPetData = new Pet({
+            name: petData.name,
+            age: petData.age,
+            birthday: petData.birthday,
+            breed: petData.breed,
+            chipNumber: petData.chip,
+            description: petData.description,
+            owner: petData.owner,
+            species: petData.species,
+            weight: petData.weight,
+            image: imagePath,
+        });
+        console.log('new pet: ', newPetData);
+        await newPetData.save();
+        const pet = newPetData._id.toString();
+console.log('petId: ', pet.toString());
+        if (petData.expenses.length > 0) {
+            expenseIds = await Promise.all(petData.expenses.map(async (expense) => {
+                const newExpense = new Expense({ ...expense, pet });
+                console.log('newExpense: ', newExpense);
+                await newExpense.save();
 
-        // if (petData.expenses.length > 0) {
-        //     expenseIds = await Promise.all(petData.expenses.map(async (expense) => {
-        //         const newExpense = new Expense({ ...expense, pet });
-        //         console.log('newExpense: ', newExpense);
-        //         await newExpense.save();
-        //         return newExpense._id;
-        //     }));
-        // }
+                const activityLog = new ActivityLog({
+                    userId: userId, 
+                    petId: pet,
+                    type: ActivityType.EXPENSE,
+                    actionType: ActivityLogType.EXPENSE_ADDED,
+                    details: expense.note ? `expense type: ${ExpenseCategory[expense.category]}.\n your note: ${expense.note}` :  `expense type: ${ExpenseCategory[expense.category]}`
+                });
+                await activityLog.save();
 
-        // if (petData.medications.length > 0) {
-        //     medicationIds = await Promise.all(petData.medications.map(async (medication) => {
-        //         const newMedication = new Medication({ ...medication, pet });
-        //         await newMedication.save();
-        //         return newMedication._id;
-        //     }));
-        // }
+                return newExpense._id;
+            }));
+        }
 
-        // if (petData.allergies.length > 0) {
-        //     allergyIds = await Promise.all(petData.allergies.map(async (allergy) => {
-        //         const newAllergy = new Allergy({ ...allergy, pet });
-        //         await newAllergy.save();
-        //         return newAllergy._id;
-        //     }));
-        // }
+        if (petData.medications.length > 0) {
+            medicationIds = await Promise.all(petData.medications.map(async (medication) => {
+                const newMedication = new Medication({ ...medication, pet });
+                await newMedication.save();
 
-        // if (petData.routineCareRecord.length > 0) {
-        //     rouineCareIds = await Promise.all(petData.routineCareRecord.map(async (routineCare) => {
-        //         const newRoutineCare = new RoutineCareRecord({ ...routineCare, pet });
-        //         await newRoutineCare.save();
-        //         return newRoutineCare._id;
-        //     }));
-        // }
+                const activityLog = new ActivityLog({
+                    userId: userId, 
+                    petId: pet,
+                    type: ActivityType.MEDICATION,
+                    actionType: ActivityLogType.MEDICATION_ADDED,
+                    details: medication.note ? `Medication name: ${medication.name}.\n The dosage: ${medication.dosage}\n start date:${new Date(medication.startDate).toLocaleDateString()} - end date:${new Date(medication.endDate).toLocaleDateString()}\n your note: ${medication.note}` :
+                      `Medication name: ${medication.name}.\n The dosage: ${medication.dosage}\n start date:${new Date(medication.startDate).toLocaleDateString()} - end date:${new Date(medication.endDate).toLocaleDateString()}`
+                });
+                await activityLog.save();
+                return newMedication._id;
+            }));
+        }
 
-        // if (petData.vaccinationRecord.length > 0) {
-        //     vaccinationIds = await Promise.all(petData.vaccinationRecord.map(async (vaccine) => {
-        //         const newVaccine = new VaccinationRecord({ ...vaccine, pet });
-        //         await newVaccine.save();
-        //         return newVaccine._id;
-        //     }));
-        // }
+        if (petData.allergies.length > 0) {
+            allergyIds = await Promise.all(petData.allergies.map(async (allergy) => {
+                const newAllergy = new Allergy({ ...allergy, pet });
+                await newAllergy.save();
 
-        // if (petData.vetVisits.length > 0) {
-        //     vetVisitIds = await Promise.all(petData.vetVisits.map(async (visit) => {
-        //         const newVisit = new VetVisit({ ...visit, pet });
-        //         await newVisit.save();
-        //         return newVisit._id;
-        //     }));
-        // }
+                const activityLog = new ActivityLog({
+                    userId: userId, 
+                    petId: pet,
+                    type: ActivityType.ALLERGY,
+                    actionType: ActivityLogType.ALLERGY_ADDED,
+                    details: allergy.note ? `Allergy name: ${allergy.name}.\n The treatment: ${allergy.treatment}\n your note: ${allergy.note}` :  `Allergy name: ${allergy.name}\n The treatment: ${allergy.treatment}`
+                });
+                await activityLog.save();
+                return newAllergy._id;
+            }));
+        }
 
-        // if (petData.notes.length > 0) {
-        //     noteIds = await Promise.all(petData.notes.map(async (note) => {
-        //         const newNote = new Note({ ...note, pet });
-        //         await newNote.save();
-        //         return newNote._id;
-        //     }));
-        // }
+        if (petData.routineCareRecord.length > 0) {
+            rouineCareIds = await Promise.all(petData.routineCareRecord.map(async (routineCare) => {
+                const newRoutineCare = new RoutineCareRecord({ ...routineCare, pet });
+                await newRoutineCare.save();
+                const activityLog = new ActivityLog({
+                    userId: userId, 
+                    petId: pet,
+                    type: ActivityType.ROUTINE_CARE,
+                    actionType: ActivityLogType.ROUTINE_CARE_ADDED,
+                    details: routineCare.note ? `routine care type: ${RoutineCareActivity[routineCare.activity]}.\n your note: ${routineCare.note}` :  `routine care type: ${RoutineCareActivity[routineCare.activity]}`
+                });
+                await activityLog.save();
+                return newRoutineCare._id;
+            }));
+        }
 
-        // // Update the pet document with the IDs of related data items
-        // newPet.medications = medicationIds;
-        // newPet.allergies = allergyIds;
-        // newPet.vaccinationRecords = vaccinationIds;
-        // newPet.routineCareRecords = rouineCareIds,
-        // newPet.expenses = expenseIds;
-        // newPet.notes = noteIds;
-        // newPet.vetVisits = vetVisitIds;
-        // await newPet.save();
+        if (petData.vaccinationRecord.length > 0) {
+            vaccinationIds = await Promise.all(petData.vaccinationRecord.map(async (vaccine) => {
+                const newVaccine = new VaccinationRecord({ ...vaccine, pet });
+                await newVaccine.save();
 
-        // // Find the user by ID and update the pets field
-        // const updatedUser = await User.findByIdAndUpdate(
-        //     userId,
-        //     { $push: { pets: newPet._id } }, // Add the pet's ID to the pets array
-        //     { new: true }
-        // );
+                const activityLog = new ActivityLog({
+                    userId: userId, 
+                    petId: pet,
+                    type: ActivityType.VACCINE_RECORD,
+                    actionType: ActivityLogType.VACCINE_RECORD_ADDED,
+                    details: vaccine.note ? `vaccine type: ${VaccineRecordType[vaccine.vaccineType]}.\n your note: ${note}` :  `vaccine type: ${VaccineRecordType[vaccine.vaccineType]}`
+                });
+                await activityLog.save();
+                return newVaccine._id;
+            }));
+        }
 
-        // const weightActivityLog = new ActivityLog({
-        //     userId: newPet.owner, 
-        //     petId: newPet._id,
-        //     type: ActivityType.WEIGHT,
-        //     actionType: ActivityLogType.PET_WEIGHT_UPDATE,
-        //     details: `update weight to ${newPet.weight} `
-        // });
-        // await weightActivityLog.save();
+        if (petData.vetVisits.length > 0) {
+            vetVisitIds = await Promise.all(petData.vetVisits.map(async (visit) => {
+                const newVisit = new VetVisit({ ...visit, pet });
+                await newVisit.save();
 
-        //   // Log the activity
-        //   const activityLog = new ActivityLog({
-        //     userId: newPet.owner, 
-        //     petId: newPet._id,
-        //     actionType: ActivityLogType.PET_ADDED
-        // });
-        // await activityLog.save();
+                const activityLog = new ActivityLog({
+                    userId: userId, 
+                    petId: pet,
+                    type: ActivityType.VET_VISIT,
+                    actionType: ActivityLogType.VET_VISIT_ADDED,
+                    details: visit.note ? `Visit Reason: ${visit.reason}\n${visit.examination ? `Examination: ${visit.examination}` : ''}\nyour note: ${visit.note}` :
+                     `Visit Reason: ${visit.reason}}\n${visit.examination ? `Examination: ${visit.examination}` : ''}`
+                });
+                await activityLog.save();
+                return newVisit._id;
+            }));
+        }
 
-        // res.status(201).json({ message: 'Pet added successfully', pet: newPet });
+        if (petData.notes.length > 0) {
+            noteIds = await Promise.all(petData.notes.map(async (note) => {
+                const newNote = new Note({ ...note, pet });
+                await newNote.save();
+
+                const activityLog = new ActivityLog({
+                    userId: userId, 
+                    petId: pet,
+                    type: ActivityType.NOTE,
+                    actionType: ActivityLogType.NOTE_ADDED,
+                    details: note.content
+                });
+                await activityLog.save();
+                return newNote._id;
+            }));
+        }
+
+        // Update the pet document with the IDs of related data items
+        newPetData.medications = medicationIds;
+        newPetData.allergies = allergyIds;
+        newPetData.vaccinationRecords = vaccinationIds;
+        newPetData.routineCareRecords = rouineCareIds,
+        newPetData.expenses = expenseIds;
+        newPetData.notes = noteIds;
+        newPetData.vetVisits = vetVisitIds;
+        await newPetData.save();
+
+        // Find the user by ID and update the pets field
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { $push: { pets: newPetData._id } }, // Add the pet's ID to the pets array
+            { new: true }
+        );
+
+        const weightActivityLog = new ActivityLog({
+            userId: userId, 
+            petId: pet,
+            type: ActivityType.WEIGHT,
+            actionType: ActivityLogType.PET_WEIGHT_UPDATE,
+            details: `update weight to ${newPet.weight} `
+        });
+        await weightActivityLog.save();
+
+          // Log the activity
+          const activityLog = new ActivityLog({
+            userId: userId, 
+            petId: pet,
+            actionType: ActivityLogType.PET_ADDED
+        });
+        await activityLog.save();
+
+        res.status(201).json({ message: 'Pet added successfully', pet: newPet });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Error while adding pet, try again later' });
@@ -420,18 +512,15 @@ async function uploadAdditionalImageToNewPet(req, res) {
         console.log('pet id: ', petId);
         console.log('uploadAdditionalImageToNewPet: ', req.files);
 
-        // const pet = await Pet.findById(petId);
-        // if (!pet) {
-        //     return res.status(404).json({ error: 'Pet not found' });
-        // }
-        // // Extract paths of additional images from req.files and add them to pet.additionalImages
-        // const additionalImagePaths = req.files.map(file => file.path);
-        // pet.additionalImages = pet.additionalImages.concat(additionalImagePaths);
-
-        // await pet.save();
-
-        // res.status(201).json({ message: 'Pet Additional images added successfully' });
-
+        const pet = await Pet.findById(petId);
+        if (!pet) {
+            return res.status(404).json({ error: 'Pet not found' });
+        }
+        // Extract paths of additional images from req.files and add them to pet.additionalImages
+        const additionalImagePaths = req.files.map(file => file.path);
+        pet.additionalImages = pet.additionalImages.concat(additionalImagePaths);
+        await pet.save();
+        res.status(201).json({additionalImages: pet.additionalImages, message: 'Pet Additional images added successfully' });
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Error while adding pet, try again later' });
@@ -600,7 +689,6 @@ async function addPetExpense (req, res) {
             type: ActivityType.EXPENSE,
             actionType: ActivityLogType.EXPENSE_ADDED,
             details: note ? `expense type: ${ExpenseCategory[category]}.\n your note: ${note}` :  `expense type: ${ExpenseCategory[category]}`
-
         });
         await activityLog.save();
 
@@ -666,7 +754,6 @@ async function addPetMedication (req, res) {
     try {
         const { petId } = req.params;
         const { medicationData } = req.body;
-console.log('addPetMedication: ', medicationData);
 
         const medication = new Medication({
             name: medicationData.name,
@@ -713,7 +800,6 @@ async function addPetVetVisit (req, res) {
     try {
         const { petId } = req.params;
         const { vetVisitData } = req.body;
-console.log('addPetVetVisit: ', vetVisitData);
 
         const vetVisit = new VetVisit({
             reason: vetVisitData.reason,
@@ -754,12 +840,93 @@ console.log('addPetVetVisit: ', vetVisitData);
     }
 }
 
+async function addPetMealPlanner (req, res) {
+    try {
+        const { petId } = req.params;
+        const { mealData } = req.body;
+console.log('mealData: ', mealData);
+        const mealPlanner = new MealPlanner({
+            amount: mealData.amount,
+            note: mealData.note ? mealData.note : null,
+            food: mealData.food,
+            date: mealData.date,
+            petId: petId
+        });
+        await mealPlanner.save();
+        // Find the pet by ID and update its vetVisitis array
+        const pet = await Pet.findByIdAndUpdate(
+            petId,
+            { $push: { mealPlanner: mealPlanner._id } },
+            { new: true }
+        );
+
+        if (!pet) {
+            return res.status(404).json({ error: 'Pet not found' });
+        }
+       
+        // Log the activity
+        const activityLog = new ActivityLog({
+            userId: pet.owner, 
+            petId: petId,
+            type: ActivityType.VET_VISIT,
+            actionType: ActivityLogType.VET_VISIT_ADDED,
+            details: mealPlanner.note ? `Meal details: ${mealPlanner.food}, Amount:${mealPlanner.amount}\nTime:${mealPlanner.date}\nyour note: ${mealPlanner.note}` :
+             `Meal details: ${mealPlanner.food}, Amount:${mealPlanner.amount}}\nTime:${mealPlanner.date}`
+        });
+        await activityLog.save();
+
+        res.status(201).json({ message: 'Meal Planner added successfully', meal: mealPlanner });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Error while adding meal planner, please try again later' });
+    }
+}
+
+async function addPetEmergencyContacts (req, res) {
+    try {
+        const { petId } = req.params;
+        const { contactData } = req.body;
+
+        const contact = new EmergencyContact({
+            name: contactData.name,
+            phone: contactData.phone,
+            relationship: contactData.type,
+            petId: petId
+        });
+        await contact.save();
+        // Find the pet by ID and update its vetVisitis array
+        const pet = await Pet.findByIdAndUpdate(
+            petId,
+            { $push: { emergencyContacts: contact._id } },
+            { new: true }
+        );
+
+        if (!pet) {
+            return res.status(404).json({ error: 'Pet not found' });
+        }
+        
+        // Log the activity
+        const activityLog = new ActivityLog({
+            userId: pet.owner, 
+            petId: petId,
+            actionType: ActivityLogType.EMERGENCT_CONTACT_ADDED,
+            details: `Contact details:\n Name:${contact.name}, Relationship:${contact.relationship}` 
+           
+        });
+        await activityLog.save();
+
+        res.status(201).json({ message: 'Emergency Contact added successfully', contact });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Error while adding meal planner, please try again later' });
+    }
+}
+
 async function updateNoteById (req, res) {
     try {
         const { noteId } = req.params;
         const { noteData } = req.body;
-console.log(noteId);
-console.log(noteData);
+
         const note = await Note.findById(noteId);
         if (!note) {
             return res.status(404).json({ error: 'Note not found' });
@@ -1022,6 +1189,135 @@ async function deleteVetVisit (req, res) {
     }
 }
 
+async function updateMealPlannerById (req, res) {
+    try {
+        const { mealId } = req.params;
+        const { mealData } = req.body;
+
+        const meal = await MealPlanner.findById(mealId);
+        if (!meal) {
+            return res.status(404).json({ error: 'Meal Planner not found' });
+        }
+
+        meal.date = mealData.date;
+        meal.food = mealData.food;
+        meal.examination = mealData.examination;
+        meal.amount = mealData.amount;
+        meal.note = mealData.note;
+        meal.updatedDate = Date.now();
+        await meal.save();
+
+        const pet = await Pet.findById(meal.petId);
+        // Update the corresponding note within the pet notes array
+        const index = pet.mealPlanner.findIndex(meal => meal._id.toString() === mealId);
+        if (index !== -1) {
+            pet.mealPlanner[index] = meal;
+        }
+
+         // Log the activity
+         const activityLog = new ActivityLog({
+            userId: pet.owner, 
+            petId: visit.pet,
+            type: ActivityType.MEAL_PLANNER,
+            actionType: ActivityLogType.MEAL_PLANNER_EDIT
+        });
+        await activityLog.save();
+
+        res.status(200).json({ message: 'Meal Planner updated successfully', meal });
+    } catch (error) {
+        res.status(500).json({ error: 'Error while updating meal planner, please try again later' });
+    }
+}
+
+async function deleteMealPlanner (req, res) {
+    try {
+        const { mealId } = req.params;
+        const meal = await MealPlanner.findByIdAndDelete(mealId);
+        if (!meal) {
+            return res.status(404).json({ error: 'Meal Planner not found' });
+        }
+        // Remove from the pet meals array
+        const pet = await Pet.findById(meal.petId);
+        pet.mealPlanner = pet.mealPlanner.filter(meal => meal.toString() !== mealId );
+        await pet.save();
+
+         // Log the activity
+         const activityLog = new ActivityLog({
+            userId: pet.owner, 
+            petId: pet._id,
+            type: ActivityType.MEAL_PLANNER,
+            actionType: ActivityLogType.MEAL_PLANNER_DELETE
+        });
+        await activityLog.save();
+
+        res.status(200).json({ message: 'Meal Planner deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error while deleting meal planner, please try again later' });
+    }
+}
+
+async function updateEmergencyContactById (req, res) {
+    try {
+        const { contactId } = req.params;
+        const { contactData } = req.body;
+
+        const contact = await EmergencyContact.findById(contactId);
+        if (!contact) {
+            return res.status(404).json({ error: ' Contact not found' });
+        }
+
+        contact.name = contactData.name;
+        contact.phone = contactData.phone;
+        contact.relationship = contactData.type;
+        await contact.save();
+
+        const pet = await Pet.findById(contact.petId);
+        // Update the corresponding note within the pet notes array
+        const index = pet.emergencyContacts.findIndex(contact => contact._id.toString() === contactId);
+        if (index !== -1) {
+            pet.emergencyContacts[index] = contact;
+        }
+
+         // Log the activity
+         const activityLog = new ActivityLog({
+            userId: pet.owner, 
+            petId: contact.pet,
+            actionType: ActivityLogType.EMERGENCT_CONTACT_EDIT
+        });
+        await activityLog.save();
+
+        res.status(200).json({ message: 'Contact updated successfully', meal });
+    } catch (error) {
+        res.status(500).json({ error: 'Error while updating contact, please try again later' });
+    }
+}
+
+async function deleteEmergencyContact (req, res) {
+    try {
+        const { contactId } = req.params;
+        const contact = await MealPlanner.findByIdAndDelete(contactId);
+        if (!contact) {
+            return res.status(404).json({ error: 'Contact not found' });
+        }
+        // Remove from the pet contacts array
+        const pet = await Pet.findById(contact.petId);
+        pet.emergencyContacts = pet.emergencyContacts.filter(contact => contact.toString() !== contactId );
+        await pet.save();
+
+         // Log the activity
+         const activityLog = new ActivityLog({
+            userId: pet.owner, 
+            petId: pet._id,
+            actionType: ActivityLogType.EMERGENCT_CONTACT_DELETE
+        });
+        await activityLog.save();
+
+        res.status(200).json({ message: 'Contact deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error while deleting contact, please try again later' });
+    }
+}
+
 async function updatePetById(req, res) {
     try {
         const { petId } = req.params;
@@ -1132,6 +1428,8 @@ module.exports = {
     getPetAllergies,
     getPetMedications,
     getPetVetVisits,
+    getPetMealPlanner,
+    getPetEmergencyContacts,
     addPet,
     uploadAdditionalImageToNewPet,
     addPetVaccineRecord,
@@ -1141,9 +1439,15 @@ module.exports = {
     addPetAllergy,
     addPetMedication,
     addPetVetVisit,
+    addPetMealPlanner,
+    addPetEmergencyContacts,
     updateNoteById,
     updatePetById,
     deleteNote,
+    updateMealPlannerById,
+    deleteMealPlanner,
+    updateEmergencyContactById,
+    deleteEmergencyContact,
     deletePet,
     singleImageUpload,
     multipleImagesUpload,

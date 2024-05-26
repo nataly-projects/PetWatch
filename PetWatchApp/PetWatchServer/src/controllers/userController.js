@@ -160,25 +160,31 @@ async function getUserExpensesArrays (req, res) {
 async function getUserUpcomingEvents (req, res) {
   try {
     const { userId } = req.params;
-    const userWithUpcomingEvents = await User.findById(userId).populate({
-      path: 'pets',
-      populate: [
-          { path: 'vaccinationRecords', 
-          match: { nextDate: { $gte: new Date() } },  
-           populate: {path: 'pet',select: 'name'} },
-          { path: 'routineCareRecords', 
-          match: { nextDate: { $gte: new Date() } },
-          populate: {path: 'pet', select: 'name'} },
-          { path: 'vetVisits', 
-          match: { nextDate: { $gte: new Date() } },
-          populate: {path: 'pet', select: 'name'} }
-      ]
-    });
-    console.log('userWithUpcomingEvents: ', userWithUpcomingEvents);
+  
+    const user = await User.findById(userId);
+    const petIds = user.pets;
+    const vetVisits = await VetVisit.find({
+      $or: [
+        { date: { $gte: new Date() } }
+      ],
+      pet: { $in: petIds }
+    }).populate('pet');
+    const routineCare = await RoutineCareRecord.find({
+      $or: [
+        { nextDate: { $gte: new Date() } }
+      ],
+        pet: { $in: petIds }
+    }).populate('pet');
+    const vaccinationRecords = await VaccinationRecord.find({
+        $or: [
+            { nextDate: { $gte: new Date() } }
+        ],
+        pet: { $in: petIds }
+    }).populate('pet');
+
     const upcomingEvents = [];
 
-    userWithUpcomingEvents.pets.forEach(pet => {
-      pet.vaccinationRecords.forEach(vaccineRecord => {
+      vaccinationRecords.forEach(vaccineRecord => {
           upcomingEvents.push({
               ...vaccineRecord.toObject(),
               petId: vaccineRecord.pet,
@@ -187,7 +193,7 @@ async function getUserUpcomingEvents (req, res) {
           });
       });
 
-      pet.routineCareRecords.forEach(routineCareRecord => {
+      routineCare.forEach(routineCareRecord => {
           upcomingEvents.push({
               ...routineCareRecord.toObject(),
               petId: routineCareRecord.pet,
@@ -196,15 +202,15 @@ async function getUserUpcomingEvents (req, res) {
           });
       });
 
-      pet.vetVisits.forEach(visit => {
+      vetVisits.forEach(visit => {
         upcomingEvents.push({
             ...visit.toObject(),
+            nextDate: visit.date,
             petId: visit.pet,
             actionType: 'Vet Visit',
             details: `The Reason: ${visit.reason}`
         });
     });
-  });
 
     // Sort the combined events by nextDate
     upcomingEvents.sort((a, b) => a.nextDate - b.nextDate);
