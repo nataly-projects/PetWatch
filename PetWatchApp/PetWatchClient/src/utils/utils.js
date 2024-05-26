@@ -29,9 +29,15 @@ export const isValidPhoneNumber = async (phoneNumber) => {
 
 export const formatDate = (timestamp) => {
   const date = new Date(timestamp);
-  // const formattedDate = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()} - ${date.getHours()}:${date.getMinutes()}`;
   const formattedDate = `${date.toLocaleDateString()} - ${date.toLocaleTimeString()}`;
   return formattedDate;
+};
+
+export const formatDateForInput = (dateString) => {
+  const date = new Date(dateString);
+  const offset = date.getTimezoneOffset();
+  const localDate = new Date(date.getTime() - (offset * 60000));
+  return localDate.toISOString().slice(0, 16);
 };
 
 

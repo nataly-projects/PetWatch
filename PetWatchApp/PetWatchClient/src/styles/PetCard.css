@@ -9,8 +9,13 @@
     .pet-card:hover {
         box-shadow: 0 0 0px rgba(0, 0, 0, 0.1);
     }
+
+    .img-profile {
+        width: 80px;
+        border-radius: 50%;
+        border: 1px solid #ccc;
+    }
       
-   
     .name-species-section {
         align-items: baseline;
         display: flex;

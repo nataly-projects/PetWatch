@@ -3,9 +3,13 @@ import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMars, faVenus } from '@fortawesome/free-solid-svg-icons';
+import petDefaultImage from '../images/paw.png';
 import '../styles/PetCard.css';
 
 const PetCard = ({ pet }) => {
+    if(pet.image) {
+        console.log(pet.image.replace(/\\/g, '/'))
+    }
     const navigate = useNavigate();
 
     const [expanded, setExpanded] = useState(false);
@@ -21,7 +25,9 @@ const PetCard = ({ pet }) => {
     return (
         <div className="pet-card" onClick={toggleExpand}>
             <div className='pet-basic-details'>
-                <img src={pet.image} alt={pet.name} />
+                <img className='img-profile'
+                src={pet.image ? `http://localhost:5001/${pet.image}` : petDefaultImage} alt={pet.name} 
+                />
                 <div className='name-species-section'>
                     <h3>{pet.name}</h3>
                     {pet.species === 'MALE' ? (
@@ -38,7 +44,7 @@ const PetCard = ({ pet }) => {
                     <p>Breed: {pet.breed}</p>
                     <p>Age: {pet.age}</p>
                     <p>Weight: {pet.weight}</p>
-                    {
+                    {/* {
                     pet.additionalImages && pet.additionalImages.length > 0 && (
                     <>
                         <p>Additional Photos:</p>
@@ -55,22 +61,8 @@ const PetCard = ({ pet }) => {
                     </div>
                     </>
                     
-                    )
-                    }
+                    )} */}
                     <button className='btn' onClick={onPetClick}> View Pet Page </button>
-                    
-                    
-                    {/* <div className='buttons'> 
-                        <>
-                            <button onClick={onDelete}>
-                            <FontAwesomeIcon icon={faTrash} /> Delete
-                            </button>
-                            <button onClick={onEdit}>
-                            <FontAwesomeIcon icon={faEdit} /> Edit
-                            </button>
-                        </>
-                    </div> */}
-
                 </div>
             )}
         </div>

@@ -122,9 +122,7 @@ const Dashboard = () => {
       />
 
 
-      <div className="add-pet">
-        <button className='add-btn'>Add New Pet</button>
-      </div>
+      <button className='btn'>Add New Pet</button>
     </div>
   );
 

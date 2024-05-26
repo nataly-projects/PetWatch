@@ -34,11 +34,6 @@ const NoteActivity = ({ onSave, onClose, noteToEdit  }) => {
             ? { ...noteToEdit, title, content } 
             : { title, content };
             onSave(updatedNote);
-
-            // onSave({ 
-            //     title,
-            //     content 
-            // });
         } 
     };
 
@@ -68,7 +63,7 @@ const NoteActivity = ({ onSave, onClose, noteToEdit  }) => {
             />
             {errors.content && <div className="error-message">{errors.content}</div>} 
 
-            <button className='btn' onClick={handleSave}>{noteToEdit ? 'Save' : 'Update'}</button>
+            <button className='btn' onClick={handleSave}>{noteToEdit ? 'Update' : 'Save'}</button>
         </div>
     );
 };

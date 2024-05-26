@@ -7,11 +7,24 @@
         margin-bottom: 20px;
     }
 
+    .img-profile {
+        width: 120px;
+        border-radius: 50%;
+        border: 1px solid #ccc;
+    }
+
     .pet-details-headers {
         display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
+    }
+
+    .name-species-section {
+        align-items: baseline;
+        display: flex;
+        flex-direction: row;
+        gap: 5px;
     }
 
     .pet-details-actions {

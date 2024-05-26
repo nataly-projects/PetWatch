@@ -1,0 +1,59 @@
+.emergency-contacts-container {
+    margin-top: 20px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+
+    .emergency-contacts h3 {
+        margin-bottom: 10px;
+        font-size: 1.5em;
+        color: #333;
+    }
+    
+    .contact-form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .input-container {
+        display: flex;
+        align-items: baseline;
+        gap: 5px;
+    }
+
+    .input-field {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    input:focus {
+        outline: none;
+        border-color: #007bff;
+    }
+    
+    .contact-list {
+        margin-top: 20px;
+    }
+    
+    .contact-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #fff;
+        margin-bottom: 10px;
+    }
+    
+    .contact-item span {
+        font-size: 1em;
+        color: #333;
+    }
+}
+  
+  
+  

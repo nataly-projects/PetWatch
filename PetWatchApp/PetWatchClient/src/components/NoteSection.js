@@ -11,7 +11,7 @@ const NoteSection = ({propsNotes, petId}) => {
   const navigate = useNavigate();
   const token = useSelector((state) => state.token);
 
-  const  [notes, setNotes] = useState(propsNotes);
+  const [notes, setNotes] = useState(propsNotes);
   const [editingNote, setEditingNote] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [showAddNoteActivity, setShowAddNoteActivity] = useState(false);
@@ -118,19 +118,18 @@ const NoteSection = ({propsNotes, petId}) => {
             )}
           </>
         )}
-        { editMode && (
-              <div className='add-activity-card'>
-                <NoteActivity onSave={(data) => handleEditNote(data)} 
-                onClose={() => setEditMode(false)}
-                noteToEdit={editingNote}
-                />
-              </div>
-        )}
       </>
       :
       <p>No notes yet.</p>
       }
-   
+      { editMode && (
+        <div className='add-activity-card'>
+          <NoteActivity onSave={(data) => handleEditNote(data)} 
+          onClose={() => setEditMode(false)}
+          noteToEdit={editingNote}
+          />
+        </div>
+      )}
     </div>
   );
 };

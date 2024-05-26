@@ -6,13 +6,16 @@ import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMars, faVenus, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { getPetActivityLog, getPetUpcomingEvents, getPetExpensesArrays, 
-  getPetWeightTracker, getPetNote, addPetActivity } from '../services/petService';
+  getPetWeightTracker, getPetNote, getPetMealPlanner, getPetEmergencyContact, addPetActivity } from '../services/petService';
 import WeightTracker from './WeightTracker';
 import NoteSection from './NoteSection';
 import ActivityLog from './ActivityLog';
 import ExpenseTracker from './ExpenseTracker';
 import AddActivityPopup from './AddActivityPopup';
+import EmergencyContactsSection from './EmergencyContactsSection';
+import MealPlannerSection from './MealPlannerSection';
 import { formatDate } from '../utils/utils';
+import petDefaultImage from '../images/paw.png';
 import '../styles/PetProfile.css';
 
 
@@ -27,6 +30,8 @@ const PetProfile = () => {
   const [expenses, setExpenses] = useState([]);
   const [weights, setWeights] = useState([]);
   const [notes, setNotes] = useState([]);
+  const [meals, setMeals] = useState([]);
+  const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [popupVisible, setPopupVisible] = useState(false);
@@ -38,11 +43,15 @@ const PetProfile = () => {
         const petExpenses = await getPetExpensesArrays(pet._id, token);
         const petWeights = await getPetWeightTracker(pet._id, token);
         const petNotes = await getPetNote(pet._id, token);
+        const petMeals = await getPetMealPlanner(pet._id, token);
+        const petContacts = await getPetEmergencyContact(pet._id, token);
         setActivityLogs(logs);
         setUpcomingEvents(events);
         setExpenses(petExpenses);
         setWeights(petWeights);
         setNotes(petNotes);
+        setMeals(petMeals);
+        setContacts(petContacts);
         setLoading(false);
     } catch (error) {
       if (error.response && error.response.status === 401) {
@@ -105,18 +114,14 @@ const PetProfile = () => {
         console.error('Error adding activity:', error);
         toast.error('Failed to adding activity. Please try again.');
     }
-
   };
-
-
 
   return (
     <div className="pet-profile-container">
       <div className="pet-details-card">
-        <img src={pet.image} alt={pet.name} />
         <div className='pet-details-headers'>
           <div className='name-species-section'>
-                <h3>{pet.name}</h3>
+                <h1>{pet.name}</h1>
                 {pet.species === 'MALE' ? (
                 <FontAwesomeIcon icon={faMars}  /> 
                 ) : (
@@ -127,9 +132,10 @@ const PetProfile = () => {
             <FontAwesomeIcon icon={faEdit}  /> 
             <FontAwesomeIcon icon={faTrash}  /> 
           </div>
-        
         </div>
-      
+        <img className='img-profile'
+          src={pet.image ? `http://localhost:5001/${pet.image}` : petDefaultImage} alt={pet.name} 
+        />
         <p> Breed: {pet.breed}</p>
         <p> Age: {pet.age} </p>
         <p> Weight: {pet.weight} kg</p>
@@ -194,8 +200,7 @@ const PetProfile = () => {
 
       </div>
 
-     
-
+    
       <div className="activity-log">
         <ActivityLog
             activityLogs={activityLogs}
@@ -214,30 +219,58 @@ const PetProfile = () => {
         from={'pet'}
         petName={pet.name}
         currencySign={currencySign}
-      />
-        
+        />
       </div>
 
       <div className="meal-planner">
-        <h3>Meal Planner</h3>
-        {/* TODO -Allow users to plan and schedule meals */}
+        <MealPlannerSection 
+        propsMeals={meals}
+        petId={pet._id} 
+        token={token} 
+        />
       </div>
 
       <div className="gallery">
         <h3>Gallery</h3>
-        {/* TODO - Display pet photos in a gallery */}
+        {/* //TODO - create component / add option to add new photos and upload them */}
+        {
+          pet.additionalImages && pet.additionalImages.length > 0 
+          ?
+          (
+            <>
+            <p>Additional Photos:</p>
+            <div className="additional-photos">
+            {pet.additionalImages.map((photo, index) => (
+                <img
+                key={index}
+                className="additional-photo"
+                src={`http://localhost:5001/${photo}`}  
+
+                alt={`Additional Photo ${index + 1}`}
+                />
+            ))} 
+            </div>
+            </>   
+          )  
+          :
+          (<p>No photos in the gallery yet.</p>  )      
+        }
       </div>
 
       <div className="notes">
-         <NoteSection 
-         propsNotes={notes}
-         petId={pet._id} />
+        <NoteSection 
+        propsNotes={notes}
+        petId={pet._id} 
+        />
       </div>
 
-      {/* <div className="emergency-contacts">
-        <h3>Emergency Contacts</h3>
-        {// Display emergency contact information }
-      </div> */}
+      <div className="emergency-contacts">
+        <EmergencyContactsSection 
+        propsContacts={contacts}
+        petId={pet._id} 
+        token={token} 
+        />
+      </div>
 
     </div>
   );

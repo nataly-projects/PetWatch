@@ -5,6 +5,7 @@
     /* align-items: center; */
     padding: 20px;
     margin: 0 auto;
+    background-color: #f9f9f9;
 
     .top-row {
         display: flex;
@@ -63,15 +64,27 @@
         border-bottom: none;
     }
 
-    .add-btn {
-        padding: 16px;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        font-size: 16px;
-        background-color: #795B4A; 
-        color: white;
-        border-radius: 8px;
-        cursor: pointer;
-        border: 1px solid #795B4A; 
+
+    /* Slick slider navigation dots */
+    .slick-dots {
+        bottom: -25px;
+    }
+    
+    .slick-dots li button:before {
+        font-size: 12px;
+        color: #36A2EB;
+    }
+    
+    .slick-dots li.slick-active button:before {
+        color: #044875;
+    }
+    
+    /* PetCard container styles */
+    .slick-slide > div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px;
     }
 }
 

@@ -109,7 +109,7 @@ const DogCarePage = () => {
   );
 
   return (
-    <div className="container">
+    <div className="care-container">
         <div className="section">
         <h2>Dog Vaccinations and Routine Care</h2>
         <p>Below is a list of common dog vaccinations and their descriptions:</p>

@@ -51,7 +51,7 @@ const CatCarePage = () => {
     };
 
     return (
-        <div className="container">
+        <div className="care-container">
             <div className="section">
                 <h2>Cat Vaccinations and Routine Care</h2>
                 <p>Below is a list of common cat vaccinations and their descriptions:</p>

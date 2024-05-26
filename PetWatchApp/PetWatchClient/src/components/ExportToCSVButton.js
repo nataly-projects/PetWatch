@@ -6,7 +6,7 @@ const ExportToCSVButton = ({ data, filename }) => {
     <CSVLink 
     className='btn' 
     data={data} 
-    filename={filename + '.csv'} 
+    filename={filename} 
     target="_self">
         Export to CSV
     </CSVLink>

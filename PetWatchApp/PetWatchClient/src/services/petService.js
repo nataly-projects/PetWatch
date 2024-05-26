@@ -137,7 +137,6 @@ export const getPetWeightTracker = async (petId, token) => {
   }
 };
 
-
 export const getPetActivityLog = async (petId, token) => {
   try {
       const response = await axios.get(`${BASE_API_URL}/pets/activity/${petId}`, {
@@ -186,6 +185,38 @@ export const getPetExpensesArrays = async (petId, token) => {
   }
 }
 
+export const getPetMealPlanner = async (petId, token) => {
+  try {
+    const response = await axios.get(`${BASE_API_URL}/pets/meal/${petId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });      
+    if (response && response.data) {
+      return response.data;
+    }
+      return null;
+  } catch (error) {
+    throw error; 
+  }
+};
+
+export const getPetEmergencyContact = async (petId, token) => {
+  try {
+    const response = await axios.get(`${BASE_API_URL}/pets/contact/${petId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });      
+    if (response && response.data) {
+      return response.data;
+    }
+      return null;
+  } catch (error) {
+    throw error; 
+  }
+};
+
   export const deletePet = async (petId) => {
     try {
         const response = await axios.delete(`${BASE_API_URL}/pets/${petId}`);
@@ -210,9 +241,9 @@ export const getPetExpensesArrays = async (petId, token) => {
     }
   };
 
-  export const addPet = async (petData, token, userId) => {
+  export const addPet = async (newPet, token, userId) => {
     try {
-      const response = await axios.post(`${BASE_API_URL}/pets/${userId}`, petData, {
+      const response = await axios.post(`${BASE_API_URL}/pets/${userId}`, newPet, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data'
@@ -379,6 +410,38 @@ export const getPetExpensesArrays = async (petId, token) => {
   }
   };
 
+  export const addPetMealPlanner = async (petId, mealData, token) => {
+    try {
+      const response = await axios.post(`${BASE_API_URL}/pets/meal/${petId}`, {mealData}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+  };
+
+  export const addPetEmergencyContact = async (petId, contactData, token) => {
+    try {
+      const response = await axios.post(`${BASE_API_URL}/pets/contact/${petId}`, {contactData}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+  };
+
   export const updateNoteById = async (updatedNote, token) => {
     try {
       const response = await axios.put(`${BASE_API_URL}/pets/note/${updatedNote._id}`, {noteData: updatedNote}, {
@@ -399,6 +462,72 @@ export const getPetExpensesArrays = async (petId, token) => {
   export const deleteNoteById = async (noteId, token) => {
     try {
       const response = await axios.delete(`${BASE_API_URL}/pets/note/${noteId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+  };
+
+  export const updateMealPlannerById = async (mealData, token) => {
+    try {
+      const response = await axios.put(`${BASE_API_URL}/pets/meal/${mealData._id}`, mealData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+  };
+
+  export const deleteMealPlannerById = async (mealId, token) => {
+    try {
+      const response = await axios.delete(`${BASE_API_URL}/pets/meal/${mealId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+  };
+
+  export const updateEmergencyContactById = async (contactData, token) => {
+    try {
+      const response = await axios.put(`${BASE_API_URL}/pets/contact/${contactData._id}`, contactData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+  };
+
+  export const deleteEmergencyContactById = async (contactId, token) => {
+    try {
+      const response = await axios.delete(`${BASE_API_URL}/pets/contact/${contactId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

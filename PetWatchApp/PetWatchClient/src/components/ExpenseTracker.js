@@ -7,7 +7,7 @@ import { formatDate } from '../utils/utils';
 import { Currency } from '../utils/utils';
 import FilterSection from './FilterSection';
 import { ExpensesType } from '../utils/utils';
-import ExportToCSVButton from './ExportToCSVButton copy';
+import ExportToCSVButton from './ExportToCSVButton';
 import '../styles/ExpenseTracker.css';
 
 const ExpenseTracker = ({expenses, from, petName}) => {
@@ -60,6 +60,16 @@ const ExpenseTracker = ({expenses, from, petName}) => {
             (!minAmount || expense.amount >= minAmount);
     });
 
+    const exportToCSV = () => {
+        const processedData = filteredExpenses.map(item => ({
+            Amount: item.amount,
+            Category: item.category,
+            Pet: petName == null ? (item.petId?.name || item.pet?.name) : petName,
+            Date: formatDate(item.created_at),
+          }));
+        return processedData;
+    };
+
     const renderExpensesTable = () => {
         return (
             (allExpenses.length > 0 ?
@@ -86,18 +96,15 @@ const ExpenseTracker = ({expenses, from, petName}) => {
                 </table>
                 <ExportToCSVButton className='btn'
                 petName={petName}
-                data={filteredExpenses} 
+                data={exportToCSV()} 
                 filename={petName == null ? "expenses.csv" : petName +"-expenses.csv"}
                 isExpense={true}
                 />
                 </>
-          
                 :
                 <p>No expenses yet.</p>
             )
-  
         );
-       
     };
 
     const renderPetExpensesDataChart = () => {
@@ -144,7 +151,6 @@ const ExpenseTracker = ({expenses, from, petName}) => {
                 <div className="chart-container">
                     {from === 'user' ? renderPetExpensesDataChart() : null}
                 </div>
-                
 
                 <div className="chart-container">
                     <h2>Chart Expenses By Monthly</h2>
@@ -180,7 +186,6 @@ const ExpenseTracker = ({expenses, from, petName}) => {
             <></>
             }
          
-
         </div>
     );
 };

@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import { useLocation } from 'react-router-dom';
 import { formatDate } from '../utils/utils';
-import ExportToCSVButton from './ExportToCSVButton copy';
+import ExportToCSVButton from './ExportToCSVButton';
 import FilterSection from './FilterSection';
 import { ActivityType } from '../utils/utils';
 import '../styles/ActivityLog.css';
@@ -44,14 +44,25 @@ const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
       });
 
     const filteredUpcomingEvnets = upcomingEvents.filter(event => {
-    const activityDate = new Date(event.created_at);
-    const start = eventStartDate ? new Date(eventStartDate) : null;
-    const end = eventEndDate ? new Date(eventEndDate) : null;
+        console.log('event: ', event);
+        const activityDate = new Date(event.created_at);
+        const start = eventStartDate ? new Date(eventStartDate) : null;
+        const end = eventEndDate ? new Date(eventEndDate) : null;
 
-    return (!eventFilterType || (event.actionType === eventFilterType)) &&
-            (!start || activityDate >= start) &&
-            (!end || activityDate <= end.setHours(23, 59, 59, 999));
+        return (!eventFilterType || (event.actionType === eventFilterType)) &&
+                (!start || activityDate >= start) &&
+                (!end || activityDate <= end.setHours(23, 59, 59, 999));
     });
+
+    const exportToCSV = (data) => {
+         const processedData = data.map(item => ({
+            Details: item.details,
+            ActionType: item.actionType,
+            Pet: petName == null ? (item.petId?.name || item.pet?.name) : petName,
+            Date: formatDate(item.created_at),
+          }));
+        return processedData;
+      };
 
     return (
         <div className="activity-log-container">
@@ -90,7 +101,7 @@ const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
                 </table>
                 <ExportToCSVButton className='btn'
                 petName={petName}
-                data={filteredActivities} 
+                data={exportToCSV(filteredActivities)} 
                 filename={petName == null ? "activity-log.csv" : petName +"-activity-log.csv"}
                 />
                 </>
@@ -119,9 +130,10 @@ const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredUpcomingEvnets.map((event, index) => (
+                        {console.log(filteredUpcomingEvnets.length)}
+                        {filteredUpcomingEvnets.map((event, index) => ( 
                         <tr key={index}>
-                            <td>{formatDate(event.created_at)}</td>
+                            <td>{formatDate(event.nextDate)}</td>
                             {petName == null && <td>{event.pet.name}</td>}
                             <td>{event.actionType}</td>
                             <td>{event.details}</td>
@@ -131,12 +143,12 @@ const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
                 </table>
                 <ExportToCSVButton className='btn'
                 petName={petName}
-                data={filteredUpcomingEvnets} 
+                data={exportToCSV(filteredUpcomingEvnets)} 
                 filename={petName == null ? "upcoming-events.csv" : petName +"-upcoming-events.csv"}
                 />
             </>   
-                : 
-                <p>No upcoming events yet.</p>
+            : 
+            <p>No upcoming events yet.</p>
             }
         </div>
     );
