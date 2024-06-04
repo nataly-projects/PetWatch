@@ -116,7 +116,7 @@ export const ActivityTypeObject = [
   { name: 'ALLERGY', icon: faAllergies, value: 'Allergy', items: false },
   { name: 'MEDICATION', icon: faPills, value: 'Medication', items: false },
   { name: 'VET_VISIT', icon: faHospital, value: 'Vet Visit', items: false },
-  // { name: 'EXAMINATION', icon: faMicroscope, value: 'Examination', items: false },
+  { name: 'MEDICAL_CONDITION', icon: faHospital, value: 'Medical Condition', items: false },
   { name: 'OTHER', icon: faEllipsisH, value: 'Other', items: false }
 ];
 
@@ -142,7 +142,8 @@ export const ActivityType = {
   MEDICATION:'Medication',
   VET_VISIT:'Vet Visit',
   NOTE:'Note',
-  WEIGHT: 'Weight'
+  WEIGHT: 'Weight',
+  MEDICAL_CONDITION: 'Medical Condition'
 };
 
 

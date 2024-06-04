@@ -158,7 +158,7 @@
         background-color: #e0e0e0;
     }
 
-     .pet-image-container {
+    .pet-image-container {
         width: 100%;
         display: flex;
         flex-direction: column;    

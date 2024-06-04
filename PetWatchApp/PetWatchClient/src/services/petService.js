@@ -217,6 +217,22 @@ export const getPetEmergencyContact = async (petId, token) => {
   }
 };
 
+export const getPetMedicalConditions = async (petId, token) => {
+  try {
+    const response = await axios.get(`${BASE_API_URL}/pets/medical-condition/${petId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });      
+    if (response && response.data) {
+      return response.data;
+    }
+      return null;
+  } catch (error) {
+    throw error; 
+  }
+};
+
   export const deletePet = async (petId) => {
     try {
         const response = await axios.delete(`${BASE_API_URL}/pets/${petId}`);
@@ -403,6 +419,8 @@ export const getPetEmergencyContact = async (petId, token) => {
           return addPetMedication(petId, data, token);
       case 'VET_VISIT':
           return addPetVetVisit(petId, data, token);
+      case 'MEDICAL_CONDITION':
+        return addPetMedicalCondition(petId, data, token);
       // case 'OTHER':
       //     return addOtherActivity(petId, data, token);
       default:
@@ -429,6 +447,22 @@ export const getPetEmergencyContact = async (petId, token) => {
   export const addPetEmergencyContact = async (petId, contactData, token) => {
     try {
       const response = await axios.post(`${BASE_API_URL}/pets/contact/${petId}`, {contactData}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+  };
+
+  export const addPetMedicalCondition = async (petId, medicalData, token) => {
+    try {
+      const response = await axios.post(`${BASE_API_URL}/pets/medical-condition/${petId}`, {medicalData}, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -528,6 +562,105 @@ export const getPetEmergencyContact = async (petId, token) => {
   export const deleteEmergencyContactById = async (contactId, token) => {
     try {
       const response = await axios.delete(`${BASE_API_URL}/pets/contact/${contactId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+  };
+
+  export const updateMedicalConditionById = async (conditionData, token) => {
+    try {
+      const response = await axios.put(`${BASE_API_URL}/pets/medical-condition/${conditionData._id}`, conditionData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+  };
+
+  export const deleteMedicalConditionById = async (conditionId, token) => {
+    try {
+      const response = await axios.delete(`${BASE_API_URL}/pets/medical-condition/${conditionId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+  };
+
+  export const updateAllergyById = async (allergyData, token) => {
+    try {
+      const response = await axios.put(`${BASE_API_URL}/pets/allergy/${allergyData._id}`, allergyData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+  };
+
+  export const deleteAllergyById = async (allergyId, token) => {
+    try {
+      const response = await axios.delete(`${BASE_API_URL}/pets/allergy/${allergyId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+  };
+
+  export const updateMedicationById = async (medicationData, token) => {
+    try {
+      const response = await axios.put(`${BASE_API_URL}/pets/medication/${medicationData._id}`, medicationData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+  };
+
+  export const deleteMedicationById = async (medicationId, token) => {
+    try {
+      const response = await axios.delete(`${BASE_API_URL}/pets/medication/${medicationId}`, {
         headers: {
           Authorization: `Bearer ${token}`
         }

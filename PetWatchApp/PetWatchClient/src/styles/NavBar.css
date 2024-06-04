@@ -1,5 +1,5 @@
 .nav_guest {
-  background-color: #F8F4EF;
+  background-color: #f9f9f9;
   border-bottom: 1px solid #795B4A;
   text-align: center;
   top: 0;
@@ -100,16 +100,18 @@
   padding: 20px;
 
   width: 100%;
-  background-color: #f0f0f0;
+  background-color: #f9f9f9;
 
   .actions  {
     display: flex;
     gap: 30px;
     cursor: pointer;
+    align-items: baseline;
 
     .user {
       display: flex;
       gap: 10px;
+      align-items: baseline;
     }
 
   }

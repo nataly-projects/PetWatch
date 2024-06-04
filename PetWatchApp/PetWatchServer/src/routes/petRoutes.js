@@ -22,6 +22,7 @@ router.get('/medication/:petId', petController.getPetMedications);
 router.get('/vet-visit/:petId', petController.getPetVetVisits);
 router.get('/meal/:petId', petController.getPetMealPlanner);
 router.get('/contact/:petId', petController.getPetEmergencyContacts);
+router.get('/medical-condition/:petId', petController.getPetMedicalConditions);
 const { singleImageUpload, multipleImagesUpload } = petController;
 
 router.post('/:userId',singleImageUpload, petController.addPet);
@@ -36,24 +37,28 @@ router.post('/medication/:petId', petController.addPetMedication);
 router.post('/vet-visit/:petId', petController.addPetVetVisit);
 router.post('/meal/:petId', petController.addPetMealPlanner);
 router.post('/contact/:petId', petController.addPetEmergencyContacts);
+router.post('/medical-condition/:petId', petController.addPetMedicalCondition);
 
 router.put('/note/:noteId', petController.updateNoteById);
 router.delete('/note/:noteId', petController.deleteNote);
 
-// router.put('/allergy/:allergyId', petController.);
-// router.delete('/allergy/:allergyId', petController.);
+router.put('/allergy/:allergyId', petController.updateAllergyById);
+router.delete('/allergy/:allergyId', petController.deleteAllergy);
 
-// router.put('/medication/:medicationId', petController.);
-// router.delete('/medication/:medicationId', petController.);
+router.put('/medication/:medicationId', petController.updateMedicationById);
+router.delete('/medication/:medicationId', petController.deleteMedication);
 
-// router.put('/vet-visit/:vetVisitId', petController.);
-// router.delete('/vet-visit/:vetVisitId', petController.);
+router.put('/vet-visit/:vetVisitId', petController.updateVetVisitById);
+router.delete('/vet-visit/:vetVisitId', petController.deleteMedication);
 
 router.put('/meal/:mealId', petController.updateMealPlannerById);
 router.delete('/meal/:mealId', petController.deleteMealPlanner);
 
 router.put('/contact/:contactId', petController.updateEmergencyContactById);
 router.delete('/contact/:contactId', petController.deleteEmergencyContact);
+
+router.put('/medical-condition/:conditionId', petController.updateMedicalConditionById);
+router.delete('/medical-condition/:conditionId', petController.deleteMedicalCondition);
 
 // router.put('/:petId',petController.upload.single('image'),  petController.updatePetById);
 router.put('/:petId',  petController.updatePetById);

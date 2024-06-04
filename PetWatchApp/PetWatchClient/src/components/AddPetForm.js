@@ -13,6 +13,7 @@ import MedicationActivity from './MedicationActivity';
 import ExpenseActivity from './ExpenseActivity';
 import VetVisitActivity from './VetVisitActivity';
 import NoteActivity from './NoteActivity';
+import MedicalConditionActivity from './MedicalConditionActivity';
 import petDefaultImage from '../images/paw.png';
 import { formatDate } from '../utils/utils';
 import { addPet, addPetAdditionalImages } from '../services/petService';
@@ -46,6 +47,7 @@ const AddPetForm = () => {
     const [vetVisitsRecord, setVetVisitsRecord] = useState([]);
     const [allergies, setAllergies] = useState([]);
     const [medications, setMedications] = useState([]);
+    const [medicalConiditons, setMedicalConiditons] = useState([]);
     const [selectedVaccineType, setSelectedVaccineType] = useState(null);
     const [selectedRoutineCareType, setSelectedRoutineCareType] = useState(null);
     const [selectedExpenseType, setSelectedExpenseType] = useState(null);
@@ -53,6 +55,8 @@ const AddPetForm = () => {
     const [showMedicationActivity, setShowMedicationActivity] = useState(false);
     const [showVetVisitActivity, setShowVetVisitActivity] = useState(false);
     const [showNoteActivity, setShowNoteActivity] = useState(false);
+    const [showMedicalConiditionActivity, setShowMedicalConiditionActivity] = useState(false);
+
 
     const [currentSection, setCurrentSection] = useState(1);
     const [errors, setErrors] = useState({});
@@ -74,6 +78,7 @@ const AddPetForm = () => {
             expenses: expensesRecord,
             notes: notesRecord,
             vetVisits: vetVisitsRecord,
+            medicalConiditons: medicalConiditons,
             owner: user._id
         };
         return pet;
@@ -197,6 +202,9 @@ const AddPetForm = () => {
             case ActivityType.NOTE:
                 setShowNoteActivity(true);
                 break;
+            case ActivityType.MEDICAL_CONDITION:
+                setShowMedicalConiditionActivity(true);
+                break;
             default:
                 break;
         }
@@ -233,6 +241,10 @@ const AddPetForm = () => {
             case ActivityType.NOTE:
                 setNotesRecord([...notesRecord, data]);
                 setShowNoteActivity(false);
+                break;
+            case ActivityType.MEDICAL_CONDITION:
+                setMedicalConiditons([...medicalConiditons, data]);
+                setShowMedicalConiditionActivity(false);
                 break;
             default:
                 break;
@@ -275,6 +287,11 @@ const AddPetForm = () => {
                 const updatedNotes = [...notesRecord];
                 updatedNotes.splice(index, 1);
                 setNotesRecord(updatedNotes);
+                break;
+            case ActivityType.MEDICAL_CONDITION:
+                const updatedMedicalConsitions = [...medicalConiditons];
+                updatedMedicalConsitions.splice(index, 1);
+                setMedicalConiditons(updatedMedicalConsitions);
                 break;
             default:
                 break;
@@ -494,6 +511,37 @@ const AddPetForm = () => {
                     {currentSection === 4 && (
                     <div className="form-section">
                         <h3>Section 4: Health Information</h3>
+
+                        {medicalConiditons.length > 0 && (
+                            <>
+                            <h4>Medical Conditions: </h4>
+                            <div className="activity-section">
+                                { medicalConiditons.map((item, index) => (    
+                                <div key={index} className="activity-card">
+                                    <div className="activity-card-header">
+                                        <p>{item.name}</p>
+                                        <FontAwesomeIcon className='activity-card-icon' 
+                                        icon={faTrash} 
+                                        onClick={() => handleDeleteActivityItem(index, ActivityType.MEDICAL_CONDITION)} />
+                                    </div>
+                                    <p>Desciption: {item.description}</p>
+                                    <p>Diagnose Date: {formatDate(item.dateDiagnosed)}</p>
+                                </div>
+                            ))}
+                            </div>
+                            </>
+                        )}
+                        <h4>Add Medical Condition: </h4>
+                        <button className='button' onClick={() => handleItemClick(ActivityType.MEDICAL_CONDITION)}> Add new medical condition </button>
+                            {showMedicalConiditionActivity && (
+                                <div className='add-activity-card'>
+                                    <MedicalConditionActivity 
+                                    onSave={(data) => handleActivitySave(ActivityType.MEDICAL_CONDITION, data)} 
+                                    onClose={() => setShowMedicalConiditionActivity(false)}/> 
+                                </div>
+                            )}
+                        
+                        <hr />
 
                         {allergies.length > 0 && (
                             <>

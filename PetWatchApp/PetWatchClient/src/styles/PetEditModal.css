@@ -1,0 +1,82 @@
+
+.modalContent {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f0f0f0;
+    width: 40%;
+    max-width: 600px;
+    max-height: 550px;
+    overflow-y: scroll;
+
+    .actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        margin-left: 5px;
+    }
+
+    .input-container {
+        display: flex;
+        flex-direction: column;
+        align-items: baseline;
+        gap: 5px;
+        margin: 5px;
+    }
+
+    .textarea-container {
+        display: flex;
+        flex-direction: column;
+        margin: 5px;
+    }
+    
+    .label {
+        margin-bottom: 3px;
+    }
+        
+    .input-field {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 60%;
+    }
+        
+    .textarea-field {
+        width: 60%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        resize: vertical;
+    }
+    
+    input:focus, textarea:focus {
+        outline: none;
+        border-color: #007bff;
+    }
+
+    .hedaer-container {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .close-btn {
+        cursor: pointer;
+        background-color: transparent;
+        border: none;
+        font-size: 18px;
+        color: #795B4A;
+    }
+
+    .radio-buttons {
+        display: flex;
+        justify-content: space-evenly;
+    }
+}
+  

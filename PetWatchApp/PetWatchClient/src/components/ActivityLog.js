@@ -67,7 +67,7 @@ const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
     return (
         <div className="activity-log-container">
             <h3>{petName !== null ? `${petName} Activity Logs` : 'Your Activity Logs'}</h3>
-            <FilterSection
+            { activityLogs.length > 0 && <FilterSection
                 filterType={activityFilterType}
                 handleTypeChange={handleActivityTypeChange}
                 startDate={activityStartDate}
@@ -75,7 +75,7 @@ const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
                 endDate={activityEndDate}
                 handleEndDateChange={handleActivityEndDateChange}
                 selectOptions={ActivityType}
-            />
+            />}
             {activityLogs.length > 0 ?
                 <>
                 <table className='table'>
@@ -109,7 +109,7 @@ const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
                 <p>No activity logs yet.</p>
             }
             <h3>{petName !== null ? `${petName} Upcoming Events` : 'Your Upcoming Events'}</h3>
-            <FilterSection
+            {upcomingEvents.length > 0 && <FilterSection
                 filterType={eventFilterType}
                 handleTypeChange={handleEventTypeChange}
                 startDate={eventStartDate}
@@ -117,7 +117,7 @@ const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
                 endDate={eventEndDate}
                 handleEndDateChange={handleEventEndDateChange}
                 selectOptions={ActivityType}
-            />
+            />}
             {upcomingEvents.length > 0 ?
             <>
               <table className='table'>

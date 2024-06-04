@@ -8,6 +8,7 @@ import NoteActivity from './NoteActivity';
 import AllergyActivity from './AllergyActivity';
 import MedicationActivity from './MedicationActivity';
 import VetVisitActivity from './VetVisitActivity';
+import MedicalConditionActivity from './MedicalConditionActivity';
 import OtherActivity from './OtherActivity';
 import '../styles/AddActivityPopup.css';
 
@@ -80,32 +81,34 @@ const AddActivityPopup = ({ onActivitySelect, onClose }) => {
             {!showActivityComponent 
             ? 
             <>
-            <h3>Choose Activity to Add</h3>
-            <div className="activity-grid">
-            {initialItems !== null && (
-                <>
-                {initialItems.map((activity, index) => (
-                <div key={index} className="activity-card" onClick={() => handleActivityClick(activity)}>
-                    <FontAwesomeIcon className="icon" icon={activity.icon} />
-                    <span>{activity.value}</span>
+                <div className='hedaer-container'>
+                    <h3>Choose Activity to Add</h3>
+                    <button className="close-btn" onClick={onClose}>X</button>
                 </div>
-                )  
-            )}
-            </>   
-            )}
-            {expandedItems !== null && expandedActivity  && (
-            <>
-            {expandedItems.map((item, idx) => (
-                <div key={idx} className="activity-card" onClick={() => handleNestedItemClick(item)}>
-                {item.icon ? <FontAwesomeIcon className="icon" icon={item.icon} /> : null}
-                <span>{item.value}</span>
-                </div>
-            ))}
-            </>
-            )}
-            </div>
-            </>
                 
+                <div className="activity-grid">
+                {initialItems !== null && (
+                <>
+                    {initialItems.map((activity, index) => (
+                    <div key={index} className="activity-card" onClick={() => handleActivityClick(activity)}>
+                        <FontAwesomeIcon className="icon" icon={activity.icon} />
+                        <span>{activity.value}</span>
+                    </div>
+                    ))}
+                </>   
+                )}
+                {expandedItems !== null && expandedActivity  && (
+                <>
+                    {expandedItems.map((item, idx) => (
+                        <div key={idx} className="activity-card" onClick={() => handleNestedItemClick(item)}>
+                        {item.icon ? <FontAwesomeIcon className="icon" icon={item.icon} /> : null}
+                        <span>{item.value}</span>
+                        </div>
+                    ))}
+                </>
+                )}
+                </div>
+            </>     
             :
             <div>
                 {selectedActivity.name === 'VACCINE_RECORD' && 
@@ -146,6 +149,11 @@ const AddActivityPopup = ({ onActivitySelect, onClose }) => {
                 onSave={handleSave} 
                 onClose={onClose}
                 />}
+                {selectedActivity.name === 'MEDICAL_CONDITION' && 
+                <MedicalConditionActivity 
+                onSave={handleSave} 
+                onClose={onClose}
+                />}
                 {selectedActivity.name === 'OTHER' && 
                 <OtherActivity 
                 onSave={handleSave} 
@@ -153,8 +161,6 @@ const AddActivityPopup = ({ onActivitySelect, onClose }) => {
                 />}
             </div>
             }
-          
-            {/* <button className='btn' onClick={onClose}>Cancel</button> */}
         </div>
     );
 };

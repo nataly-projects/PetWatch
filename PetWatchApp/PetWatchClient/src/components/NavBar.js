@@ -13,7 +13,7 @@ const NavBar = () => {
     const user = useSelector((state) => state.user);
     const [isUserPopupVisible, setUserPopupVisible] = useState(false);
     const [isNotificationPopupVisible, setNotificationPopupVisible] = useState(false);
-
+    
     const handleUserIconClick = () => {
         setUserPopupVisible(!isUserPopupVisible);
     };
@@ -27,7 +27,7 @@ const NavBar = () => {
             <nav className='nav_guest'>
                 <div className='limit'>
                     <div className="logo">
-                        <img className='logo-image' src={logoImage} alt="Logo" />
+                     <img className='logo-image' src={(user && user.imageUrl) ? `http://localhost:5001/${user.imageUrl}` : logoImage} alt="Logo" />
                     </div>    
                     <ul>
                         <li>

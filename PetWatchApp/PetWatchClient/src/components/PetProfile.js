@@ -1,12 +1,12 @@
 import React, {useState, useEffect} from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom'; 
-import { useLocation } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom'; 
 import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMars, faVenus, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { getPetActivityLog, getPetUpcomingEvents, getPetExpensesArrays, 
-  getPetWeightTracker, getPetNote, getPetMealPlanner, getPetEmergencyContact, addPetActivity } from '../services/petService';
+  getPetWeightTracker, addPetActivity, deleteAllergyById, deleteMedicalConditionById, deleteMedicationById,
+updateMedicalConditionById, updateAllergyById, updateMedicationById, updatePetById } from '../services/petService';
 import WeightTracker from './WeightTracker';
 import NoteSection from './NoteSection';
 import ActivityLog from './ActivityLog';
@@ -14,8 +14,13 @@ import ExpenseTracker from './ExpenseTracker';
 import AddActivityPopup from './AddActivityPopup';
 import EmergencyContactsSection from './EmergencyContactsSection';
 import MealPlannerSection from './MealPlannerSection';
+import HealthInformationSection from './HealthInformationSection';
+import GallerySection from './gallerySection';
 import { formatDate } from '../utils/utils';
+import { ActivityType } from '../utils/utils';
 import petDefaultImage from '../images/paw.png';
+import EditHealthItemModal from './EditHealthItemModal';
+import EditPetDetailsModal from './EditPetDetailsModal';
 import '../styles/PetProfile.css';
 
 
@@ -25,33 +30,37 @@ const PetProfile = () => {
   const navigate = useNavigate();
   const token = useSelector((state) => state.token);
 
+  const [petDetails, setPetDetails] = useState(pet);
   const [activityLogs, setActivityLogs] = useState([]);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [weights, setWeights] = useState([]);
-  const [notes, setNotes] = useState([]);
-  const [meals, setMeals] = useState([]);
-  const [contacts, setContacts] = useState([]);
+  const [medications, setMedications] = useState([]);
+  const [allergies, setAllergies] = useState([]);
+  const [medicalConditions, setMedicalConditions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [popupVisible, setPopupVisible] = useState(false);
 
+  const [editHealthModalVisible, setEditHealthModalVisible] = useState(false); 
+  const [itemToEdit, setItemToEdit] = useState(null); 
+  const [healthEditType, setHealthEditType] = useState(null); 
+  const [editBasicDetailsModalVisible, setEditBasicDetailsModalVisible] = useState(false); 
+
+
   const fetchData = async () => {
     try {
-        const logs = await getPetActivityLog(pet._id, token);
-        const events = await getPetUpcomingEvents(pet._id, token);
-        const petExpenses = await getPetExpensesArrays(pet._id, token);
-        const petWeights = await getPetWeightTracker(pet._id, token);
-        const petNotes = await getPetNote(pet._id, token);
-        const petMeals = await getPetMealPlanner(pet._id, token);
-        const petContacts = await getPetEmergencyContact(pet._id, token);
+        const logs = await getPetActivityLog(petDetails._id, token);
+        const events = await getPetUpcomingEvents(petDetails._id, token);
+        const petExpenses = await getPetExpensesArrays(petDetails._id, token);
+        const petWeights = await getPetWeightTracker(petDetails._id, token);
         setActivityLogs(logs);
         setUpcomingEvents(events);
         setExpenses(petExpenses);
         setWeights(petWeights);
-        setNotes(petNotes);
-        setMeals(petMeals);
-        setContacts(petContacts);
+        setMedications(pet.medications);
+        setAllergies(pet.allergies);
+        setMedicalConditions(pet.medicalConditions);
         setLoading(false);
     } catch (error) {
       if (error.response && error.response.status === 401) {
@@ -67,10 +76,10 @@ const PetProfile = () => {
   };
 
   useEffect(() => {
-    if (pet) {
+    if (petDetails) {
         fetchData();
     }
-  }, [pet]);
+  }, [petDetails]);
 
 
   if (loading) {
@@ -103,7 +112,7 @@ const PetProfile = () => {
       // Handle the selected activity here
       setPopupVisible(false);
       try{
-        await addPetActivity(pet._id, selectedActivity, data, token);
+        await addPetActivity(petDetails._id, selectedActivity, data, token);
         toast.success('Activity added successfully!');
         fetchData();
       } catch (error) {
@@ -116,97 +125,132 @@ const PetProfile = () => {
     }
   };
 
+  const handleHealthEdit = (item, type) => {
+    setItemToEdit(item);
+    setHealthEditType(type);
+    setEditHealthModalVisible(true);
+  };
+
+  const handleEditSubmit = async (updatedItem, type) => {
+    try {
+      switch (type) {
+        case ActivityType.MEDICAL_CONDITION:
+          console.log('edit medical condition ', updatedItem);
+          // await updateMedicalConditionById(updatedItem, token);
+          // setMedicalConditions(medicalConditions.map(condition => condition._id === updatedItem._id ? updatedItem : condition));
+          toast.success('Medical Condition edit successfully!');
+          break;
+        case ActivityType.MEDICATION:
+          console.log('edit medication', updatedItem);
+          // await updateMedicationById(updatedItem, token);
+          // setMedications(medications.map(medication => medication._id === updatedItem._id ? updatedItem : medication));
+          toast.success('Medication edit successfully!');
+          break;
+        case ActivityType.ALLERGY:
+          console.log('edit allergy ', updatedItem);
+          // await updateAllergyById(updatedItem, token);
+          // setAllergies(allergies.map(allergy => allergy._id === updatedItem._id ? updatedItem : allergy));
+          toast.success('Allergy edit successfully!');
+          break;
+        case 'pet':
+          console.log('edit pet ', updatedItem);
+          // await updatePetById(updatedItem, token);
+          // setAllergies(allergies.map(allergy => allergy._id === updatedItem._id ? updatedItem : allergy));
+          toast.success(`${petDetails.name} edit successfully!`);
+          break;
+        default:
+          return;
+      }
+      if(type === 'pet') {
+        setEditBasicDetailsModalVisible(false);
+      } else {
+        setEditHealthModalVisible(false);
+      }
+      // fetchData();
+    } catch (error) {
+      toast.error('Failed to update item. Please try again.');
+    }
+  };
+
+  const handleDelete = async (item, type) => {
+    console.log('type: ', type);
+    try {
+      switch(type){
+        case ActivityType.MEDICAL_CONDITION:
+          await deleteMedicalConditionById(item._id, token);
+          setMedicalConditions(medicalConditions.filter(conditon => conditon._id !== item._id));
+          toast.success('Medical Condition deleted successfully!');
+          return;
+        case ActivityType.MEDICATION:
+          await deleteMedicationById(item._id, token);
+          setMedications(medications.filter(medication => medication._id !== item._id));
+          toast.success('Medication deleted successfully!');
+          return;
+        case ActivityType.ALLERGY:
+          await deleteAllergyById(item._id, token);
+          setAllergies(allergies.filter(allergy => allergy._id !== item._id));
+          toast.success('Allergy deleted successfully!');
+          return;
+        case 'pet':
+          await deleteAllergyById(item._id, token);
+          setAllergies(allergies.filter(allergy => allergy._id !== item._id));
+          toast.success(`${petDetails.name} deleted successfully!`);
+          return;
+      }
+    } catch (error) {
+      toast.error('Failed to delete item. Please try again.');
+    }
+  };
+
   return (
     <div className="pet-profile-container">
       <div className="pet-details-card">
         <div className='pet-details-headers'>
           <div className='name-species-section'>
                 <h1>{pet.name}</h1>
-                {pet.species === 'MALE' ? (
+                {petDetails.species === 'MALE' ? (
                 <FontAwesomeIcon icon={faMars}  /> 
                 ) : (
                 <FontAwesomeIcon icon={faVenus}  /> 
                 )} 
           </div>
           <div className='pet-details-actions'>
-            <FontAwesomeIcon icon={faEdit}  /> 
+            <FontAwesomeIcon icon={faEdit} onClick={() => setEditBasicDetailsModalVisible(true)} /> 
             <FontAwesomeIcon icon={faTrash}  /> 
           </div>
         </div>
         <img className='img-profile'
-          src={pet.image ? `http://localhost:5001/${pet.image}` : petDefaultImage} alt={pet.name} 
+          src={petDetails.image ? `http://localhost:5001/${petDetails.image}` : petDefaultImage} alt={petDetails.name} 
         />
-        <p> Breed: {pet.breed}</p>
-        <p> Age: {pet.age} </p>
-        <p> Weight: {pet.weight} kg</p>
-        <p> Birthday: {pet.birthday ? formatDate(pet.birthday) : 'No Birthday date added'} </p>
-        <p> About {pet.name}: {pet.description}</p>
-        <p>Chip Number: {pet.chipNumber ? pet.chipNumber : 'No chip number'}</p>
+        <p> Breed: {petDetails.breed}</p>
+        <p> Age: {petDetails.age} </p>
+        <p> Weight: {petDetails.weight} kg</p>
+        <p> Birthday: {petDetails.birthday ? formatDate(petDetails.birthday) : 'No Birthday date added'} </p>
+        <p> About {petDetails.name}: {petDetails.description}</p>
+        <p>Chip Number: {petDetails.chipNumber ? petDetails.chipNumber : 'No chip number'}</p>
       
         <div className="health-information">
-          <h3>Health Information</h3>
-          <h4>Medications:</h4>
-          <div className="health-info-cards">
-            {pet.medications.length > 0 ? (
-                pet.medications.map(medication => (
-                    <div className="health-info-card" key={medication._id}>
-                      <div className='health-info-header'>
-                        <h4>{medication.name}</h4>
-                        <div className="health-info-actions">
-                          <FontAwesomeIcon icon={faEdit}  />
-                          <FontAwesomeIcon icon={faTrash}  />
-                        </div>
-                      </div>
-                        <p><strong>Dosage:</strong> {medication.dosage}</p>
-                        {medication.note && <p><strong>Note:</strong> {medication.note}</p>}
-                        <p><strong>Start From:</strong> {new Date(medication.startDate).toLocaleDateString()} - 
-                        <strong>End Date:</strong> {new Date(medication.endDate).toLocaleDateString()}
-                        </p>
-                    </div>
-                ))
-            ) : (
-                <p>No Medications</p>
-            )}
-        </div>
+          <HealthInformationSection 
+          medicalConditions={medicalConditions}
+          medications={medications}
+          allergies={allergies}
+          onEdit={handleHealthEdit}
+          onDelete={handleDelete}
+          />
+        </div> 
 
-        <h4>Allergies:</h4>
-          <div className="health-info-cards">
-            {pet.allergies.length > 0 ? (
-                pet.allergies.map(allergy => (
-                    <div className="health-info-card" key={allergy._id}>
-                      <div className='health-info-header'>
-                        <h4>{allergy.name}</h4>
-                        <div className="health-info-actions">
-                          <FontAwesomeIcon icon={faEdit}  />
-                          <FontAwesomeIcon icon={faTrash}  />
-                        </div>
-                      </div>
-                        <p><strong>treatment:</strong> {allergy.treatment}</p>
-                        {allergy.note && <p><strong>Note:</strong> {allergy.note}</p>}
-                        <p><strong>Date:</strong> {new Date(allergy.date).toLocaleDateString()} </p>
-                    </div>
-                ))
-            ) : (
-                <p>No Allergies</p>
-            )}
-        </div>
-          {/* <p>Allergies: {pet.allergies.length > 0 ? pet.allergies : 'No Allergies'}</p> */}
-
-          {/* <p>Vaccination Records: {pet.vaccinationRecords}</p>
-          <p>Medical Conditions: {pet.medicalConditions}</p> */}
-        </div>
         <button className='btn' onClick={handleAddActivityClick}>Add Activity</button>
-        {popupVisible && <AddActivityPopup onActivitySelect={handleActivitySelect} onClose={handleCancel}/>}
+        {popupVisible && <AddActivityPopup onActivitySelect={handleActivitySelect} onClose={handleCancel}/>} 
 
-      </div>
+        </div>
 
     
       <div className="activity-log">
         <ActivityLog
-            activityLogs={activityLogs}
-            upcomingEvents={upcomingEvents}
-            petName={pet.name}
-          />
+          activityLogs={activityLogs}
+          upcomingEvents={upcomingEvents}
+          petName={petDetails.name}
+        />
       </div>
 
       <div className="weight-tracker">
@@ -217,60 +261,58 @@ const PetProfile = () => {
         <ExpenseTracker 
         expenses={expenses}
         from={'pet'}
-        petName={pet.name}
+        petName={petDetails.name}
         currencySign={currencySign}
         />
       </div>
 
       <div className="meal-planner">
         <MealPlannerSection 
-        propsMeals={meals}
-        petId={pet._id} 
+        propsMeals={petDetails.mealPlanner}
+        petId={petDetails._id} 
         token={token} 
         />
       </div>
 
       <div className="gallery">
-        <h3>Gallery</h3>
-        {/* //TODO - create component / add option to add new photos and upload them */}
-        {
-          pet.additionalImages && pet.additionalImages.length > 0 
-          ?
-          (
-            <>
-            <p>Additional Photos:</p>
-            <div className="additional-photos">
-            {pet.additionalImages.map((photo, index) => (
-                <img
-                key={index}
-                className="additional-photo"
-                src={`http://localhost:5001/${photo}`}  
-
-                alt={`Additional Photo ${index + 1}`}
-                />
-            ))} 
-            </div>
-            </>   
-          )  
-          :
-          (<p>No photos in the gallery yet.</p>  )      
-        }
+        <GallerySection 
+        additionalImages={petDetails.additionalImages} 
+        petId={petDetails._id}
+        token={token}
+        />
       </div>
 
       <div className="notes">
         <NoteSection 
-        propsNotes={notes}
-        petId={pet._id} 
+        propsNotes={petDetails.notes}
+        petId={petDetails._id} 
         />
       </div>
 
       <div className="emergency-contacts">
         <EmergencyContactsSection 
-        propsContacts={contacts}
-        petId={pet._id} 
+        propsContacts={petDetails.emergencyContacts}
+        petId={petDetails._id} 
         token={token} 
         />
       </div>
+
+      {editHealthModalVisible && (
+        <EditHealthItemModal
+          item={itemToEdit}
+          type={healthEditType}
+          onClose={() => setEditHealthModalVisible(false)}
+          onSubmit={handleEditSubmit}
+        />
+      )}
+
+      {editBasicDetailsModalVisible && (
+        <EditPetDetailsModal
+          pet={petDetails}
+          onClose={() => setEditBasicDetailsModalVisible(false)}
+          onSubmit={handleEditSubmit}
+        />
+      )}
 
     </div>
   );

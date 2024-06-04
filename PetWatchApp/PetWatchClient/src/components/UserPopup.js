@@ -1,8 +1,9 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faSignOutAlt, faEye, faCog, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
+
 import '../styles/Popup.css';
 
 const UserPopup = ({ onClose }) => {
@@ -17,7 +18,11 @@ const UserPopup = ({ onClose }) => {
       <div className="user-info">
         <div className='user-header'>
             {/* Render profile image here */}
+            { user.imageUrl ?
+            <img src={`http://localhost:5001/${user.imageUrl}`}/>
+            :
             <FontAwesomeIcon icon={faUser} className="profile-image"/>
+            }
             <span className="username">{user.fullName}</span>
             <FontAwesomeIcon icon={faTimes} className='close-btn' onClick={onClose}/>
         </div>
@@ -25,11 +30,6 @@ const UserPopup = ({ onClose }) => {
           
       </div>
       <ul className="user-options">
-        {/* <li>
-          <Link to="/edit-profile">
-            <FontAwesomeIcon icon={faEdit} /> Edit Profile
-          </Link>
-        </li> */}
         <li>
           <Link to="/user-profile">
             <FontAwesomeIcon icon={faEye} /> User Profile

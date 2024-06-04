@@ -131,7 +131,7 @@ const ExpenseTracker = ({expenses, from, petName}) => {
     return (
         <div className="expense-tracker">
             <h3>{from === 'user' ? 'Your Expense Tracker': 'Expenses' }</h3>
-            <FilterSection
+            { allExpenses.length > 0 && <FilterSection
                 filterType={categoryFilter}
                 handleTypeChange={handleCategoryChange}
                 startDate={startDateFilter}
@@ -144,7 +144,7 @@ const ExpenseTracker = ({expenses, from, petName}) => {
                 handleMinAmountChange={handleMinAmountChange}
                 selectOptions={ExpensesType}
                 isExpenseFilter={true}
-            />
+            />}
             {renderExpensesTable()}
             { allExpenses.length > 0 ?
             <>
@@ -184,8 +184,7 @@ const ExpenseTracker = ({expenses, from, petName}) => {
             </>
             :
             <></>
-            }
-         
+            }  
         </div>
     );
 };
