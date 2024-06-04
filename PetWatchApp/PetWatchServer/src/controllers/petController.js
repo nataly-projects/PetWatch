@@ -11,6 +11,7 @@ const { Expense } = require('../models/expenseModel');
 const { ActivityLog } = require('../models/activityLogModel');
 const { MealPlanner } = require('../models/mealPlannerModel');
 const { EmergencyContact } = require('../models/emergencyContactModel');
+const { MedicalCondition } = require( '../models/MedicalConditionsModel');
 const  {ActivityLogType, ActivityType, VaccineRecordType, RoutineCareActivity, ExpenseCategory } = require('../utils/enums');
 const { all } = require('../routes/userRoutes');
 
@@ -41,7 +42,10 @@ async function getPetsByUserId(req, res) {
                     { path: 'notes' },
                     { path: 'allergies' },
                     { path: 'medications' },
-                    { path: 'vetVisits' }
+                    { path: 'vetVisits' },
+                    { path: 'mealPlanner' },
+                    { path: 'emergencyContacts' },
+                    { path: 'medicalConditions' }
                 ]
           });
         if (!user) {
@@ -317,6 +321,21 @@ async function getPetEmergencyContacts (req, res) {
     }
 }
 
+async function getPetMedicalConditions (req, res) {
+    try {
+        const { petId } = req.params;
+
+        const pet = await Pet.findById(petId).populate('medicalConditions');
+        if (!pet) {
+            return res.status(404).json({ error: 'Pet not found' });
+        }
+        res.status(200).json(pet.medicalConditions);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
 async function addPet (req, res) {
     try {
         console.log('add pet');
@@ -342,7 +361,7 @@ async function addPet (req, res) {
         console.log('new pet: ', newPetData);
         await newPetData.save();
         const pet = newPetData._id.toString();
-console.log('petId: ', pet.toString());
+
         if (petData.expenses.length > 0) {
             expenseIds = await Promise.all(petData.expenses.map(async (expense) => {
                 const newExpense = new Expense({ ...expense, pet });
@@ -465,6 +484,25 @@ console.log('petId: ', pet.toString());
             }));
         }
 
+        
+        if (petData.medicalConditions.length > 0) {
+            contidionIds = await Promise.all(petData.medicalConditions.map(async (condition) => {
+                const newCondition = new MedicalCondition({ ...condition, pet });
+                await newCondition.save();
+
+                const activityLog = new ActivityLog({
+                    userId: userId, 
+                    petId: pet,
+                    type: ActivityType.MEDICAL_CONDITION,
+                    actionType: ActivityLogType.MEDICAL_CONDITION_ADDED,
+                    details: `Medical condition details:\n Name:${condition.name}, Description:${condition.description}` 
+
+                });
+                await activityLog.save();
+                return newCondition._id;
+            }));
+        }
+
         // Update the pet document with the IDs of related data items
         newPetData.medications = medicationIds;
         newPetData.allergies = allergyIds;
@@ -473,6 +511,7 @@ console.log('petId: ', pet.toString());
         newPetData.expenses = expenseIds;
         newPetData.notes = noteIds;
         newPetData.vetVisits = vetVisitIds;
+        newPetData.medicalConditions = contidionIds;
         await newPetData.save();
 
         // Find the user by ID and update the pets field
@@ -487,7 +526,7 @@ console.log('petId: ', pet.toString());
             petId: pet,
             type: ActivityType.WEIGHT,
             actionType: ActivityLogType.PET_WEIGHT_UPDATE,
-            details: `update weight to ${newPet.weight} `
+            details: `update weight to ${newPetData.weight} `
         });
         await weightActivityLog.save();
 
@@ -868,10 +907,10 @@ console.log('mealData: ', mealData);
         const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: petId,
-            type: ActivityType.VET_VISIT,
-            actionType: ActivityLogType.VET_VISIT_ADDED,
-            details: mealPlanner.note ? `Meal details: ${mealPlanner.food}, Amount:${mealPlanner.amount}\nTime:${mealPlanner.date}\nyour note: ${mealPlanner.note}` :
-             `Meal details: ${mealPlanner.food}, Amount:${mealPlanner.amount}}\nTime:${mealPlanner.date}`
+            type: ActivityType.MEAL_PLANNER,
+            actionType: ActivityLogType.MEAL_PLANNER_ADDED,
+            details: mealPlanner.note ? `Meal details: ${mealPlanner.food}, Amount:${mealPlanner.amount}\nyour note: ${mealPlanner.note}` :
+             `Meal details: ${mealPlanner.food}, Amount:${mealPlanner.amount}}`
         });
         await activityLog.save();
 
@@ -919,6 +958,49 @@ async function addPetEmergencyContacts (req, res) {
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'Error while adding meal planner, please try again later' });
+    }
+}
+
+async function addPetMedicalCondition (req, res) {
+    try {
+        const { petId } = req.params;
+        const { medicalData } = req.body;
+
+        const condition = new MedicalCondition({
+            name: medicalData.name,
+            description: medicalData.description,
+            continuedTreatment: medicalData.continuedTreatment,
+            dateDiagnosed: medicalData.dateDiagnosed,
+            note: medicalData.note,
+            pet: petId
+        });
+        await condition.save();
+        // Find the pet by ID and update its vetVisitis array
+        const pet = await Pet.findByIdAndUpdate(
+            petId,
+            { $push: { medicalConditions: condition._id } },
+            { new: true }
+        );
+
+        if (!pet) {
+            return res.status(404).json({ error: 'Pet not found' });
+        }
+        
+        // Log the activity
+        const activityLog = new ActivityLog({
+            userId: pet.owner, 
+            petId: petId,
+            type: ActivityType.MEDICAL_CONDITION,
+            actionType: ActivityLogType.MEDICAL_CONDITION_ADDED,
+            details: `Medical condition details:\n Name:${condition.name}, Description:${condition.description}` 
+           
+        });
+        await activityLog.save();
+
+        res.status(201).json({ message: 'Medical Condition added successfully', contact });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: 'Error while adding medical condition, please try again later' });
     }
 }
 
@@ -1005,7 +1087,7 @@ async function updateAllergyById (req, res) {
         await allergy.save();
 
         const pet = await Pet.findById(allergy.pet);
-        // Update the corresponding note within the pet notes array
+        // Update the corresponding allergy within the pet allergies array
         const index = pet.allergies.findIndex(allergy => allergy._id.toString() === alleryId);
         if (index !== -1) {
             pet.allergies[index] = allergy;
@@ -1030,13 +1112,15 @@ async function updateAllergyById (req, res) {
 async function deleteAllergy (req, res) {
     try {
         const { allergyId } = req.params;
+
         const allergy = await Allergy.findByIdAndDelete(allergyId);
         if (!allergy) {
             return res.status(404).json({ error: 'Allergy not found' });
         }
-        // Remove from the pet notes array
+        // Remove from the pet allergies array
         const pet = await Pet.findById(allergy.pet);
         pet.allergies = pet.allergies.filter(allergy => allergy.toString() !== allergyId );
+
         console.log('pet allergies: ', pet.allergies);
         await pet.save();
 
@@ -1089,7 +1173,6 @@ async function updateMedicationById (req, res) {
 
         res.status(200).json({ message: 'Medication updated successfully', medication });
     } catch (error) {
-        console.error('Error updating note:', error);
         res.status(500).json({ error: 'Error while updating note, please try again later' });
     }
 }
@@ -1097,14 +1180,14 @@ async function updateMedicationById (req, res) {
 async function deleteMedication (req, res) {
     try {
         const { medicationId } = req.params;
+
         const medication = await Medication.findByIdAndDelete(medicationId);
         if (!medication) {
             return res.status(404).json({ error: 'Medication not found' });
         }
-        // Remove from the pet notes array
+        // Remove from the pet medications array
         const pet = await Pet.findById(medication.pet);
         pet.medications = pet.notes.filter(med => med.toString() !== medication );
-        console.log('pet medications: ', pet.medications);
         await pet.save();
 
          // Log the activity
@@ -1116,9 +1199,9 @@ async function deleteMedication (req, res) {
         });
         await activityLog.save();
 
-        res.status(200).json({ message: 'Note deleted successfully' });
+        res.status(200).json({ message: 'Medication deleted successfully' });
     } catch (error) {
-        res.status(500).json({ error: 'Error while deleting note, please try again later' });
+        res.status(500).json({ error: 'Error while deleting medication, please try again later' });
     }
 }
 
@@ -1139,7 +1222,7 @@ async function updateVetVisitById (req, res) {
         await visit.save();
 
         const pet = await Pet.findById(visit.pet);
-        // Update the corresponding note within the pet notes array
+
         const index = pet.vetVisits.findIndex(visit => visit._id.toString() === visitId);
         if (index !== -1) {
             pet.vetVisits[index] = visit;
@@ -1156,22 +1239,21 @@ async function updateVetVisitById (req, res) {
 
         res.status(200).json({ message: 'Visit updated successfully', visit });
     } catch (error) {
-        console.error('Error updating note:', error);
-        res.status(500).json({ error: 'Error while updating note, please try again later' });
+        res.status(500).json({ error: 'Error while updating visit, please try again later' });
     }
 }
 
 async function deleteVetVisit (req, res) {
     try {
         const { visitId } = req.params;
+
         const visit = await VetVisit.findByIdAndDelete(visitId);
         if (!visit) {
             return res.status(404).json({ error: 'Visit not found' });
         }
-        // Remove from the pet notes array
+        // Remove from the pet visits array
         const pet = await Pet.findById(visit.pet);
         pet.vetVisits = pet.notes.filter(visit => visit.toString() !== visitId );
-        console.log('pet vetVisits: ', pet.vetVisits);
         await pet.save();
 
          // Log the activity
@@ -1183,9 +1265,9 @@ async function deleteVetVisit (req, res) {
         });
         await activityLog.save();
 
-        res.status(200).json({ message: 'Note deleted successfully' });
+        res.status(200).json({ message: 'Visit deleted successfully' });
     } catch (error) {
-        res.status(500).json({ error: 'Error while deleting note, please try again later' });
+        res.status(500).json({ error: 'Error while deleting visit, please try again later' });
     }
 }
 
@@ -1318,6 +1400,73 @@ async function deleteEmergencyContact (req, res) {
     }
 }
 
+async function updateMedicalConditionById (req, res) {
+    try {
+        const { conditionId } = req.params;
+        const { conditionData } = req.body;
+
+        const condition = await MedicalCondition.findById(conditionId);
+        if (!meal) {
+            return res.status(404).json({ error: 'Medical Condition not found' });
+        }
+
+        condition.name = conditionData.date;
+        condition.description = conditionData.description;
+        condition.continuedTreatment = conditionData.continuedTreatment;
+        condition.dateDiagnosed = conditionData.dateDiagnosed;
+        condition.note = conditionData.note;
+        condition.updatedDate = Date.now();
+        await condition.save();
+
+        const pet = await Pet.findById(meal.petId);
+
+        const index = pet.medicalConditions.findIndex(condition => condition._id.toString() === conditionId);
+        if (index !== -1) {
+            pet.medicalConditions[index] = condition;
+        }
+
+         // Log the activity
+         const activityLog = new ActivityLog({
+            userId: pet.owner, 
+            petId: pet._id,
+            type: ActivityType.MEDICAL_CONDITION,
+            actionType: ActivityLogType.MEDICAL_CONDITION_EDIT
+        });
+        await activityLog.save();
+
+        res.status(200).json({ message: 'Medical Condition updated successfully', meal });
+    } catch (error) {
+        res.status(500).json({ error: 'Error while updating medical condition, please try again later' });
+    }
+}
+
+async function deleteMedicalCondition (req, res) {
+    try {
+        const { conditionId } = req.params;
+        const condition = await MedicalCondition.findByIdAndDelete(conditionId);
+        if (!meal) {
+            return res.status(404).json({ error: 'Medical Condition not found' });
+        }
+
+        const pet = await Pet.findById(condition.pet);
+        pet.medicalConditions = pet.medicalConditions.filter(condition => condition.toString() !== conditionId );
+        await pet.save();
+
+         // Log the activity
+         const activityLog = new ActivityLog({
+            userId: pet.owner, 
+            petId: pet._id,
+            type: ActivityType.MEDICAL_CONDITION,
+            actionType: ActivityLogType.MEDICAL_CONDITION_DELETE
+        });
+        await activityLog.save();
+
+        res.status(200).json({ message: 'Medical Condition deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error while deleting medical condition, please try again later' });
+    }
+}
+
 async function updatePetById(req, res) {
     try {
         const { petId } = req.params;
@@ -1430,6 +1579,7 @@ module.exports = {
     getPetVetVisits,
     getPetMealPlanner,
     getPetEmergencyContacts,
+    getPetMedicalConditions,
     addPet,
     uploadAdditionalImageToNewPet,
     addPetVaccineRecord,
@@ -1441,6 +1591,7 @@ module.exports = {
     addPetVetVisit,
     addPetMealPlanner,
     addPetEmergencyContacts,
+    addPetMedicalCondition,
     updateNoteById,
     updatePetById,
     deleteNote,
@@ -1448,6 +1599,14 @@ module.exports = {
     deleteMealPlanner,
     updateEmergencyContactById,
     deleteEmergencyContact,
+    updateMedicalConditionById,
+    deleteMedicalCondition,
+    updateAllergyById,
+    deleteAllergy,
+    updateMedicationById,
+    deleteMedication,
+    updateVetVisitById,
+    deleteVetVisit,
     deletePet,
     singleImageUpload,
     multipleImagesUpload,

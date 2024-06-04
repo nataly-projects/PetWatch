@@ -92,6 +92,10 @@ const petSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'MealPlanner',
     }],
+    medicalConditions: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'MedicalCondition'
+    }],
     created_at: {
         type: Date,
         default: Date.now()
