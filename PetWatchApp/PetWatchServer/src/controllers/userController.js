@@ -495,22 +495,22 @@ async function getUserPetsActivitiesForMonth(req, res) {
     // Fetch activities for each table
     const vetVisits = await VetVisit.find({
       $or: [
-        { date: { $gte: new Date(year, month - 1, 1), $lt: new Date(year, month, 1) } },
-        { nextDate: { $gte: new Date(year, month - 1, 1), $lt: new Date(year, month, 1) } }
+        { date: { $gte: new Date(year, month-1, 1), $lt: new Date(year, month, 1) } },
+        { nextDate: { $gte: new Date(year, month-1, 1), $lt: new Date(year, month, 1) } }
       ],
       pet: { $in: petIds }
     }).populate('pet');
     const routineCare = await RoutineCareRecord.find({
       $or: [
-        { date: { $gte: new Date(year, month - 1, 1), $lt: new Date(year, month, 1) } },
-        { nextDate: { $gte: new Date(year, month - 1, 1), $lt: new Date(year, month, 1) } }
+        { date: { $gte: new Date(year, month-1, 1), $lt: new Date(year, month, 1) } },
+        { nextDate: { $gte: new Date(year, month-1, 1), $lt: new Date(year, month, 1) } }
       ],
         pet: { $in: petIds }
     }).populate('pet');
     const vaccinationRecords = await VaccinationRecord.find({
         $or: [
-            { date: { $gte: new Date(year, month - 1, 1), $lt: new Date(year, month, 1) } },
-            { nextDate: { $gte: new Date(year, month - 1, 1), $lt: new Date(year, month, 1) } }
+            { date: { $gte: new Date(year, month-1, 1), $lt: new Date(year, month, 1) } },
+            { nextDate: { $gte: new Date(year, month-1, 1), $lt: new Date(year, month, 1) } }
         ],
         pet: { $in: petIds }
     }).populate('pet');

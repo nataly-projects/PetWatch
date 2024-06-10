@@ -1,31 +1,31 @@
-.card {
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    text-align: center;
-    flex: 1;
-    margin: 0 10px;
-  }
 
-  .title-section {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: baseline;
-    gap: 5px
-  }
-  
-  .card-title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    margin-bottom: 10px;
-  }
-  
-  .card-icon {
-    font-size: 1.5rem;
-  }
-  
-  .card-content {
-    font-size: 1.2rem;
-  }
+.dashboard-card {
+  background: #f9fafb;
+  border: 1px solid #ccc;
+  padding: 20px;
+  flex: 1; /* Each card takes equal space */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.dashboard-card-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dashboard-card-info {
+  margin-top: 10px;
+}
+
+.dashboard-card h3 {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.dashboard-card p {
+  margin: 0;
+  color: #6b7280;
+}

@@ -6,30 +6,19 @@
     margin: 0 auto;
     background-color: #f9f9f9;
 
+    .top-row-container {
+        display: flex;
+        gap: 10px;
+        justify-content: space-between;
+        border-radius: 8px;
+    }
+
     .top-row {
+        width: 80%;
         display: flex;
         justify-content: space-between;
-        width: 100%;
-        margin-bottom: 20px;
     }
 
-    .pet-section-title {
-        padding: 0 20px;
-    }
-
-    .pet-section {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
-    }
-  
-    .pet-card {
-        padding: 15px;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        background-color: #f9f9f9;
-    }
-    
     .pet-name {
         font-size: 1.2rem;
         font-weight: bold;
@@ -64,10 +53,34 @@
         border-bottom: none;
     }
 
+    .slider-calendar-warpper {
+        display: flex;
+        gap: 10px;
+        max-width: 100%;
+        align-items: flex-start;
+        margin-top: 20px;
+    }
+    /* Slick slider */
+    .pet-slider-wrapper {
+        width: 60%;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        padding: 20px;
+    }
 
-    /* Slick slider navigation dots */
+    .pet-section-title {
+        padding: 0 20px;
+    }
+
+    .pet-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
+
     .slick-dots {
-        bottom: -25px;
+        margin-bottom: 20px;
+        text-align: center;
     }
     
     .slick-dots li button:before {
@@ -78,7 +91,7 @@
     .slick-dots li.slick-active button:before {
         color: #044875;
     }
-    
+
     /* PetCard container styles */
     .slick-slide > div {
         display: flex;
@@ -86,6 +99,21 @@
         align-items: center;
         padding: 10px;
     }
+
+
+    .slick-next, .slick-prev {
+        background: transparent;
+        border: none;
+        color: black; 
+        z-index: 1; 
+        cursor: pointer;
+    }
+
+    .slick-prev:before,
+    .slick-next:before {
+        color: #ccc;
+    }
+
 }
 
 

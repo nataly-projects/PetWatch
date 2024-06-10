@@ -4,11 +4,8 @@
     padding: 20px;
     margin-bottom: 20px;
     cursor: pointer;
-    transition: all 0.3s ease;
-
-    .pet-card:hover {
-        box-shadow: 0 0 0px rgba(0, 0, 0, 0.1);
-    }
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #f9f9f9;
 
     .img-profile {
         width: 80px;
@@ -48,9 +45,12 @@
     .additional-photo:last-child {
         margin-right: 0;
     }
-
-   
   }
+
+    .pet-card:hover {
+        transition: all 0.3s ease;
+        box-shadow: 0 0 0px rgba(0, 0, 0, 0.1);
+    }
 
 
 

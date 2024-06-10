@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom'; 
-import { faPaw, faMoneyCheck } from '@fortawesome/free-solid-svg-icons'; 
+import Calendar from 'react-calendar';
+import ReactTooltip from 'react-tooltip';
+import { faPaw, faMoneyCheck, faCalendarAlt, faTasks } from '@fortawesome/free-solid-svg-icons'; 
 import { getPetsByUserId } from '../services/petService'; 
 import { fetchUserActivityLog, fetchUserNotes, fetchUserUpcomingEvents, fetchUserExpensesArray, fetchUserAccountSettings } from '../services/userService';
 import { Currency } from '../utils/utils';
@@ -10,6 +12,7 @@ import PetSlider from './PetSlider';
 import ActivityLog from './ActivityLog';
 import ExpenseTracker from './ExpenseTracker';
 import NoteSection from './NoteSection';
+import CalendarSection from './Calendar';
 import '../styles/Dashboard.css';
 
 const Dashboard = () => {
@@ -26,6 +29,8 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
+  const [date, setDate] = useState(new Date());
+
   const fetchData = async () => {
     try {
         const userPets = await getPetsByUserId(user._id, token);
@@ -41,6 +46,7 @@ const Dashboard = () => {
         setUpcomingEvents(events);
         setCurrency(userAccountSettings.accountSettings.currency);
         setLoading(false);
+
     } catch (error) {
       if (error.response && error.response.status === 401) {
         console.error('UNAUTHORIZED_ERROR');
@@ -84,25 +90,49 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-container">
+      <div className='top-row-container'>
         <div className="top-row">
-            <DashboardCard 
-            title="Number of Pets" 
-            icon={faPaw}
-            content={`${pets.length}`} />
-        
-            <DashboardCard 
-            title="Total Expenses" 
-            icon={faMoneyCheck}
-            content={`${user.totalExpenses}  ${Currency[currency].sign}`} />
-        </div>
+          <DashboardCard 
+          title="Number of Pets" 
+          icon={faPaw}
+          content={`${pets.length}`} />
       
-      <h3 className='pet-section-title'>Your pets:</h3>
-      <div className="pet-section">
-        <PetSlider 
-        pets={pets} 
-        currencySign={`${Currency[currency].sign}`}
-        />
+          <DashboardCard 
+          title="Total Expenses" 
+          icon={faMoneyCheck}
+          content={`${user.totalExpenses}  ${Currency[currency].sign}`} />
+
+          <DashboardCard 
+            title="Upcoming Events" 
+            icon={faCalendarAlt}
+            content={`${upcomingEvents.length}`} />
+        </div>
+          <DashboardCard 
+          title="Opening Tasks" 
+          icon={faTasks}
+          content={`0`} />
       </div>
+
+      <div className='slider-calendar-warpper'>
+        <div className='pet-slider-wrapper'>
+          <h3 className='pet-section-title'>Your pets:</h3>
+          <div className="pet-section">
+            <PetSlider 
+            pets={pets} 
+            />
+          </div>
+        </div>
+
+        {/* <div className='calendar-wrapper'>
+          <Calendar
+            onChange={setDate}
+            value={date}
+          />
+        </div> */}
+        <CalendarSection />
+      </div>    
+
+      
 
       
       <ActivityLog

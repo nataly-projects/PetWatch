@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { fetchUserUpcomingEvents } from '../services/userService';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { formatDate } from '../utils/utils';
+import { formatDate, formatDateUniversal } from '../utils/utils';
 import '../styles/Popup.css';
 
 const NotificationPopup = ({ onClose }) => {
@@ -54,7 +54,7 @@ const NotificationPopup = ({ onClose }) => {
                         </div>
                         <p>{event.pet.name}</p>
                         <p>{event.details}</p>
-                        <p>Date: {formatDate(event.nextDate)}</p>
+                        <p>Date: {formatDateUniversal(new Date(event.nextDate))}</p>
                     </div>
                 ))}
                 </>

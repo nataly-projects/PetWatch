@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import Calendar from 'react-calendar';
+import { Tooltip } from 'react-tooltip';
 import { getDaysInMonth, getFirstDayOfMonth } from '../utils/utils';
 import { fetchUserPetsActivitiesForMonth } from '../services/userService';
 import ExportToCSVButton from './ExportToCSVButton';
 import '../styles/Calendar.css'; 
 
 
-const Calendar = () => {
+const CalendarSection = () => {
     const user = useSelector((state) => state.user);
     const token = useSelector((state) => state.token);
 
@@ -15,10 +17,14 @@ const Calendar = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
-    const fetchActivitiesForMonth = async () => {
+    const [date, setDate] = useState(new Date());
+
+    const fetchActivitiesForMonth = async (year, month) => {
+        console.log('month: ', month);
         try {
-          const allActivites = await fetchUserPetsActivitiesForMonth(user._id, token, currentDate.getFullYear(), currentDate.getMonth());
+          const allActivites = await fetchUserPetsActivitiesForMonth(user._id, token, year, month+1);
           setActivities(allActivites);
+          console.log('allActivites: ', allActivites);
           setLoading(false);
         } catch (error) {
           console.error('Error fetching doctors:', error);
@@ -28,8 +34,8 @@ const Calendar = () => {
       };
 
     useEffect(() => {
-        fetchActivitiesForMonth();
-    }, []);
+        fetchActivitiesForMonth(date.getFullYear(), date.getMonth());
+    }, [date]);
 
 
     if (loading) {
@@ -50,21 +56,26 @@ const Calendar = () => {
         );
     }
 
-    const prevMonth = () => {
-        setCurrentDate((prevDate) => {
-          const prevMonthDate = new Date(prevDate);
-          prevMonthDate.setMonth(prevMonthDate.getMonth() - 1);
-          return prevMonthDate;
-        });
+    const handleMonthChange = ({ activeStartDate }) => {
+        setDate(activeStartDate);
+        fetchActivitiesForMonth(activeStartDate.getFullYear(), activeStartDate.getMonth());
     };
+
+    // const prevMonth = () => {
+    //     setCurrentDate((prevDate) => {
+    //       const prevMonthDate = new Date(prevDate);
+    //       prevMonthDate.setMonth(prevMonthDate.getMonth() - 1);
+    //       return prevMonthDate;
+    //     });
+    // };
     
-    const nextMonth = () => {
-        setCurrentDate((prevDate) => {
-            const nextMonthDate = new Date(prevDate);
-            nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
-            return nextMonthDate;
-        });
-    };
+    // const nextMonth = () => {
+    //     setCurrentDate((prevDate) => {
+    //         const nextMonthDate = new Date(prevDate);
+    //         nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
+    //         return nextMonthDate;
+    //     });
+    // };
 
 
     // Function to render the calendar cells
@@ -132,34 +143,87 @@ const Calendar = () => {
 
     const { calendarJSX, rowsToExport } = renderCells();
 
+    const tileContent = ({ date, view }) => {
+        if (view === 'month') {
+            const activity = activities.find(activity => 
+                new Date(activity.date).toDateString() === date.toDateString() || new Date(activity.nextDate).toDateString() === date.toDateString()
+            );
+
+            if (activity) {
+                return (
+                    <div className='tooltip'
+                    data-tooltip-id={`tooltip-${date.toDateString()}`}
+                    data-tooltip-content={`${activity.pet.name} - ${activity.vaccineType || activity.activity || activity.vaccineType || 'Vet Visit'}`}
+                    >
+                        {`${activity.pet.name} - `}
+                        <br></br>
+                        {`${activity.vaccineType || activity.activity || activity.vaccineType || 'Vet Visit'}`}
+                    </div>
+                );
+            }
+        }
+        return null;
+    };
+
+    const tileClassName = ({ date, view }) => {
+        if (view === 'month') {
+            const activity = activities.find(activity => 
+                new Date(activity.date).toDateString() === date.toDateString() || new Date(activity.nextDate).toDateString() === date.toDateString()
+            );
+            if (activity) {
+                return activity.vaccineType ? 'tile-vaccine-type' : activity.vaccineType ? 'tile-routine-care' : 'tile-vet-visit';
+            }
+        }
+        return null;
+    };
+
 
     return (
-    <div className="calendar">
-        <div className="calendar-header">
-            <button className='btn' onClick={prevMonth}>Prev</button>
-            <span className='current-date'> {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
-            <button className='btn' onClick={nextMonth}>Next</button>
-      </div>
-        <table>
-            <thead>
-                <tr>
-                <th>Sun</th>
-                <th>Mon</th>
-                <th>Tue</th>
-                <th>Wed</th>
-                <th>Thu</th>
-                <th>Fri</th>
-                <th>Sat</th>
-                </tr>
-            </thead>
-           {calendarJSX}
-        </table>
-        <ExportToCSVButton 
-            data={rowsToExport} 
-            filename={(currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric'}))}  
-        />
-    </div>
+        <div className='calendar-wrapper'>
+        <Calendar
+            onChange={setDate}
+            value={date}
+            tileContent={tileContent}
+            onActiveStartDateChange={handleMonthChange}
+            tileClassName={tileClassName}
+          />
+            {activities.map(activity => (
+                <Tooltip
+                    key={activity.date}
+                    id={`tooltip-${new Date(activity.date).toDateString()}`}
+                    effect="solid"
+                >
+                    <span>{activity.date}</span>
+                </Tooltip>
+            ))}
+        </div>
+        
+    // <div className="calendar">
+    //     <div className="calendar-header">
+    //         <button className='btn' onClick={prevMonth}>Prev</button>
+    //         <span className='current-date'> {currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
+    //         <button className='btn' onClick={nextMonth}>Next</button>
+    //   </div>
+    //     <table>
+    //         <thead>
+    //             <tr>
+    //             <th>Sun</th>
+    //             <th>Mon</th>
+    //             <th>Tue</th>
+    //             <th>Wed</th>
+    //             <th>Thu</th>
+    //             <th>Fri</th>
+    //             <th>Sat</th>
+    //             </tr>
+    //         </thead>
+    //        {calendarJSX}
+    //     </table>
+    //     <ExportToCSVButton 
+    //         data={rowsToExport} 
+    //         filename={(currentDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric'}))}  
+    //     />
+    // </div>
     );
 };
 
-export default Calendar;
+export default CalendarSection;

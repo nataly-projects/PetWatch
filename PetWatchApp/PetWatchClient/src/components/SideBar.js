@@ -59,7 +59,7 @@ const Sidebar = () => {
     {title: 'Pets', items: [{text: 'Pets Section', link: '/main/pets', icon: faPaw} ]},
     {title: 'Logs', items: [{text: 'Activity Log', link: '/main/activity-log', icon: faBook} ]},
     {title: 'Expenses', items: [{text: 'Expenses', link: '/main/expenses' , icon: faMoneyCheck} ]},
-    {title: 'Calendar', items: [{text: 'Calendar', link: '/main/calendar' , icon: faCalendar} ]},
+    // {title: 'Calendar', items: [{text: 'Calendar', link: '/main/calendar' , icon: faCalendar} ]},
     {title: 'Info', items: [
     {text: 'Dogs Care Routine', link: '/main/dog-care' , icon: faDog}, 
     {text: 'Dog Guide', link: '/main/dog-guide' , icon: faDog}, 

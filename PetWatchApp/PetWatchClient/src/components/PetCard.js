@@ -39,31 +39,13 @@ const PetCard = ({ pet }) => {
             </div>
         
         {expanded && (
-                <div className="extended-details">
-                    <p>About {pet.name}: {pet.description}</p>
-                    <p>Breed: {pet.breed}</p>
-                    <p>Age: {pet.age}</p>
-                    <p>Weight: {pet.weight}</p>
-                    {/* {
-                    pet.additionalImages && pet.additionalImages.length > 0 && (
-                    <>
-                        <p>Additional Photos:</p>
-                        <div className="additional-photos">
-                        {pet.additionalImages.map((photo, index) => (
-                            <img
-                            key={index}
-                            className="additional-photo"
-                            src={`http://localhost:3000/${photo}`}  
-
-                            alt={`Additional Photo ${index + 1}`}
-                            />
-                        ))}
-                    </div>
-                    </>
-                    
-                    )} */}
-                    <button className='btn' onClick={onPetClick}> View Pet Page </button>
-                </div>
+            <div className="extended-details">
+                {/* <p>About {pet.name}: {pet.description}</p> */}
+                <p>Breed: {pet.breed}</p>
+                <p>Age: {pet.age}</p>
+                <p>Weight: {pet.weight}</p>
+                <button className='btn' onClick={onPetClick}> View Pet Page </button>
+            </div>
             )}
         </div>
     );
