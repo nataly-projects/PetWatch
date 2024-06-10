@@ -74,25 +74,25 @@ const ExpenseTracker = ({expenses, from, petName}) => {
         return (
             (allExpenses.length > 0 ?
                 <>
-                      <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        {from === 'user' && <th>Pet Name</th>}
-                        <th>Category</th>
-                        <th>Amount</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {filteredExpenses.map(expense => (
-                        <tr key={expense._id}>
-                            <td>{formatDate(expense.date)}</td>
-                            {from === 'user' && <td>{expense.pet.name}</td>}
-                            <td>{expense.category}</td>
-                            <td>{expense.amount.toFixed(2)} {currencySign}</td>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            {from === 'user' && <th>Pet Name</th>}
+                            <th>Category</th>
+                            <th>Amount</th>
                         </tr>
-                    ))}
-                </tbody>
+                    </thead>
+                    <tbody>
+                        {filteredExpenses.map(expense => (
+                            <tr key={expense._id}>
+                                <td>{formatDate(expense.date)}</td>
+                                {from === 'user' && <td>{expense.pet.name}</td>}
+                                <td>{expense.category}</td>
+                                <td>{expense.amount.toFixed(2)} {currencySign}</td>
+                            </tr>
+                        ))}
+                    </tbody>
                 </table>
                 <ExportToCSVButton className='btn'
                 petName={petName}
@@ -110,7 +110,7 @@ const ExpenseTracker = ({expenses, from, petName}) => {
     const renderPetExpensesDataChart = () => {
         const { petExpensesData } = expenses;
         return (
-            <>
+            <div className='chart-container'>
             <h3>Chart Expenses By Pet</h3>
             <div className="chart-wrapper">
                 <Pie data={{
@@ -124,7 +124,7 @@ const ExpenseTracker = ({expenses, from, petName}) => {
                 options={pieChartOptions}
                     />
             </div>
-            </>
+            </div>
         );
     }
 
@@ -147,13 +147,13 @@ const ExpenseTracker = ({expenses, from, petName}) => {
             />}
             {renderExpensesTable()}
             { allExpenses.length > 0 ?
-            <>
+            <div className="charts-row">
                 <div className="chart-container">
                     {from === 'user' ? renderPetExpensesDataChart() : null}
                 </div>
 
                 <div className="chart-container">
-                    <h2>Chart Expenses By Monthly</h2>
+                    <h3>Chart Expenses By Monthly</h3>
                     <div className="chart-wrapper">
                         <Pie data={{
                             labels: monthlyExpensesChartData.map(item => item.month),
@@ -168,7 +168,7 @@ const ExpenseTracker = ({expenses, from, petName}) => {
                 </div>
 
                 <div className="chart-container">
-                    <h2>Chart Expenses By Category</h2>
+                    <h3>Chart Expenses By Category</h3>
                         <div className="chart-wrapper">
                         <Pie data={{
                             labels: categoryExpensesChartData.map(item => item.category),
@@ -181,7 +181,7 @@ const ExpenseTracker = ({expenses, from, petName}) => {
                         options={pieChartOptions} />
                     </div>
                 </div>
-            </>
+            </div>
             :
             <></>
             }  

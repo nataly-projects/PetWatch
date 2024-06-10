@@ -15,29 +15,26 @@ const UserPopup = ({ onClose }) => {
 
   return (
     <div className="user-popup" onClick={handleClick}>
-      <div className="user-info">
-        <div className='user-header'>
-            {/* Render profile image here */}
-            { user.imageUrl ?
-            <img src={`http://localhost:5001/${user.imageUrl}`}/>
-            :
-            <FontAwesomeIcon icon={faUser} className="profile-image"/>
-            }
-            <span className="username">{user.fullName}</span>
-            <FontAwesomeIcon icon={faTimes} className='close-btn' onClick={onClose}/>
-        </div>
-
-          
+      <div className='user-header'>
+          {/* Render profile image here */}
+          { user.imageUrl ?
+          <img src={`http://localhost:5001/${user.imageUrl}`}/>
+          :
+          <FontAwesomeIcon icon={faUser} className="profile-image"/>
+          }
+          <span className="username">{user.fullName}</span>
+          <FontAwesomeIcon icon={faTimes} className='close-btn' onClick={onClose}/>
       </div>
+
       <ul className="user-options">
         <li>
           <Link to="/user-profile">
-            <FontAwesomeIcon icon={faEye} /> User Profile
+            <FontAwesomeIcon icon={faEye} /> Profile
           </Link>
         </li>
         <li>
           <Link to="/main/account-settings">
-            <FontAwesomeIcon icon={faCog} /> Account Settings
+            <FontAwesomeIcon icon={faCog} /> Settings
           </Link>
         </li>
         <li>

@@ -53,7 +53,7 @@ const PetsSection = () => {
 
     const handleAddNewPetClick = () => {
         navigate('/add-pet');
-      };
+    };
 
     return (
     <div className="pets-section-container">

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom'; 
-import { faPaw, faMoneyCheck } from '@fortawesome/free-solid-svg-icons'; // Importing sample icons
+import { faPaw, faMoneyCheck } from '@fortawesome/free-solid-svg-icons'; 
 import { getPetsByUserId } from '../services/petService'; 
 import { fetchUserActivityLog, fetchUserNotes, fetchUserUpcomingEvents, fetchUserExpensesArray, fetchUserAccountSettings } from '../services/userService';
 import { Currency } from '../utils/utils';
@@ -78,6 +78,10 @@ const Dashboard = () => {
     );
   }
 
+  const handleAddNewPetClick = () => {
+    navigate('/add-pet');
+  };  
+
   return (
     <div className="dashboard-container">
         <div className="top-row">
@@ -90,10 +94,9 @@ const Dashboard = () => {
             title="Total Expenses" 
             icon={faMoneyCheck}
             content={`${user.totalExpenses}  ${Currency[currency].sign}`} />
-
         </div>
       
-      <h3>Your pets:</h3>
+      <h3 className='pet-section-title'>Your pets:</h3>
       <div className="pet-section">
         <PetSlider 
         pets={pets} 
@@ -102,27 +105,24 @@ const Dashboard = () => {
       </div>
 
       
-      <div className="activity-log">
-        <ActivityLog
-        activityLogs={activityLogs}
-        upcomingEvents={upcomingEvents}
-        petName={null}
-        />
-      </div>
+      <ActivityLog
+      activityLogs={activityLogs}
+      upcomingEvents={upcomingEvents}
+      petName={null}
+      />
 
-      <div className="notes">
-        <NoteSection 
-        propsNotes={notes}
-        petId={null} />
-      </div>
+      <NoteSection 
+      propsNotes={notes}
+      petId={null} 
+      />
 
       <ExpenseTracker 
       expenses={expenses}
       from={'user'}
       />
 
+      <button className='btn' onClick={handleAddNewPetClick}>Add New Pet</button>
 
-      <button className='btn'>Add New Pet</button>
     </div>
   );
 

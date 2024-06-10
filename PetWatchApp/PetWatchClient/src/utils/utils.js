@@ -1,29 +1,27 @@
 import bcrypt from 'bcryptjs';
 import { faSyringe, faHeartbeat, faMoneyBillAlt, faStickyNote, faAllergies, faPills, faHospital, 
-  faMicroscope, faUtensils, faDog, faShower, faScissors, faWeightHanging, faCapsules, faShoppingBasket, faHome, 
+  faUtensils, faDog, faShower, faScissors, faWeightHanging, faCapsules, faShoppingBasket, faHome, 
   faEllipsisH, faTeeth, faBrush, faEarListen, faPaw, faSoccerBall } from '@fortawesome/free-solid-svg-icons';
 
 const saltRounds = 10; 
 
 export const isValidEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
-    return emailRegex.test(email);
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; 
+  return emailRegex.test(email);
 };
 
 export const isValidPassword = (password) => {
-    //TODO - need to create a validation for password
+  //TODO - need to create a validation for password
 };
 
 export const hashPassword = async (password) => {
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-    console.log('Hashed Password Length:', hashedPassword.length);
-    return hashedPassword;
-  };
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
+  return hashedPassword;
+};
 
 
 export const isValidPhoneNumber = async (phoneNumber) => {
-
-  // Check if the cleaned phone number is a valid length 
+  // Check if the phone number is a valid length 
   return phoneNumber.length >= 10 && phoneNumber.length <= 15;
 };
 
