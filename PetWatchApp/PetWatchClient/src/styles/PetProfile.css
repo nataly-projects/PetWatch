@@ -25,6 +25,11 @@
         display: flex;
         flex-direction: row;
         gap: 5px;
+
+        .species-icon {
+            width: 20px;
+            height: 20px;
+        }
     }
 
     .pet-details-actions {
@@ -68,22 +73,6 @@
         margin-right: 5px;
     }
 
-    .chart-container {
-        margin-bottom: 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .chart-wrapper {
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        padding: 20px;
-        background-color: #f9f9f9;
-        width: 500px; 
-        height: 500px;
-    }
-    
     .health-information,
     .activity-log,
     .weight-tracker,

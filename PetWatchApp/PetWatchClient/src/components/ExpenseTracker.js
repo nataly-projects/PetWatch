@@ -148,9 +148,17 @@ const ExpenseTracker = ({expenses, from, petName}) => {
             {renderExpensesTable()}
             { allExpenses.length > 0 ?
             <div className="charts-row">
+                {from === 'user' ? 
                 <div className="chart-container">
+                    renderPetExpensesDataChart()
+                </div> 
+                : 
+                null
+                }
+
+                {/* <div className="chart-container">
                     {from === 'user' ? renderPetExpensesDataChart() : null}
-                </div>
+                </div> */}
 
                 <div className="chart-container">
                     <h3>Chart Expenses By Monthly</h3>

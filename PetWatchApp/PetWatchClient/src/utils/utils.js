@@ -31,6 +31,10 @@ export const formatDate = (timestamp) => {
   return formattedDate;
 };
 
+export const formatDateUniversal = (date) => {
+  return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(date);
+};
+
 export const formatDateForInput = (dateString) => {
   const date = new Date(dateString);
   const offset = date.getTimezoneOffset();

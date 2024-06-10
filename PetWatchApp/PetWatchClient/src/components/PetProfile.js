@@ -209,9 +209,9 @@ const PetProfile = () => {
           <div className='name-species-section'>
                 <h1>{pet.name}</h1>
                 {petDetails.species === 'MALE' ? (
-                <FontAwesomeIcon icon={faMars}  /> 
+                <FontAwesomeIcon icon={faMars} className='species-icon'/> 
                 ) : (
-                <FontAwesomeIcon icon={faVenus}  /> 
+                <FontAwesomeIcon icon={faVenus} className='species-icon'/> 
                 )} 
           </div>
           <div className='pet-details-actions'>
