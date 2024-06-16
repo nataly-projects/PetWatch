@@ -9,6 +9,8 @@ const { validatePhone, validateEmail, validatePassword } = require('../validator
 const { RoutineCareRecord } = require('../models/routineCareRecordModel');
 const { VaccinationRecord } = require('../models/vaccinationRecordModel');
 const { VetVisit } = require('../models/vetVisitModel');
+const { Task } = require('../models/taskModel');
+const  {ActivityLogType, ActivityType } = require('../utils/enums');
 
 
 async function getUserById(req, res) {
@@ -237,7 +239,7 @@ async function getUserNotes (req, res) {
 
     userWithNotes.pets.map(pet => {
       notes.push(...pet.notes);
-      });
+    });
 
       
     res.status(200).json(notes);
@@ -525,6 +527,103 @@ async function getUserPetsActivitiesForMonth(req, res) {
   }
 }
 
+async function getUserTasks(req, res) {
+  const { userId } = req.params;
+  try {
+    const user = await User.findById(userId).populate('tasks');
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    console.log('tasks: ', user.tasks);
+    res.status(200).json(user.tasks);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+
+async function addUserTask(req, res) {
+  const { userId } = req.params;
+  const {newTask} = req.body;
+  console.log('newTask: ', newTask);
+  try {
+    const task = new Task({...newTask});
+     await task.save();
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { $push: { tasks: task._id } },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Log the activity
+    const activityLog = new ActivityLog({
+        userId: userId, 
+        type: ActivityType.TASK,
+        actionType: ActivityLogType.TASK_ADDED,
+        details: task.title
+    });
+    await activityLog.save();
+
+    res.status(201).json({ message: 'Task added successfully',  task});
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+async function updateUserTask(req, res) {
+  const { userId, taskId } = req.params;
+  const {updateTask} = req.body;
+  console.log('updateTask: ', updateTask);
+  try {
+    const task = await Task.findByIdAndUpdate(
+      taskId,
+      { ...updateTask },
+      { new: true }
+    );    
+
+    if (!task) {
+        return res.status(404).json({ error: 'Task not found' });
+    }
+
+    // task.title = updateTask.title;
+    // task.description = updateTask.description;
+    // task.completed = updateTask.completed;
+    // task.dueDate = updateTask.dueDate;
+    // await task.save();
+
+    // Log the activity
+    const activityLog = new ActivityLog({
+      userId: userId, 
+      type: ActivityType.TASK,
+      actionType: ActivityLogType.TASK_EDIT,
+      details: task.title
+    });
+    await activityLog.save();
+
+    res.status(200).json({ message: 'Task updated successfully', task });
+  
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
+async function deleteUserTask(req, res) {
+  const { userId, taskId } = req.params;
+  try {
+  
+  } catch (error) {
+    return res.status(500).json({ error: 'Internal server error' });
+  }
+}
+
 // function genreateSecretKey () {
 //   const secretKey = crypto.randomBytes(32).toString('hex');
 //   // Write the secret key to the .env file
@@ -541,8 +640,12 @@ module.exports = {
     getUserNotes,
     getUserAccountSettings,
     getUserPetsActivitiesForMonth,
+    getUserTasks,
+    addUserTask,
     updateUserById,
     updateUserAccountSettings,
+    updateUserTask,
+    deleteUserTask,
     changePassword,
     requestPasswordReset,
     resetPasswordCode,

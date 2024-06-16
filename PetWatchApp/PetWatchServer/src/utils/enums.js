@@ -13,7 +13,8 @@ const ActivityType = Object.freeze({
     NOTE:'Note',
     WEIGHT: 'Weight',
     MEAL_PLANNER: 'Meal Planner',
-    MEDICAL_CONDITION: 'Medical Condition'
+    MEDICAL_CONDITION: 'Medical Condition',
+    TASK:'Task'
   });
 
 const VaccineRecordType = Object.freeze({
@@ -67,13 +68,13 @@ const ActivityLogType = Object.freeze({
     VET_VISIT_ADDED: 'vet visit added',
     VET_VISIT_EDIT: 'vet visit edit',
     VET_VISIT_DELETE: 'vet visit delete',
-    NOTE_ADDED: 'note added',
     PET_ADDED: 'pet added',
     PET_EDIT: 'pet edit',
     PET_WEIGHT_UPDATE: 'pet weight update',
     PET_DELETE: 'pet delete',
-    NOTE_EDIT: 'note edit' ,
-    NOTE_DELETE: 'note delete' ,
+    NOTE_ADDED: 'note added',
+    NOTE_EDIT: 'note edit',
+    NOTE_DELETE: 'note delete',
     PROFILE_EDIT: 'profile edit',
     MEAL_PLANNER_ADDED: 'meal planner added',
     MEAL_PLANNER_EDIT: 'meal planner edit',
@@ -84,6 +85,9 @@ const ActivityLogType = Object.freeze({
     MEDICAL_CONDITION_ADDED: 'medical condition added',
     MEDICAL_CONDITION_EDIT: 'medical condition edit',
     MEDICAL_CONDITION_DELETE: 'medical condition delete',
+    TASK_ADDED: 'task added',
+    TASK_EDIT: 'task edit',
+    TASK_DELETE: 'task delete',
 });
 
 const Currency = Object.freeze({

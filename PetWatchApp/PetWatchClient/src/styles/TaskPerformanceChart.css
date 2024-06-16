@@ -1,0 +1,46 @@
+.tasks-chart-container {
+    /* text-align: center; */
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    border: 1px solid #ccc;
+    width: 100%;
+
+    .chart-title {
+        padding: 0 20px;
+    }
+}
+
+.info {
+    font-size: medium;
+    margin-top: 20px;
+    border-top: 1px solid #ddd;
+    display: flex;
+    padding: 10px 0px;
+
+    .dot {
+        height: 10px;
+        width: 10px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 5px;
+    }
+      
+    .assigned {
+        background-color: #007bff;
+    }
+    
+    .completed {
+        background-color: green;
+    }
+    
+    .active {
+        background-color: darkblue;
+    }
+    
+    span {
+        margin: 0 10px;
+    } 
+}
+
+
+   

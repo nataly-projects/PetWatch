@@ -53,16 +53,33 @@
         border-bottom: none;
     }
 
+    .warpper {
+        display: flex;
+        gap: 10px;
+        max-width: 100%;
+        align-items: stretch;
+        margin-top: 20px;
+    }
+
+    .tasks-section {
+        width: 30%;
+        align-items: stretch;
+        display: flex;
+        flex-direction: column;
+        margin-top: 10px;
+        gap: 10px;
+    }
+
     .slider-calendar-warpper {
         display: flex;
         gap: 10px;
         max-width: 100%;
-        align-items: flex-start;
+        align-items: stretch;
         margin-top: 20px;
     }
     /* Slick slider */
     .pet-slider-wrapper {
-        width: 60%;
+        width: 70%;
         background-color: #fff;
         border: 1px solid #ccc;
         padding: 20px;

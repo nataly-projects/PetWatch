@@ -17,7 +17,7 @@ import AccountSettings from '../components/AccountSettings';
 import PetsSection from '../components/PetsSection';
 import AddPetForm from '../components/AddPetForm';
 import ContactPage from './ContactPage';
-import CalendarSection from '../components/Calendar';
+import TaskListPage from './TaskListPage';
 import '../styles/UserMainPage.css';
 
 
@@ -37,6 +37,7 @@ const UserMainPage = () => {
           <Route path="/emergency-guide" element={<EmergencyGuide />} />
           <Route path="/expenses" element={<ExpenseTracker />} />
           <Route path="/activity-log" element={<ActivityLog />} />
+          <Route path="/tasks" element={<TaskListPage />} />
           <Route path="/account-settings" element={<AccountSettings />} />
           <Route path="/user-profile" element={<UserProfile />} />
           <Route path="/pets" element={<PetsSection />} />

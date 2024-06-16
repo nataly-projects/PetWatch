@@ -1,0 +1,53 @@
+.tasks-warpper{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    /* margin-top: 10px; */
+    justify-content: space-between;
+
+    .header {
+        display: flex;
+        border-bottom: 1px solid #ddd;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
+    }
+
+    .add-icon{
+        cursor: pointer;
+    }
+
+    .tasks-list, p{
+        padding: 0 20px;
+        list-style-type: none;
+    }
+
+    .footer {
+        display: flex;
+        border-top: 1px solid #ddd;
+        align-items: center;
+        gap: 10px;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    /* Task Item Style */
+    .overdue {
+        color: red;
+        font-size: small;
+    }
+
+    .task-item {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        /* border-bottom: 1px solid #ddd; */
+    }
+      
+    .task-item.completed span {
+        text-decoration: line-through;
+        color: #999;
+    }
+}

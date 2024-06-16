@@ -12,7 +12,6 @@ const activityLogSchema = new Schema({
     petId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Pet',
-        required: true
     },
     type: {
         type: String,

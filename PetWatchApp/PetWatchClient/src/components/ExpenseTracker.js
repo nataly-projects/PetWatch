@@ -150,7 +150,7 @@ const ExpenseTracker = ({expenses, from, petName}) => {
             <div className="charts-row">
                 {from === 'user' ? 
                 <div className="chart-container">
-                    renderPetExpensesDataChart()
+                    {renderPetExpensesDataChart()}
                 </div> 
                 : 
                 null

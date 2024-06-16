@@ -145,7 +145,8 @@ export const ActivityType = {
   VET_VISIT:'Vet Visit',
   NOTE:'Note',
   WEIGHT: 'Weight',
-  MEDICAL_CONDITION: 'Medical Condition'
+  MEDICAL_CONDITION: 'Medical Condition',
+  TASK: 'Task'
 };
 
 

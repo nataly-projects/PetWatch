@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom'; 
-import Calendar from 'react-calendar';
-import ReactTooltip from 'react-tooltip';
 import { faPaw, faMoneyCheck, faCalendarAlt, faTasks } from '@fortawesome/free-solid-svg-icons'; 
 import { getPetsByUserId } from '../services/petService'; 
-import { fetchUserActivityLog, fetchUserNotes, fetchUserUpcomingEvents, fetchUserExpensesArray, fetchUserAccountSettings } from '../services/userService';
+import { fetchUserActivityLog, fetchUserNotes, fetchUserUpcomingEvents, fetchUserExpensesArray, 
+  fetchUserAccountSettings, fetchUserTasks } from '../services/userService';
 import { Currency } from '../utils/utils';
 import DashboardCard from './DashboardCard';
 import PetSlider from './PetSlider';
@@ -13,6 +12,8 @@ import ActivityLog from './ActivityLog';
 import ExpenseTracker from './ExpenseTracker';
 import NoteSection from './NoteSection';
 import CalendarSection from './Calendar';
+import TaskList from './TaskList';
+import TaskPerformanceChart from './TaskPerformanceChart';
 import '../styles/Dashboard.css';
 
 const Dashboard = () => {
@@ -24,12 +25,12 @@ const Dashboard = () => {
   const [activityLogs, setActivityLogs] = useState([]);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [notes, setNotes] = useState([]);
+  const [tasks, setTasks] = useState([]);
   const [expenses, setExpenses] = useState([]);
   const [currency, setCurrency] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  const [date, setDate] = useState(new Date());
 
   const fetchData = async () => {
     try {
@@ -39,12 +40,14 @@ const Dashboard = () => {
         const events = await fetchUserUpcomingEvents(user._id, token);
         const userExpenses = await fetchUserExpensesArray(user._id, token);
         const userAccountSettings  = await fetchUserAccountSettings(user._id, token);
+        const userTasks = await fetchUserTasks(user._id, token); 
         setPets(userPets);
         setActivityLogs(logs);
         setNotes(notes);
         setExpenses(userExpenses);
         setUpcomingEvents(events);
         setCurrency(userAccountSettings.accountSettings.currency);
+        setTasks(userTasks);
         setLoading(false);
 
     } catch (error) {
@@ -110,7 +113,7 @@ const Dashboard = () => {
           <DashboardCard 
           title="Opening Tasks" 
           icon={faTasks}
-          content={`0`} />
+          content={`${tasks.filter(task => task.completed === false).length}`} />
       </div>
 
       <div className='slider-calendar-warpper'>
@@ -122,24 +125,26 @@ const Dashboard = () => {
             />
           </div>
         </div>
-
-        {/* <div className='calendar-wrapper'>
-          <Calendar
-            onChange={setDate}
-            value={date}
-          />
-        </div> */}
         <CalendarSection />
       </div>    
 
-      
-
-      
+    <div className='warpper'>
       <ActivityLog
-      activityLogs={activityLogs}
-      upcomingEvents={upcomingEvents}
-      petName={null}
+        activityLogs={activityLogs}
+        upcomingEvents={upcomingEvents}
+        petName={null}
       />
+      <div className='tasks-section'>
+        <TaskList 
+        propTasks={tasks}
+        token={token}
+        userId={user._id}
+        />
+        <TaskPerformanceChart tasks={tasks}/>
+      </div>
+     
+    </div>
+      
 
       <NoteSection 
       propsNotes={notes}

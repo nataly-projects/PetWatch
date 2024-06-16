@@ -103,6 +103,56 @@ export const fetchUserNotes = async (userId, token) => {
     }
 }
 
+export const fetchUserTasks = async (userId, token) => {
+    try{
+        const response = await axios.get(`${BASE_API_URL}/users/tasks/${userId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+        });
+
+        if (response && response.data) {
+            return response.data;
+        }
+        return null;
+
+    } catch (error) {
+        throw error; 
+    }
+}
+
+export const addUserTask = async (userId, newTask, token) => {
+    try {
+      const response = await axios.post(`${BASE_API_URL}/users/tasks/${userId}`, {newTask}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+};
+
+export const updateUserTask = async (userId, updateTask, token) => {
+    try {
+      const response = await axios.put(`${BASE_API_URL}/users/tasks/${userId}/${updateTask._id}`, {updateTask}, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+};
+
 export const fetchUserAccountSettings = async (userId, token) => {
     try{
         const response = await axios.get(`${BASE_API_URL}/users/settings/${userId}`, {
@@ -136,7 +186,6 @@ export const updateUserSettings = async (userId, updateSettings, token) => {
       throw error; 
     }
 }
-
 
 export const resetPasswordRequest = async (email) => {
     try {

@@ -1,8 +1,9 @@
 import React, {useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useTable, useSortBy, usePagination } from 'react-table';
-import ReactPaginate from 'react-paginate';
-import { formatDate } from '../utils/utils';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSortUp, faSortDown, faSort, faDownload } from '@fortawesome/free-solid-svg-icons';
+import { formatDateUniversal } from '../utils/utils';
 import ExportToCSVButton from './ExportToCSVButton';
 import FilterSection from './FilterSection';
 import { ActivityType } from '../utils/utils';
@@ -64,16 +65,14 @@ const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
             Details: item.details,
             ActionType: item.actionType,
             Pet: petName == null ? (item.petId?.name || item.pet?.name) : petName,
-            Date: formatDate(item.created_at),
+            Date: formatDateUniversal(new Date(item.created_at)),
         }));
         return processedData;
     };
 
-
-
     const columns = useMemo(
         () => [
-            { Header: 'Date', accessor: 'created_at', Cell: ({ value }) => formatDate(value) },
+            { Header: 'Date', accessor: 'created_at', Cell: ({ value }) => formatDateUniversal(new Date(value))},
             { Header: 'Pet Name', accessor: 'petId.name', show: petName == null },
             { Header: 'Action Type', accessor: 'actionType' },
             { Header: 'Details', accessor: 'details' },
@@ -102,9 +101,11 @@ const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
     );
 
     return (
-        <div className="activity-log-container">
+        <div className='logs-wrapper'>
+        <div className="log-container">
             <h3>{petName !== null ? `${petName} Activity Logs` : 'Your Activity Logs'}</h3>
             {activityLogs.length > 0 && (
+                <div style={{display: 'flex', alignItems: 'baseline', padding: '0 10px'}}>
                 <FilterSection
                     filterType={activityFilterType}
                     handleTypeChange={handleActivityTypeChange}
@@ -114,6 +115,10 @@ const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
                     handleEndDateChange={handleActivityEndDateChange}
                     selectOptions={ActivityType}
                 />
+                <FontAwesomeIcon icon={faDownload} />
+                </div>
+                
+
             )}
             {activityLogs.length > 0 ? (
                 <>
@@ -128,7 +133,9 @@ const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
             ) : (
                 <p>No activity logs yet.</p>
             )}
-            <h3>{petName !== null ? `${petName} Upcoming Events` : 'Your Upcoming Events'}</h3>
+        </div>
+        <div className="log-container">
+        <h3>{petName !== null ? `${petName} Upcoming Events` : 'Your Upcoming Events'}</h3>
             {upcomingEvents.length > 0 && (
                 <FilterSection
                     filterType={eventFilterType}
@@ -153,6 +160,7 @@ const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
             ) : (
                 <p>No upcoming events yet.</p>
             )}
+        </div>
         </div>
     );
 
@@ -249,73 +257,93 @@ const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
 
 const Table = ({ instance, petName }) => {
     const {
-        getTableProps,
-        getTableBodyProps,
-        headerGroups,
-        page,
-        prepareRow,
-        canPreviousPage,
-        canNextPage,
-        pageOptions,
-        state: { pageIndex },
-        previousPage,
-        nextPage,
+      getTableProps,
+      getTableBodyProps,
+      headerGroups,
+      page,
+      prepareRow,
+      canPreviousPage,
+      canNextPage,
+      pageOptions,
+      state: { pageIndex, pageSize },
+      previousPage,
+      nextPage,
+      gotoPage,
+      pageCount,
     } = instance;
 
+    const totalItems = instance.rows.length;
+
     return (
-        <>
-            <table {...getTableProps()} className='table'>
-                <thead>
-                    {headerGroups.map(headerGroup => (
-                        <tr {...headerGroup.getHeaderGroupProps()}>
-                            {headerGroup.headers.map(column => (
-                                column.show !== false && (
-                                    <th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                                        {column.render('Header')}
-                                        <span>
-                                            {column.isSorted
-                                                ? column.isSortedDesc
-                                                    ? ' 🔽'
-                                                    : ' 🔼'
-                                                : ''}
-                                        </span>
-                                    </th>
-                                )
-                            ))}
-                        </tr>
-                    ))}
-                </thead>
-                <tbody {...getTableBodyProps()}>
-                    {page.map((row, i) => {
-                        prepareRow(row);
-                        return (
-                            <tr {...row.getRowProps()}>
-                                {row.cells.map(cell => {
-                                    return (
-                                        <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                                    );
-                                })}
-                            </tr>
-                        );
-                    })}
-                </tbody>
-            </table>
-            <div className="pagination">
-                <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-                    Previous
-                </button>
-                <span>
-                    Page{' '}
-                    <strong>
-                        {pageIndex + 1} of {pageOptions.length}
-                    </strong>{' '}
+      <>
+        <table {...getTableProps()} className='table'>
+          <thead>
+            {headerGroups.map(headerGroup => (
+              <tr {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map(column => (
+                  column.show !== false && (
+                    <th {...column.getHeaderProps(column.getSortByToggleProps())}
+                    className={(column.id === 'created_at' || column.id === 'petId.name') ? 'custom-column' : ''}
+                    >
+                        <div style={{display: 'flex', justifyContent: 'space-between',alignItems: 'center'}}>
+                        {column.render('Header')}
+                        {column.isSorted ? (
+                            column.isSortedDesc ? (
+                                <FontAwesomeIcon icon={faSortDown} />
+                            ) : (
+                                <FontAwesomeIcon icon={faSortUp} />
+                            )
+                            ) : (
+                            <div style={{display: 'flex', flexDirection: 'column'}}>
+                                <FontAwesomeIcon icon={faSort} className="sort" />
+                            </div>
+                            )}
+                      </div>
+                    </th>
+                  )
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody {...getTableBodyProps()}>
+            {page.map((row, i) => {
+              prepareRow(row);
+              return (
+                <tr {...row.getRowProps()}>
+                  {row.cells.map(cell => {
+                    return (
+                      <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        <div className="pagination">
+                <span className="pagination-info">
+                    Showing: {pageIndex * pageSize + 1} - {Math.min((pageIndex + 1) * pageSize, totalItems)} of {totalItems}
                 </span>
-                <button onClick={() => nextPage()} disabled={!canNextPage}>
-                    Next
-                </button>
+                <div className="pagination-controls">
+                    <button onClick={() => previousPage()} disabled={!canPreviousPage}>
+                        Previous
+                    </button>
+                    {pageOptions.map((page, index) => (
+                        <button
+                            key={index}
+                            onClick={() => gotoPage(index)}
+                            className={pageIndex === index ? 'active' : ''}
+                        >
+                            {index + 1}
+                        </button>
+                    ))}
+                    <button onClick={() => nextPage()} disabled={!canNextPage}>
+                        Next
+                    </button>
+                </div>
             </div>
-        </>
+      </>
     );
-};
+  };
 
 export default ActivityLog;

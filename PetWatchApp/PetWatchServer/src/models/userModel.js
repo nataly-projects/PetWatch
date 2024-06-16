@@ -74,6 +74,10 @@ const userSchema = new Schema({
     resetCode: {
        type: String 
     },
+    tasks: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Task'
+    }],
     created_at: {
         type: Date,
         default: Date.now()

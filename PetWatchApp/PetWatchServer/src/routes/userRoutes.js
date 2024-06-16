@@ -22,13 +22,17 @@ router.get('/upcoming/:userId', userController.getUserUpcomingEvents);
 router.get('/notes/:userId', userController.getUserNotes);
 router.get('/settings/:userId', userController.getUserAccountSettings);
 router.get('/calendar-activities/:userId/:year/:month', userController.getUserPetsActivitiesForMonth);
+router.get('/tasks/:userId', userController.getUserTasks);
 
 router.post('/change-password', userController.changePassword);
+router.post('/tasks/:userId', userController.addUserTask);
 
 router.put('/:userId', userController.updateUserById);
 router.put('/settings/:userId', userController.updateUserAccountSettings);
+router.put('/tasks/:userId/:taskId', userController.updateUserTask);
 
 // router.put('/:userId', userController.upload.single('imageUrl'), userController.updateUserById);
+router.delete('/tasks/:userId/:taskId', userController.deleteUserTask);
 
 module.exports = router;
 

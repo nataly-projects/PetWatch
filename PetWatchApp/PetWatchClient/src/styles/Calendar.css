@@ -42,14 +42,15 @@
 
 } */
 .calendar-wrapper {
-    width: 40%;
+    width: 30%;
     background: #fff;
     border: 1px solid #ccc;
-    padding: 20px;
+    /* padding: 5px; */
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
+    flex: 1;
 }
 
 .tooltip {
@@ -72,7 +73,7 @@
 
 .react-calendar {
     background: white;
-    padding: 10px;
+    padding: 20px;
 
   }
   /* .react-calendar--doubleView {
