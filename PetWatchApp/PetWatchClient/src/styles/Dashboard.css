@@ -61,6 +61,15 @@
         margin-top: 20px;
     }
 
+    .note-section {
+        width: 70%;
+        /* padding: 20px; */
+        background-color: #fff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        border: 1px solid #ccc;
+        margin-top: 10px;
+    }
+
     .tasks-section {
         width: 30%;
         align-items: stretch;

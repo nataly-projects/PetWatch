@@ -14,6 +14,7 @@ import NoteSection from './NoteSection';
 import CalendarSection from './Calendar';
 import TaskList from './TaskList';
 import TaskPerformanceChart from './TaskPerformanceChart';
+import AddPetForm from './AddPetForm';
 import '../styles/Dashboard.css';
 
 const Dashboard = () => {
@@ -31,6 +32,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
+  const [isAddPetPopupOpen, setIsAddPetPopupOpen] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -88,8 +90,13 @@ const Dashboard = () => {
   }
 
   const handleAddNewPetClick = () => {
-    navigate('/add-pet');
+    // navigate('/add-pet');
+    setIsAddPetPopupOpen(true);
   };  
+
+  const handleClosePopup = () => {
+    setIsAddPetPopupOpen(false);
+  };
 
   return (
     <div className="dashboard-container">
@@ -145,20 +152,29 @@ const Dashboard = () => {
      
     </div>
       
-
+    <div className='note-section'>
       <NoteSection 
       propsNotes={notes}
       petId={null} 
       />
+      </div>
 
-      <ExpenseTracker 
-      expenses={expenses}
-      from={'user'}
-      />
+      <div className='expense-section'>
+        <ExpenseTracker 
+        expenses={expenses}
+        from={'user'}
+        />
+      </div>
 
       <button className='btn' onClick={handleAddNewPetClick}>Add New Pet</button>
 
+      <AddPetForm 
+       open={isAddPetPopupOpen}
+       handleClose={handleClosePopup}
+      />
+
     </div>
+
   );
 
 

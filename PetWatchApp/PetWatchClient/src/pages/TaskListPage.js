@@ -1,27 +1,92 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { useTable, useSortBy, usePagination } from 'react-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAdd, faEdit, faTrash, faSortUp, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
-import TaskItem from '../components/TaskItem';
+import { faAdd, faEdit, faTrash, faSortUp, faSortDown, faSort, faDownload } from '@fortawesome/free-solid-svg-icons';
 import AddTaskModal from '../components/AddTaskPopup';
 import EditTaskModal from '../components/EditTaskModal';
 import { formatDateUniversal } from '../utils/utils';
+import { fetchUserTasks, updateUserTask, deleteUserTask } from '../services/userService';
 import '../styles/TaskListPage.css';
 
 const TaskListPage = () => {
+    const navigate = useNavigate();
+    const user = useSelector((state) => state.user);
+    const token = useSelector((state) => state.token);
+
     const [tasks, setTasks] = useState([]);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [currentTask, setCurrentTask] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
 
-    const location = useLocation();
     useEffect(() => {
-        if (location && location.state && location.state.tasks) {
-          setTasks(location.state.tasks);
-        }
-      }, [location.state]); 
+        fetchTasks();
+    }, []);
 
+    const fetchTasks = async () => {
+        try {
+            const response = await fetchUserTasks(user._id, token);
+            setTasks(response);
+            setLoading(false);
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                console.error('UNAUTHORIZED_ERROR');
+                setError(true);
+                setLoading(false);
+                navigate('/login');
+            } else {
+                console.error('Error fetching data:', error);
+                setError(true);
+                setLoading(false);
+            }
+        }
+    };
+
+    const columns = useMemo(
+        () => [
+            { Header: '', accessor: 'checkbox', disableSortBy: true, 
+                Cell: ({ row }) => (
+                    <input
+                        type="checkbox"
+                        checked={row.original.completed}
+                        // onChange={() => handleToggleComplete(row.original)}
+                    />
+                ),
+            },
+            { Header: 'Create Date', accessor: 'createdAt', Cell: ({ value }) => formatDateUniversal(new Date(value)) },
+            { Header: 'Title', accessor: 'title' },
+            { Header: 'Description', accessor: 'description' },
+            { Header: 'Due Date', accessor: 'dueDate', Cell: ({ value }) => formatDateUniversal(new Date(value)) },
+            { Header: 'Actions', accessor: 'actions', disableSortBy: true, Cell: ({ row }) => (
+                <div>
+                    <FontAwesomeIcon
+                        icon={faEdit}
+                        onClick={() => openEditModal(row.original)}
+                        style={{ cursor: 'pointer', marginRight: '10px' }}
+                    />
+                    <FontAwesomeIcon
+                        icon={faTrash}
+                        onClick={() => handleDeleteTask(row.original._id)}
+                        style={{ cursor: 'pointer' }}
+                    />
+                </div>
+            ), },
+        ],
+        []
+    );
+
+    const tasksTableInstance = useTable(
+        {
+            columns,
+            data: tasks,
+            initialState: { pageIndex: 0 },
+        },
+        useSortBy,
+        usePagination
+    );
 
     const handleAddTask = (newTask) => {
         setTasks([...tasks, newTask]);
@@ -30,39 +95,30 @@ const TaskListPage = () => {
 
     const handleEditTask = async (updatedTask) => {
         try {
-        const response = await fetch(`/api/tasks/${updatedTask._id}`, {
-            method: 'PUT',
-            headers: {
-            'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(updatedTask),
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to update task');
-        }
-
-        const data = await response.json();
-        setTasks(tasks.map(task => (task._id === data._id ? data : task)));
-        setIsEditModalOpen(false);
+            await updateUserTask(user._id, updatedTask, token)
+            setTasks(tasks.map(task => (task._id === updatedTask._id ? updatedTask : task)));
+            setIsEditModalOpen(false);
         } catch (error) {
-        console.error('Error updating task:', error);
+            if (error.response && error.response.status === 401) {
+                console.error('UNAUTHORIZED_ERROR');
+                navigate('/login');
+            } else {
+                console.error('Error updated task:', error);
+            }
         }
     };
 
     const handleDeleteTask = async (taskId) => {
         try {
-        const response = await fetch(`/api/tasks/${taskId}`, {
-            method: 'DELETE',
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to delete task');
-        }
-
-        setTasks(tasks.filter(task => task._id !== taskId));
+            await deleteUserTask(user._id, taskId);
+            setTasks(tasks.filter(task => task._id !== taskId));
         } catch (error) {
-        console.error('Error deleting task:', error);
+            if (error.response && error.response.status === 401) {
+                console.error('UNAUTHORIZED_ERROR');
+                navigate('/login');
+            } else {
+                console.error('Error deleting task:', error);
+            }
         }
     };
 
@@ -80,152 +136,114 @@ const TaskListPage = () => {
         setIsEditModalOpen(false);
     };
 
-    const columns = useMemo(
-        () => [
-            { Header: 'Create Date', accessor: 'createdAt', Cell: ({ value }) => formatDateUniversal(new Date(value))},
-            { Header: 'Title', accessor: 'title' },
-            { Header: 'Description', accessor: 'description' },
-            { Header: 'Due Date', accessor: 'dueDate' },
-            { Header: 'Actions', accessor: 'actions' },
-        ],
-        []
-    );
+    if (loading) {
+        return (
+            <div className="loading-container">
+                <div className="loading-spinner"></div>
+                <div>Loading...</div>
+            </div>
+        );
+    }
 
-    const activityTableInstance = useTable(
-        {
-            columns,
-            data: tasks,
-            initialState: { pageIndex: 0 },
-        },
-        useSortBy,
-        usePagination
-    );
-
-    const eventTableInstance = useTable(
-        {
-            columns,
-            data: tasks,
-            initialState: { pageIndex: 0 },
-        },
-        useSortBy,
-        usePagination
-    );
+    if (error) {
+        return (
+            <div className='error-container'>
+                <p>Failed to fetch user data. Please try again later.</p>
+                <button className='btn' onClick={fetchTasks}>Retry</button>
+            </div>
+        );
+    }
 
     return (
         <div className='task-list-page'>
-        <div className='header'>
-            <h3>All Tasks</h3>
-            <button className='add-task-button' onClick={openAddModal}>Add Task</button>
-        </div>
-        {tasks.length > 0 ? (
-            <Table instance={activityTableInstance}  />
-        )
-        :
-        <p>No Tasks yet.</p>
-        }
-        {/* {tasks.length > 0 ? (
-            <ul className='task-list'>
-            {tasks.map(task => (
-                <li key={task._id} className={`task-item ${task.completed ? 'completed' : ''}`}>
-                <input 
-                    type="checkbox" 
-                    checked={task.completed} 
-                    // onChange={() => onToggleComplete(task)}
-                />
-                <div>
-                    <h4>{task.title}</h4>
-                    <p>{task.description}</p>
-                    <p>Due Date: {formatDateUniversal(new Date(task.dueDate))}</p>
-                    <button onClick={() => openEditModal(task)}>Edit</button>
-                    <button onClick={() => handleDeleteTask(task._id)}>Delete</button>
+            <div className='header'>
+                <h3>All Tasks</h3>
+                {/* <button className='add-task-button' onClick={openAddModal}>Add Task</button> */}
+                <div style={{display: 'flex', gap: '10px', cursor: 'pointer'}}>
+                    <FontAwesomeIcon icon={faAdd} onClick={openAddModal}/>
+                    <FontAwesomeIcon icon={faDownload} />
                 </div>
-                <div>
-                    <FontAwesomeIcon icon={faEdit} />
-                    <FontAwesomeIcon icon={faTrash} />
-                </div>
-
-                </li>
-            ))}
-            </ul>
-        ) : (
-            <p>No Tasks yet.</p>
-        )} */}
-        <AddTaskModal isOpen={isAddModalOpen} onClose={closeModal} onAddTask={handleAddTask} />
-        <EditTaskModal
-            isOpen={isEditModalOpen}
-            onClose={closeModal}
-            task={currentTask}
-            onEditTask={handleEditTask}
-        />
+              
+            </div>
+            {tasks.length > 0 ? (
+                <Table instance={tasksTableInstance} />
+            ) : (
+                <p>No Tasks yet.</p>
+            )}
+            <AddTaskModal isOpen={isAddModalOpen} onClose={closeModal} onAddTask={handleAddTask} />
+            <EditTaskModal
+                isOpen={isEditModalOpen}
+                onClose={closeModal}
+                task={currentTask}
+                onEditTask={handleEditTask}
+            />
         </div>
     );
 };
 
-const Table = ({ instance, }) => {
+const Table = ({ instance }) => {
     const {
-      getTableProps,
-      getTableBodyProps,
-      headerGroups,
-      page,
-      prepareRow,
-      canPreviousPage,
-      canNextPage,
-      pageOptions,
-      state: { pageIndex, pageSize },
-      previousPage,
-      nextPage,
-      gotoPage,
-      pageCount,
+        getTableProps,
+        getTableBodyProps,
+        headerGroups,
+        page,
+        prepareRow,
+        canPreviousPage,
+        canNextPage,
+        pageOptions,
+        state: { pageIndex, pageSize },
+        previousPage,
+        nextPage,
+        gotoPage,
+        pageCount,
     } = instance;
 
     const totalItems = instance.rows.length;
 
     return (
-      <>
-        <table {...getTableProps()} className='table'>
-          <thead>
-            {headerGroups.map(headerGroup => (
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map(column => (
-                  column.show !== false && (
-                    <th {...column.getHeaderProps(column.getSortByToggleProps())}
-                    >
-                        <div style={{display: 'flex', justifyContent: 'space-between',alignItems: 'center'}}>
-                        {column.render('Header')}
-                        {column.isSorted ? (
-                            column.isSortedDesc ? (
-                                <FontAwesomeIcon icon={faSortDown} />
-                            ) : (
-                                <FontAwesomeIcon icon={faSortUp} />
-                            )
-                            ) : (
-                            <div style={{display: 'flex', flexDirection: 'column'}}>
-                                <FontAwesomeIcon icon={faSort} className="sort" />
-                            </div>
-                            )}
-                      </div>
-                    </th>
-                  )
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody {...getTableBodyProps()}>
-            {page.map((row, i) => {
-              prepareRow(row);
-              return (
-                <tr {...row.getRowProps()}>
-                  {row.cells.map(cell => {
-                    return (
-                      <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        <div className="pagination">
+        <>
+            <table {...getTableProps()} className='table'>
+                <thead>
+                    {headerGroups.map(headerGroup => (
+                        <tr {...headerGroup.getHeaderGroupProps()}>
+                            {headerGroup.headers.map(column => (
+                                column.show !== false && (
+                                    <th {...column.getHeaderProps(column.getSortByToggleProps())}>
+                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            {column.render('Header')}
+                                            {column.isSorted ? (
+                                                column.isSortedDesc ? (
+                                                    <FontAwesomeIcon icon={faSortDown} />
+                                                ) : (
+                                                    <FontAwesomeIcon icon={faSortUp} />
+                                                )
+                                            ) : (   
+                                                column.disableSortBy ? null : 
+                                                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                                    <FontAwesomeIcon icon={faSort} className="sort" />
+                                                </div>
+                                            )}
+                                        </div>
+                                    </th>
+                                )
+                            ))}
+                        </tr>
+                    ))}
+                </thead>
+                <tbody {...getTableBodyProps()}>
+                    {page.map((row, i) => {
+                        prepareRow(row);
+                        return (
+                            <tr {...row.getRowProps()}>
+                                {row.cells.map(cell => (
+                                    <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
+                                ))}
+                            </tr>
+                        );
+                    })}
+                </tbody>
+            </table>
+            <div className="pagination">
                 <span className="pagination-info">
                     Showing: {pageIndex * pageSize + 1} - {Math.min((pageIndex + 1) * pageSize, totalItems)} of {totalItems}
                 </span>
@@ -247,8 +265,8 @@ const Table = ({ instance, }) => {
                     </button>
                 </div>
             </div>
-      </>
+        </>
     );
-  };
+};
 
 export default TaskListPage;

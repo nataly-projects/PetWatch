@@ -111,16 +111,14 @@ const ContactPage = () => {
           onChange={(e) => setMessage(e.target.value)}
           required
           />
-          {/* {messageError && <div className="error-message">{messageError}</div>} */}
           {errors.message && <div className="error-message">{errors.message}</div>} 
 
-          <button type="submit">Submit</button>
+          <button className='btn' type="submit">Submit</button>
         </form>
         {error && <div className="error-message">{error}</div>}
 
       </div>
     </div>
-    
   );
 };
 

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { formatDateForInput } from '../utils/utils';
+import { formatDateAndTimeForInput } from '../utils/utils';
 import '../styles/AddActivity.css';
 
 const MealPlannerActivity = ({ onSave, onClose, mealToEdit  }) => {
@@ -13,7 +13,7 @@ const MealPlannerActivity = ({ onSave, onClose, mealToEdit  }) => {
 
     useEffect(() => {
         if (mealToEdit) {
-            setDate(formatDateForInput(mealToEdit.date));
+            setDate(formatDateAndTimeForInput(mealToEdit.date));
             setFood(mealToEdit.food);
             setAmount(mealToEdit.amount);
             setNote(mealToEdit.note);

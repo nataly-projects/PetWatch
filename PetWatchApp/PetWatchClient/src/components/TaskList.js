@@ -59,7 +59,7 @@ const TaskList = ({propTasks, token, userId}) => {
 
     const navigateToAllTasksPage = () => {
         console.log('navigateToAllTasksPage');
-        navigate( '/main/tasks',  { state: { tasks }});
+        navigate( '/main/tasks');
     };
 
     return (
@@ -85,7 +85,7 @@ const TaskList = ({propTasks, token, userId}) => {
             }
             </div>
             
-            <div className='footer' onClick={() => navigateToAllTasksPage}>
+            <div className='footer' onClick={() => navigateToAllTasksPage()}>
                 <h4>View all</h4>
                 <FontAwesomeIcon icon={faArrowRight} />
             </div>

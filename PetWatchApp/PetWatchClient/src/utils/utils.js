@@ -32,14 +32,21 @@ export const formatDate = (timestamp) => {
 };
 
 export const formatDateUniversal = (date) => {
+  if (!date) return null
   return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(date);
 };
 
-export const formatDateForInput = (dateString) => {
+export const formatDateAndTimeForInput = (dateString) => {
   const date = new Date(dateString);
   const offset = date.getTimezoneOffset();
   const localDate = new Date(date.getTime() - (offset * 60000));
   return localDate.toISOString().slice(0, 16);
+};
+
+export const formatDateForInput = (dateString) => {
+  const date = new Date(dateString);
+  console.log('localDate: ', date.toLocaleDateString());
+  return date.toLocaleDateString();
 };
 
 

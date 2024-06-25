@@ -19,7 +19,7 @@ import { formatDate } from '../utils/utils';
 import { addPet, addPetAdditionalImages } from '../services/petService';
 import '../styles/AddPetForm.css';
 
-const AddPetForm = () => {
+const AddPetForm = ({open, handleClose, handleSave} ) => {
     const navigate = useNavigate();
     const user = useSelector((state) => state.user);
     const token = useSelector((state) => state.token);
@@ -57,7 +57,6 @@ const AddPetForm = () => {
     const [showNoteActivity, setShowNoteActivity] = useState(false);
     const [showMedicalConiditionActivity, setShowMedicalConiditionActivity] = useState(false);
 
-
     const [currentSection, setCurrentSection] = useState(1);
     const [errors, setErrors] = useState({});
 
@@ -84,6 +83,24 @@ const AddPetForm = () => {
         return pet;
     };
 
+    const resetForm = () => {
+        setBasicDetails({ name: '', species: '', breed: '' });
+        setAdditionalDetails({ age: '', weight: '', description: '' });
+        setChipAndBirthday({ chipNumber: '', birthday: '' });
+        setVaccinationRecord([]);
+        setRoutineCareRecord([]);
+        setExpensesRecord([]);
+        setNotesRecord([]);
+        setVetVisitsRecord([]);
+        setAllergies([]);
+        setMedications([]);
+        setMedicalConiditons([]);
+        setSelectedImageProfile(null);
+        setAdditionalPhotos([]);
+        setErrors({});
+        setCurrentSection(1);
+    };
+    
     const onProfileImageDrop = (acceptedFiles) => {
         console.log(acceptedFiles);
         if (acceptedFiles && acceptedFiles.length > 0) {
@@ -116,6 +133,12 @@ const AddPetForm = () => {
         multiple: true,
     });
 
+    if (!open) return null;
+
+    const handleCloseWithReset = () => {
+        resetForm();
+        handleClose();
+    };
 
     // Function to handle form submission
     const handleSubmit = async (e) => {
@@ -137,6 +160,7 @@ const AddPetForm = () => {
                     formData.append('additionalImages', image);
                 });
                 await addPetAdditionalImages(formData, token, response.pet._id);
+                handleClose();
             }
           } catch (error) {
             if (error.response && error.response.status === 401) {
@@ -366,7 +390,10 @@ const AddPetForm = () => {
     return (      
         <div className="add-pet-form-container">
             <div className="add-pet-form">
-                <h2>Welcome to the Add New Pet Process!</h2>
+                <div style={{display: 'flex', justifyContent: 'space-between'}}>
+                    <h2>Welcome to the Add New Pet Process!</h2>
+                    <FontAwesomeIcon icon={faTimes} className='close-btn' onClick={handleCloseWithReset}/>
+                </div>
                 <p>Please provide the following details about your pet:</p>
                 <form onSubmit={handleSubmit}>
 
@@ -384,6 +411,14 @@ const AddPetForm = () => {
                                 <input  {...profileImageDropzone.getInputProps()} />
                                 <p>Drag & drop an image here, or click to select one</p>
                             </div>
+                            {/* <div {...getProfileRootProps({ className: 'dropzone' })}>
+                                <input {...getProfileInputProps()} />
+                                {selectedImageProfile ? (
+                                    <img src={URL.createObjectURL(selectedImageProfile)} alt="Profile" style={{ maxWidth: '100px' }} />
+                                ) : (
+                                    <p>Drag 'n' drop profile image here, or click to select one</p>
+                                )}
+                            </div> */}
                         </div>
                         <div className="input-group">
                             <label>Name:</label>
@@ -853,6 +888,10 @@ const AddPetForm = () => {
                             <input {...additionalPhotosDropzone.getInputProps()} />
                             <p>Drag 'n' drop an image here, or click to select one</p>
                         </div>
+                        {/* <div {...getAdditionalRootProps({ className: 'dropzone' })}>
+                                <input {...getAdditionalInputProps()} />
+                                <p>Drag 'n' drop additional photos here, or click to select them</p>
+                            </div> */}
                         <p className='optional-section'>You can add this information later in the pet profile. 
                             However, it's important to add all pet info for tracking and analysis.</p>
                     </div>

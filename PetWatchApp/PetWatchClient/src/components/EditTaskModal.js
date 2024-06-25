@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Modal from 'react-modal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 const EditTaskModal = ({ isOpen, onClose, task, onEditTask }) => {
   const [title, setTitle] = useState('');
@@ -19,23 +20,54 @@ const EditTaskModal = ({ isOpen, onClose, task, onEditTask }) => {
     onEditTask({ ...task, title, description, dueDate });
   };
 
+  if (!isOpen){
+    return null;
+  } 
+
   return (
-    <Modal isOpen={isOpen} onRequestClose={onClose} contentLabel="Edit Task">
-      <h2>Edit Task</h2>
-      <form onSubmit={handleSubmit}>
-        <label>Title:</label>
-        <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required />
+    <div className='modal'>
+      <div className='modal-content'>
+        <div className='modal-header'>
+          <h2>Edit Task</h2>
+          <FontAwesomeIcon icon={faTimes} className='close-btn' onClick={onClose}/>
+        </div>
 
-        <label>Description:</label>
-        <textarea value={description} onChange={(e) => setDescription(e.target.value)} required />
+        <div className='input-container'>
+          <label className='label'>Title:</label>
+          <input className='input-field'
+          type="text"
+           value={title} 
+           onChange={(e) => setTitle(e.target.value)} 
+           required 
+           />
+        </div>
+         
+        <div className='input-container'>
+        <label className='label'>Description:</label>
+          <textarea className='textarea-field'
+          value={description} 
+          onChange={(e) => setDescription(e.target.value)} 
+          required 
+          />
+        </div>
+          
 
-        <label>Due Date:</label>
-        <input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
-
-        <button type="submit">Save</button>
-        <button type="button" onClick={onClose}>Cancel</button>
-      </form>
-    </Modal>
+        <div className='input-container'>
+          <label className='label'>Due Date:</label>
+          <input className='input-field'
+          type="date" 
+          value={dueDate} 
+          onChange={(e) => setDueDate(e.target.value)} 
+          />
+        </div>
+        
+        <div className='actions'>
+          <button className='btn' onClick={handleSubmit}>Add Task</button>
+          <button className='btn' onClick={onClose}>Cancel</button>
+        </div>
+      </div>
+      
+    </div>
   );
 };
 

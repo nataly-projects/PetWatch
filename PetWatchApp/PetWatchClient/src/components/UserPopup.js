@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faSignOutAlt, faEye, faCog, faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -7,11 +7,17 @@ import { faUser, faSignOutAlt, faEye, faCog, faTimes } from '@fortawesome/free-s
 import '../styles/Popup.css';
 
 const UserPopup = ({ onClose }) => {
+  const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
 
   const handleClick = (event) => {
       onClose();
   };
+
+  const handleLogout = () => {
+    dispatch({ type: 'LOGOUT' });
+  };
+
 
   return (
     <div className="user-popup" onClick={handleClick}>
@@ -38,7 +44,7 @@ const UserPopup = ({ onClose }) => {
           </Link>
         </li>
         <li>
-          <Link to="/logout">
+          <Link onClick={() => handleLogout}>
             <FontAwesomeIcon icon={faSignOutAlt} /> Logout
           </Link>
         </li>

@@ -153,6 +153,22 @@ export const updateUserTask = async (userId, updateTask, token) => {
     }
 };
 
+export const deleteUserTask = async (userId, taskId, token) => {
+    try {
+      const response = await axios.delete(`${BASE_API_URL}/users/tasks/${userId}/${taskId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+};
+
 export const fetchUserAccountSettings = async (userId, token) => {
     try{
         const response = await axios.get(`${BASE_API_URL}/users/settings/${userId}`, {

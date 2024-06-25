@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
-import { formatDateForInput } from '../utils/utils';
+import { formatDateAndTimeForInput } from '../utils/utils';
 import '../styles/PetEditModal.css';
 
 const EditPetDetailsModal = ({ pet, onClose, onSubmit }) => {
@@ -88,7 +88,7 @@ const EditPetDetailsModal = ({ pet, onClose, onSubmit }) => {
 
             <div className='input-container'>
             <label className='label'>Birthday:</label>
-            <input className='input-field' name="birthday" type="datetime-local" value={updatedPetDetails.birthday ? formatDateForInput(updatedPetDetails.birthday): ''} onChange={handleChange} />
+            <input className='input-field' name="birthday" type="datetime-local" value={updatedPetDetails.birthday ? formatDateAndTimeForInput(updatedPetDetails.birthday): ''} onChange={handleChange} />
             </div> 
             
             <div className='textarea-container'>

@@ -35,7 +35,7 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask }) => {
     return (
         <div className='modal'>
             <div className='modal-content'>
-                {/* <span className='close' onClick={onClose}>&times;</span> */}
+                
                 <div className='modal-header'>
                     <h2>Add New Task</h2>
                     <FontAwesomeIcon icon={faTimes} className='close-btn' onClick={onClose}/>

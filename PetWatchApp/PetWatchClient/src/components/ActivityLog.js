@@ -73,7 +73,7 @@ const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
     const columns = useMemo(
         () => [
             { Header: 'Date', accessor: 'created_at', Cell: ({ value }) => formatDateUniversal(new Date(value))},
-            { Header: 'Pet Name', accessor: 'petId.name', show: petName == null },
+            petName == null ? { Header: 'Pet Name', accessor: 'petId.name', show: petName == null } : { Header: 'Pet Name', accessor: 'petId.name', show: false },
             { Header: 'Action Type', accessor: 'actionType' },
             { Header: 'Details', accessor: 'details' },
         ],
@@ -105,7 +105,7 @@ const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
         <div className="log-container">
             <h3>{petName !== null ? `${petName} Activity Logs` : 'Your Activity Logs'}</h3>
             {activityLogs.length > 0 && (
-                <div style={{display: 'flex', alignItems: 'baseline', padding: '0 10px'}}>
+                <div className='table-filter-container'>
                 <FilterSection
                     filterType={activityFilterType}
                     handleTypeChange={handleActivityTypeChange}
@@ -115,21 +115,18 @@ const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
                     handleEndDateChange={handleActivityEndDateChange}
                     selectOptions={ActivityType}
                 />
-                <FontAwesomeIcon icon={faDownload} />
+                 <ExportToCSVButton
+                    className='btn'
+                    petName={petName}
+                    data={exportToCSV(filteredActivities)}
+                    filename={petName == null ? "activity-log.csv" : petName + "-activity-log.csv"}
+                />
                 </div>
                 
 
             )}
             {activityLogs.length > 0 ? (
-                <>
-                    <Table instance={activityTableInstance} petName={petName} />
-                    <ExportToCSVButton
-                        className='btn'
-                        petName={petName}
-                        data={exportToCSV(filteredActivities)}
-                        filename={petName == null ? "activity-log.csv" : petName + "-activity-log.csv"}
-                    />
-                </>
+                <Table instance={activityTableInstance} petName={petName} />
             ) : (
                 <p>No activity logs yet.</p>
             )}
@@ -137,26 +134,26 @@ const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
         <div className="log-container">
         <h3>{petName !== null ? `${petName} Upcoming Events` : 'Your Upcoming Events'}</h3>
             {upcomingEvents.length > 0 && (
-                <FilterSection
-                    filterType={eventFilterType}
-                    handleTypeChange={handleEventTypeChange}
-                    startDate={eventStartDate}
-                    handleStartDateChange={handleEventStartDateChange}
-                    endDate={eventEndDate}
-                    handleEndDateChange={handleEventEndDateChange}
-                    selectOptions={ActivityType}
-                />
-            )}
-            {upcomingEvents.length > 0 ? (
-                <>
-                    <Table instance={eventTableInstance} petName={petName} />
+                <div className='table-filter-container'>
+                    <FilterSection
+                        filterType={eventFilterType}
+                        handleTypeChange={handleEventTypeChange}
+                        startDate={eventStartDate}
+                        handleStartDateChange={handleEventStartDateChange}
+                        endDate={eventEndDate}
+                        handleEndDateChange={handleEventEndDateChange}
+                        selectOptions={ActivityType}
+                    />
                     <ExportToCSVButton
                         className='btn'
                         petName={petName}
                         data={exportToCSV(filteredUpcomingEvents)}
                         filename={petName == null ? "upcoming-events.csv" : petName + "-upcoming-events.csv"}
                     />
-                </>
+                </div>
+            )}
+            {upcomingEvents.length > 0 ? (
+                <Table instance={eventTableInstance} petName={petName} />
             ) : (
                 <p>No upcoming events yet.</p>
             )}

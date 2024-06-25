@@ -1,5 +1,7 @@
 .task-list-page {
     padding: 20px;
+    width: 80%;
+    margin: 0 auto;
 
     .header {
         display: flex;

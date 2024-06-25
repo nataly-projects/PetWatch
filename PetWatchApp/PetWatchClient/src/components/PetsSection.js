@@ -3,6 +3,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { getPetsByUserId } from '../services/petService'; 
 import PetCard from './PetCard';
+import AddPetForm from './AddPetForm';
 import '../styles/PetsSection.css';
 
 const PetsSection = () => {
@@ -13,6 +14,8 @@ const PetsSection = () => {
     const [pets, setPets] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+    const [isAddPetPopupOpen, setIsAddPetPopupOpen] = useState(false);
+
 
     const fetchData = async () => {
         try {
@@ -52,8 +55,14 @@ const PetsSection = () => {
     }
 
     const handleAddNewPetClick = () => {
-        navigate('/add-pet');
-    };
+        // navigate('/add-pet');
+        setIsAddPetPopupOpen(true);
+      };  
+    
+      const handleClosePopup = () => {
+        setIsAddPetPopupOpen(false);
+      };
+    
 
     return (
     <div className="pets-section-container">
@@ -81,6 +90,11 @@ const PetsSection = () => {
         <p>you can add new pet.</p>
 
         <button className='btn' onClick={handleAddNewPetClick} >Add New Pet</button>
+        
+        <AddPetForm 
+        open={isAddPetPopupOpen}
+        handleClose={handleClosePopup}
+        />
     </div>  
     );
 };

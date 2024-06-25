@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
-import { formatDateForInput } from '../utils/utils';
+import { formatDateAndTimeForInput } from '../utils/utils';
 import '../styles/PetEditModal.css';
 
 const EditHealthItemModal = ({ item, type, onClose, onSubmit }) => {
@@ -75,28 +75,28 @@ const EditHealthItemModal = ({ item, type, onClose, onSubmit }) => {
             {updatedItem.date && ( 
             <div className='input-container'>
             <label className='label'>Date:</label>
-            <input className='input-field' name="date" type="datetime-local" value={formatDateForInput(updatedItem.date)} onChange={handleChange} />
+            <input className='input-field' name="date" type="datetime-local" value={formatDateAndTimeForInput(updatedItem.date)} onChange={handleChange} />
             </div> 
             )}
 
             {updatedItem.dateDiagnosed && (
             <div className='input-container'>
             <label className='label'>Date Diagnose:</label>
-            <input className='input-field' name="dateDiagnosed" type="datetime-local" value={formatDateForInput(updatedItem.dateDiagnosed)} onChange={handleChange} />
+            <input className='input-field' name="dateDiagnosed" type="datetime-local" value={formatDateAndTimeForInput(updatedItem.dateDiagnosed)} onChange={handleChange} />
             </div> 
             )}
 
             {updatedItem.startDate && (
             <div className='input-container'>
             <label className='label'>Start Date:</label>
-            <input className='input-field' name="startDate" type="datetime-local" value={formatDateForInput(updatedItem.startDate)} onChange={handleChange} />
+            <input className='input-field' name="startDate" type="datetime-local" value={formatDateAndTimeForInput(updatedItem.startDate)} onChange={handleChange} />
             </div> 
             )}
 
         {updatedItem.endDate && (
             <div className='input-container'>
             <label className='label'>End Date:</label>
-            <input className='input-field' type="datetime-local" name="endDate" value={formatDateForInput(updatedItem.endDate)} onChange={handleChange} />
+            <input className='input-field' type="datetime-local" name="endDate" value={formatDateAndTimeForInput(updatedItem.endDate)} onChange={handleChange} />
             </div> 
             )}
 
