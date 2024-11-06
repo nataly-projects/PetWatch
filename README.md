@@ -17,6 +17,7 @@ monitoring vaccination records, tracking routine care activities, or accessing i
 - React Router: For routing and navigation within the application
 - Redux: State management library for managing application state.
 - Axios: Promise-based HTTP client for making requests to the server.
+- MUI: for styling
 ## Server-Side
 - Node.js: JavaScript runtime environment.
 - Express.js: Web framework for Node.js.
