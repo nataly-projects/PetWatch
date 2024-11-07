@@ -1,6 +1,5 @@
 # PetWatchApp
-PetWatch is a web application designed to streamline pet care management for pet owners. With intuitive features tailored for pet health tracking, appointment scheduling, expense management,
-monitoring vaccination records, tracking routine care activities, or accessing informative guides on pet care, PetWatch offers a comprehensive solution for pet owners.
+PetWatch is a web application designed to streamline pet care management for pet owners. With a comprehensive suite of features, PetWatch helps pet owners manage pet health tracking, appointment scheduling, expense management, vaccination records, routine care activities, and offers informative guides on pet care.
 
 ## Features
 - Pet Owner Dashboard: Access a comprehensive dashboard displaying all data related to your pet's care and well-being. View detailed logs of your pet's activities, track and manage all pet-related expenses, stay informed about upcoming important events, and keep organized notes and reminders for your pets.
@@ -13,22 +12,23 @@ monitoring vaccination records, tracking routine care activities, or accessing i
 
 # Technologies Used
 ## Client-Side
-- React.js: JavaScript library for building user interfaces.
-- React Router: For routing and navigation within the application
-- Redux: State management library for managing application state.
-- Axios: Promise-based HTTP client for making requests to the server.
+- React.js: JavaScript library for building dynamic user interfaces.
+- React Router: For efficient routing and navigation within the application.
+- Redux: Centralized state management for predictable application state.
+- Axios: HTTP client for making API requests.
+- Material-UI (MUI): Component library for a sleek and responsive UI.
 ## Server-Side
-- Node.js: JavaScript runtime environment.
-- Express.js: Web framework for Node.js.
-- MongoDB: NoSQL database management system.
-- Mongoose: MongoDB object modeling tool.
-- JSON Web Tokens (JWT): Implementation of JSON Web Tokens for user authentication.
-- Swagger: For the Api Documentation.
+ - Node.js: JavaScript runtime environment for server-side development.
+ - Express.js: Web framework for building RESTful APIs in Node.js.
+ - MongoDB: NoSQL database for scalable data storage.
+ - Mongoose: Object Data Modeling (ODM) library for MongoDB.
+ - JWT (JSON Web Tokens): Authentication and authorization via token-based security.
+ - Swagger: API documentation and exploration through Swagger UI.
 
 # Getting Started
 ## Prerequisites
-- Node.js and npm installed on your machine.
-- MongoDB installed and running locally or configured remote MongoDB URL.
+- Ensure you have Node.js and npm installed on your machine.
+- MongoDB installed locally or set up with a remote MongoDB URI.
 ## Installation
 - Clone the repository
 - Install dependencies for both client and server
@@ -38,9 +38,9 @@ monitoring vaccination records, tracking routine care activities, or accessing i
   - MONGO_USERNAME=your-mongo-username
   - MONGO_PASSWORD=your-mongo-password
   - JWT_SECRET_KEY=your-jwt-secret-key
- 
+ - Run both client and server.
+   
 ## API Documentation
-
 The backend API is documented using Swagger. You can explore the API using the Swagger UI.
 
 ### Accessing Swagger UI
