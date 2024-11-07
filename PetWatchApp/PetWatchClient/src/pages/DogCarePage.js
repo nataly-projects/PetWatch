@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/VaccinationPage.css';
+import { Box, Typography, List, ListItem, Table, TableBody, TableCell, TableHead, TableRow, Divider } from '@mui/material';
 import fruitsCanEatImg from '../images/dogFruitsCanEat.jpg';
 import meatCanEatImg from '../images/dogMeatCanEat.jpg';
 import otherCanEatImg from '../images/dogOtherCanEat.jpg';
@@ -8,184 +8,154 @@ import notToEatImg from '../images/dogNotEat.jpg';
 
 const DogCarePage = () => {
     const vaccinations = [
-        { name: 'Multivalent Vaccine - DHPP', description: 'A vaccine that contains protection against 6 contagious diseases (among them also Parvo) that are dangerous for pups and adult dogs. The vaccine is given the first time at the age of 6 to 8 weeks and must be repeated twice after two-weeks gaps (all together a series of 3 multivalent Vaccine shots). Afterwards, or when referring to a dog above 1 year old, the vaccine is given once a year.' },
-        { name: 'Rabies Vaccinations', description: 'An obligatory vaccine for all dogs that are 3 months old against the rabies disease which is contagious also to humans. The vaccination is given once a year. With the first rabies vaccine, it is obligatory to inject an electronic chip into the dog, which is done only once in the dog’s life.' },
-        { name: 'Vaccination against Esophagus Worms/Park Worms (Spirocerca Lupi)', description: 'In actuality, this is not a vaccination but a preventive treatment for specific worms that can cause death by tearing the main artery-aorta and by migrating to the esophagus and there causing tumors that can develop to cancer.' },
-        { name: 'Deworming Treatment (pills)', description: 'Treatment against internal parasites (such as intestinal worms and tapeworms).' },
-        { name: 'Flea and Tick Treatment', description: 'There are various flea and tick treatment options available, including topical treatments, collars, sprays, shampoos, and oral medications.' },
+        { name: 'Multivalent Vaccine - DHPP', description: 'A vaccine that contains protection against 6 contagious diseases...' },
+        { name: 'Rabies Vaccinations', description: 'An obligatory vaccine for all dogs that are 3 months old...' },
+        { name: 'Vaccination against Esophagus Worms/Park Worms', description: 'A preventive treatment for specific worms...' },
+        { name: 'Deworming Treatment (pills)', description: 'Treatment against internal parasites...' },
+        { name: 'Flea and Tick Treatment', description: 'There are various flea and tick treatment options available...' },
     ];
 
     const routineCare = [
-        { name: 'Brushing', 
-        description: 'Regular brushing helps remove dead fur, dirt, and prevents mats.',
-        frequency: ['Short-haired dogs: Once a week.', 'Medium-haired dogs: Twice a week.', 'Long-haired dogs: 3-4 times a week.'] },
-        { name: 'Bathing', 
-        description: 'Bathing as needed, using a shampoo designed for dogs.',
-        frequency: ['Short-haired dogs: Once a month.', 'Medium-haired dogs: Once every two weeks.', 'Long-haired dogs: As needed, using a shampoo designed for dogs.'] },
-        { name: 'Nail trimming', 
-        description: 'Regular nail trimming prevents discomfort and injuries.',
-        frequency: ['Once a month.'] },
-        { name: 'Ear cleaning', 
-        description: 'Regular ear cleaning prevents ear infections.',
-        frequency: ['Once a week.'] },
-        { name: 'Teeth brushing', 
-        description: 'Regular teeth brushing prevents gum disease and tartar buildup.',
-        frequency: ['3-4 times a week.'] },
+        { name: 'Brushing', description: 'Regular brushing helps remove dead fur...', frequency: ['Short-haired: Once a week', 'Medium-haired: Twice a week', 'Long-haired: 3-4 times a week'] },
+        { name: 'Bathing', description: 'Bathing as needed with dog shampoo.', frequency: ['Short-haired: Once a month', 'Medium-haired: Once every two weeks', 'Long-haired: As needed'] },
+        { name: 'Nail trimming', description: 'Regular nail trimming prevents discomfort and injuries.', frequency: ['Once a month'] },
+        { name: 'Ear cleaning', description: 'Regular ear cleaning prevents infections.', frequency: ['Once a week'] },
+        { name: 'Teeth brushing', description: 'Prevents gum disease and tartar buildup.', frequency: ['3-4 times a week'] },
     ];
 
     const puppyVaccineSchedule = [
-        { age: '6–8 Weeks', vaccines: ['DHPP - first dose', 'Deworming'], additonal: [] },
-        { age: '10–12 Weeks', vaccines: ['DHPP - second dose', 'Deworming'], additonal: []}, 
-        { age: '14–16 Weeks', vaccines: ['DHPP - third dose', 'Rabies', 'Vaccination against Esophagus Worms'], additonal: ['Chip'] }
+        { age: '6–8 Weeks', vaccines: ['DHPP - first dose', 'Deworming'] },
+        { age: '10–12 Weeks', vaccines: ['DHPP - second dose', 'Deworming'] }, 
+        { age: '14–16 Weeks', vaccines: ['DHPP - third dose', 'Rabies', 'Vaccination against Esophagus Worms'] }
     ];
   
     const adultDogVaccineSchedule = [
-    { frequency: 'Every 3 month', vaccines: ['Vaccination against Esophagus Worms'] },
-    { frequency: 'Every 3 month', vaccines: ['Flea and Tick Treatment'] },
-    { frequency: 'Every 6 month', vaccines: ['Deworming'] },
-    { frequency: 'Evrey year', vaccines: ['Rabies', 'DHPP'] }
+        { frequency: 'Every 3 months', vaccines: ['Vaccination against Esophagus Worms'] },
+        { frequency: 'Every 6 months', vaccines: ['Deworming'] },
+        { frequency: 'Every year', vaccines: ['Rabies', 'DHPP'] }
     ];
 
-
-    const renderPuppyVaccineScheduleTable = () => {
-        return (
-            <table>
-            <thead>
-                <tr>
-                <th>Age</th>
-                <th>Vaccines</th>
-                <th>Additonal</th>
-                </tr>
-            </thead>
-            <tbody>
-                {puppyVaccineSchedule.map((item, index) => (
-                <tr key={index}>
-                    <td>{item.age}</td>
-                    <td>{item.vaccines.join(', ')}</td>
-                    <td>{item.additonal.join(', ')}</td>
-                </tr>
-                ))}
-            </tbody>
-            </table>
-        );
-    };
-
-    const renderAdultDogVaccineScheduleTable = () => {
-        return (
-            <table>
-            <thead>
-                <tr>
-                <th>Frequency</th>
-                <th>Vaccines</th>
-                </tr>
-            </thead>
-            <tbody>
-                {adultDogVaccineSchedule.map((item, index) => (
-                <tr key={index}>
-                    <td>{item.frequency}</td>
-                    <td>{item.vaccines.join(', ')}</td>
-                </tr>
-                ))}
-            </tbody>
-            </table>
-        );
-    };
-
     const renderRoutineCareList = () => (
-      <ul>
+      <List>
           {routineCare.map((item, index) => (
-              <li key={index}>
-                  <h3>{item.name}</h3>
-                  <p>{item.description}</p>
-                  <p><strong>Frequency:</strong></p>
-                  <ul>
+              <ListItem key={index} sx={{ mb: 2 }}>
+                  <Typography variant="h6">{item.name}</Typography>
+                  <Typography variant="body2">{item.description}</Typography>
+                  <Typography variant="subtitle1">Frequency:</Typography>
+                  <List>
                       {item.frequency.map((freq, i) => (
-                          <li key={i}>{freq}</li>
+                          <ListItem key={i} sx={{ pl: 2 }}>
+                              {freq}
+                          </ListItem>
                       ))}
-                  </ul>
-              </li>
+                  </List>
+              </ListItem>
           ))}
-      </ul>
-  );
+      </List>
+    );
 
-  return (
-    <div className="care-container">
-        <div className="section">
-        <h2>Dog Vaccinations and Routine Care</h2>
-        <p>Below is a list of common dog vaccinations and their descriptions:</p>
-        <ul>
-            {vaccinations.map((vaccination, index) => (
-            <li key={index}>
-                <h3>{vaccination.name}</h3>
-                <p>{vaccination.description}</p>
-            </li>
-            ))}
-        </ul>
-      </div>
-      <div className="section">
-        <h2>Puppy Vaccine Schedule</h2>
-        <p>For puppy vaccines to provide necessary protection, they’re given every two to four weeks until a puppy is at least 16 weeks old. </p>
-        <p>Here’s an example of what a typical puppy shot schedule looks like:</p>
-        {renderPuppyVaccineScheduleTable()}
+    const renderTable = (data, header1, header2) => (
+        <Table>
+            <TableHead>
+                <TableRow>
+                    <TableCell>{header1}</TableCell>
+                    <TableCell>{header2}</TableCell>
+                </TableRow>
+            </TableHead>
+            <TableBody>
+                {data.map((item, index) => (
+                    <TableRow key={index}>
+                        <TableCell>{item.age || item.frequency}</TableCell>
+                        <TableCell>{item.vaccines.join(', ')}</TableCell>
+                    </TableRow>
+                ))}
+            </TableBody>
+        </Table>
+    );
 
-        <h2>Adult Dog Vaccine Schedule</h2>
-        <p>A dog vaccination schedule for an adult dog may look like this:</p>
-        {renderAdultDogVaccineScheduleTable()}
+    return (
+        <Box sx={{ maxWidth: 800, margin: '0 auto', padding: '20px' }}>
+            <Box className="section" sx={{ mb: 4 }}>
+                <Typography variant="h4" gutterBottom>Dog Vaccinations and Routine Care</Typography>
+                <List>
+                    {vaccinations.map((vaccination, index) => (
+                        <ListItem key={index} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', mb: 2 }}>
+                            <Typography variant="h6">{vaccination.name}</Typography>
+                            <Typography variant="body2">{vaccination.description}</Typography>
+                        </ListItem>
+                    ))}
+                </List>
+            </Box>
 
-        <h2>Microchipping</h2>
-        <p>Microchipping is a safe and permanent way to identify your dog and increase the chances of being reunited if they are lost or stolen.</p>
-     </div>
-     <div className="section">
-        <h2> Routine Care:</h2>
-        {renderRoutineCareList()}
-        <ul>
-        <strong>It is important to note that this is just a general recommendation, and the frequency of grooming may vary depending on several factors: </strong>
-          <li><strong>Dog breed:</strong> Each breed has different needs.</li>
-          <li><strong>Coat type:</strong> Long hair requires more frequent grooming.</li>
-          <li><strong>Lifestyle:</strong> Dogs that are more active tend to get dirtier faster.</li>
-          <li><strong>Dog's health:</strong> Dogs with skin problems or allergies may need special grooming.</li>
-          <strong>It is important to consult with a veterinarian about the frequency and treatments most appropriate for your dog.</strong>
-        </ul>
-      </div>
-      <h2>Feeding Your Dog</h2>
-      <h3>What Can Dogs Eat?</h3>
-      <p>
-        Dogs can enjoy a variety of foods that provide essential nutrients to complement their regular diet. Some safe and healthy options include:
-      </p>
-      <ul>
-        <li><strong>Fruit and Vegetables:</strong> Apples, bananas, strawberries, carrots, and other fruits and 
-        vegetables are rich in vitamins, minerals, fiber, and protein.
-        <img src={fruitsCanEatImg} alt= 'fruits and vagetables dogs can eat' />
-        </li>
-        <li><strong>Meat & Fish:</strong> Chicken, beef, salmon, and other meats and fish are high in protein 
-        and essential fatty acids.
-        <img src={meatCanEatImg} alt= 'meat and fish dogs can eat' />
-        </li>
-        <li><strong>Other Foods:</strong> Grains, dairy, and eggs can also be given to dogs in moderation.
-        <img src={otherCanEatImg} alt= 'other foods dogs can eat' />
-        </li>
-      </ul>
+            <Divider />
 
-      <h3>Foods to Be Cautious About</h3>
-      <p>
-        While not toxic, some human foods should be given to dogs in moderation to prevent potential issues. 
-        These include grains, dairy products, and certain vegetables.
-        <img src={eatCautiousImg} alt= 'foods to be cautious about giving your dog' />
-      </p>
+            <Box className="section" sx={{ mb: 4 }}>
+                <Typography variant="h4" gutterBottom>Puppy Vaccine Schedule</Typography>
+                <Typography variant="body1" gutterBottom>
+                    For puppy vaccines to provide necessary protection, they’re given every two to four weeks until a puppy is at least 16 weeks old.
+                </Typography>
+                {renderTable(puppyVaccineSchedule, "Age", "Vaccines")}
+                
+                <Typography variant="h4" sx={{ mt: 4 }} gutterBottom>Adult Dog Vaccine Schedule</Typography>
+                {renderTable(adultDogVaccineSchedule, "Frequency", "Vaccines")}
 
-      <h3>What Can Dogs Not Eat?</h3>
-      <p>
-        Certain foods are toxic to dogs and should be avoided at all costs, including chocolate, caffeine, grapes, 
-        and certain vegetables. It's important to be aware of these foods to protect your dog's health.
-        <img src={notToEatImg} alt= 'foods dogs cant eat' />
-      </p>
-      <h3>Summary</h3>
-      <p>
-        Knowing what foods are safe and harmful to dogs is crucial for their health and well-being. While pre-made dog food can be convenient, incorporating natural foods like fruits, vegetables, meats, and fish into their diet can provide additional nutrients. By avoiding toxic foods and feeding them a balanced diet, you can ensure your dog stays healthy and happy.
-      </p>
+                <Typography variant="h4" sx={{ mt: 4 }} gutterBottom>Microchipping</Typography>
+                <Typography variant="body1">
+                    Microchipping is a safe and permanent way to identify your dog and increase the chances of being reunited if they are lost or stolen.
+                </Typography>
+            </Box>
 
-    </div>
-  );
+            <Divider />
+
+            <Box className="section" sx={{ mb: 4 }}>
+                <Typography variant="h4" gutterBottom>Routine Care</Typography>
+                {renderRoutineCareList()}
+            </Box>
+
+            <Divider />
+
+            <Box className="section" sx={{ mb: 4 }}>
+                <Typography variant="h4" gutterBottom>Feeding Your Dog</Typography>
+                <Typography variant="h5" gutterBottom>What Can Dogs Eat?</Typography>
+                <Typography variant="body1">Dogs can enjoy a variety of foods that provide essential nutrients:</Typography>
+                <List>
+                    <ListItem>
+                        <Typography variant="h6">Fruit and Vegetables</Typography>
+                        <Typography>Apples, bananas, strawberries, carrots, and more.</Typography>
+                        <Box component="img" src={fruitsCanEatImg} alt="Fruits dogs can eat" sx={{ width: '100%', mt: 2 }} />
+                    </ListItem>
+                    <ListItem>
+                        <Typography variant="h6">Meat & Fish</Typography>
+                        <Typography>Chicken, beef, salmon, and other meats.</Typography>
+                        <Box component="img" src={meatCanEatImg} alt="Meat dogs can eat" sx={{ width: '100%', mt: 2 }} />
+                    </ListItem>
+                    <ListItem>
+                        <Typography variant="h6">Other Foods</Typography>
+                        <Typography>Grains, dairy, and eggs in moderation.</Typography>
+                        <Box component="img" src={otherCanEatImg} alt="Other foods dogs can eat" sx={{ width: '100%', mt: 2 }} />
+                    </ListItem>
+                </List>
+            </Box>
+
+            <Divider />
+
+            <Box className="section" sx={{ mb: 4 }}>
+                <Typography variant="h5" gutterBottom>Foods to Be Cautious About</Typography>
+                <Typography>
+                    While not toxic, some foods should be given in moderation.
+                    <Box component="img" src={eatCautiousImg} alt="Foods to be cautious about" sx={{ width: '100%', mt: 2 }} />
+                </Typography>
+            </Box>
+
+            <Box className="section" sx={{ mb: 4 }}>
+                <Typography variant="h5" gutterBottom>What Can Dogs Not Eat?</Typography>
+                <Typography>
+                    Certain foods are toxic and should be avoided, including chocolate, caffeine, grapes, and some vegetables.
+                    <Box component="img" src={notToEatImg} alt="Foods dogs can't eat" sx={{ width: '100%', mt: 2 }} />
+                </Typography>
+            </Box>
+        </Box>
+    );
 };
 
 export default DogCarePage;

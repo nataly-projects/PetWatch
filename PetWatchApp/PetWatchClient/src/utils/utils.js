@@ -207,5 +207,173 @@ export const getFirstDayOfMonth = (year, month) => {
   return new Date(year, month, 1).getDay();
 }
 
+export const FormFieldsType = {
+  PET: 'pet',
+  VACCINE_RECORD:'vaccineRecord',
+  ROUTINE_CARE:'routineCare',
+  EXPENSE:'expense',
+  ALLERGY:'allergy',
+  MEDICATION:'medication',
+  VET_VISIT:'vetVisit',
+  NOTE:'note',
+  MEDICAL_CONDITION: 'medicalCondition',
+  MEAL_PLANNER: 'meal',
+  EMERGENCY_CONTACT: 'contact',
+  OTHER: 'other'
+};
 
+export const formFieldsConfig = (data = {}) => ({
+    pet: {
+      title: `Edit ${data.name} Details`,
+      fields: [
+          { name: 'name', label: 'Name', type: 'text', value: data.name },
+          {
+              name: 'species',
+              label: 'Species',
+              type: 'radio',
+              options: [
+                  { label: 'Male', value: 'MALE' },
+                  { label: 'Female', value: 'FEMALE' }
+              ],
+              value: data.species,
+          },
+          { name: 'breed', label: 'Breed', type: 'text', value: data.breed },
+          { name: 'age', label: 'Age', type: 'number', value: data.age },
+          { name: 'weight', label: 'Weight', type: 'number', value: data.weight },
+          {
+              name: 'birthday',
+              label: 'Birthday',
+              type: 'datetime-local',
+              value: data.birthday ? formatDateAndTimeForInput(data.birthday) : '',
+          },
+          {
+              name: 'description',
+              label: `About ${data.name}`,
+              type: 'textarea',
+              value: data.description,
+          },
+          { name: 'chipNumber', label: 'Chip Number', type: 'text', value: data.chipNumber },
+      ],
+      validationRules: {
+          name: 'Name',
+          age: 'Age',
+          weight: 'Weight',
+          breed: 'Breed',
+          species: 'Species',
+          description: 'Description',
+      }
+  },             
+  expense: {
+      title: `Add record for expense type: ${data.value}`,
+      fields: [
+        { name: 'amount', label: 'Amount', type: 'number'},
+        { name: 'date', label: 'Date', type: 'datetime-local' },
+        { name: 'note', label: 'Note', type: 'textarea', placeholder: 'Additional notes (optional)' },
+      ],
+      validationRules: {amount: 'Amount',date: 'Date' }
+  }, 
+  vaccineRecord: {
+      title: `Add record for vaccine type: ${data.value}`,
+      fields: [
+          { name: 'date', label: 'Date', type: 'datetime-local' },
+          { name: 'nextDate', label: 'Next Date', type: 'datetime-local'},
+          { name: 'note', label: 'Note', type: 'textarea', placeholder: 'Additional notes (optional)' },
+      ],
+      validationRules: {
+          date: 'Date',
+          nextDate: 'Next Date',
+      }
+  },
+  routineCare: {
+      title: `Add record for routine care: ${data.value}`,
+      fields: [
+        { name: 'date', label: 'Date', type: 'datetime-local' },
+        { name: 'nextDate', label: 'Next Date', type: 'datetime-local' },
+        { name: 'note', label: 'Note', type: 'textarea', placeholder: 'Additional notes (optional)' },
+      ],
+      validationRules: { date: 'Date' }
+  },
+  allergy: {
+      title: Object.keys(data).length === 0 ? "Add Allergy" : `Edit Allergy: ${data.name}`,
+      fields: [
+        { name: 'name', label: 'Allergy Name', type: 'text', placeholder: 'Allergy Name' },
+        { name: 'treatment', label: 'Treatment', type: 'textarea', placeholder: 'Add the treatment' },
+        { name: 'date', label: 'Date', type: 'datetime-local' },
+        { name: 'note', label: 'Note', type: 'textarea', placeholder: 'Additional notes (optional)' }
+      ],
+      validationRules: {name: 'Name', treatment: 'Treatment', date: 'Date'}
+  },
+  medication: {
+      title: Object.keys(data).length === 0 ? "Add Medication" : `Edit Medication: ${data.name}`,
+      fields: [
+        { name: 'name', label: 'Medication Name', type: 'text', placeholder: 'Medication Name' },
+        { name: 'dosage', label: 'Dosage', type: 'text', placeholder: 'Dosage' },
+        { name: 'startDate', label: 'Start Date', type: 'datetime-local' },
+        { name: 'endDate', label: 'End Date', type: 'datetime-local' },
+        { name: 'note', label: 'Note', type: 'textarea', placeholder: 'Additional notes (optional)' }
+    ],
+    validationRules: {name: 'Name', dosage: 'Dosage', startDate: 'Start Date', endDate: 'End Date' }
+  },
+  vetVisit: {
+      title: 'Add Vet Visit',
+      fields: [
+        { name: 'reason', label: 'Reason', type: 'text', placeholder: 'Reason for visit' },
+        { name: 'examination', label: '', type: 'textarea', placeholder: 'Examination details' },
+        { name: 'date', label: 'Date', type: 'datetime-local' },
+        { name: 'nextDate', label: 'Next Date', type: 'datetime-local' },
+        { name: 'note', label: 'Note', type: 'textarea', placeholder: 'Additional notes (optional)' },
+      ],
+      validationRules: {reason: 'Reason', examination: 'Examination', date: 'Date' }
+  },          
+  medicalCondition: {
+      title: Object.keys(data).length === 0 ? 'Add Medical Condition' : `Edit Medical Condition: ${data.name}`,
+      fields: [
+        { name: 'name', label: 'Condition Name', type: 'text'},
+        { name: 'description', label: 'Description', type: 'text' },
+        { name: 'dateDiagnosed', label: 'Diagnose Date', type: 'datetime-local'},
+        { name: 'continuedTreatment', label: 'Continued Treatment', type: 'text' },
+        { name: 'note', label: 'Note', type: 'textarea', placeholder: 'Additional note (optional)' },
+      ],
+      validationRules: {name: 'Condition Name',  description: 'Description', dateDiagnosed: 'Diagnose Date' }
+  },
+  note: {
+      title: Object.keys(data).length === 0 ? 'Add your note' : 'Edit your note',
+      fields: [
+        { name: 'title', label: 'Title', type: 'text', placeholder: 'Note title' },
+        { name: 'content', label: 'Content', type: 'textarea', placeholder: 'Note content' },
+      ],
+      validationRules: {title: 'Title', content: 'Content'}
+  },
+
+  other: {
+      title: 'Add Other Activity',
+      fields: [
+        { name: 'title', label: 'Title', type: 'text', placeholder: 'Title' },
+        { name: 'type', label: 'Type', type: 'text', placeholder: 'Type' },
+        { name: 'content', label: 'Content', type: 'textarea', placeholder: 'Note content' },
+        { name: 'date', label: 'Date', type: 'datetime-local' },
+      ],
+      validationRules: { title: 'Title', type: 'Type', content: 'Content' }
+  },
+  meal: {
+    title: Object.keys(data).length === 0 ? 'Add new meal planner' : 'Edit the meal',
+    fields: [
+      { name: 'date', label: 'Date', type: 'datetime-local' },
+      { name: 'food', label: 'Food', type: 'text', placeholder: 'Food' },
+      { name: 'amount', label: 'Amount', type: 'text' },
+      { name: 'note', label: 'Note', type: 'textarea', placeholder: 'Additional notes (optional)' },
+    ],
+    validationRules: {date: 'Date', food: 'Food', amount: 'Amount' }
+  },
+  contact: {
+    title: Object.keys(data).length === 0 ? 'Add new emergency contact' : `Edit ${data} contact details`,
+    fields: [
+      { name: 'name', label: 'Name', type: 'text' },
+      { name: 'phone', label: 'Phone', type: 'number' },
+      { name: 'type', label: 'Type', type: 'text', placeholder: 'e.g. Vet' },
+      { name: 'note', label: 'Note', type: 'textarea', placeholder: 'Additional notes (optional)' },
+    ],
+    validationRules: {name: 'Name', phone: 'Phone', type: 'Type' }
+  }
+});
   

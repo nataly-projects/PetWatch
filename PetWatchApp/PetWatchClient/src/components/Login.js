@@ -1,152 +1,196 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { Box, Typography, Button, TextField, InputAdornment, IconButton, Modal } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faLock, faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons';
 import ForgotPassword from './ForgotPassword';
 import {isValidEmail} from '../utils/utils';
 import { loginUser } from '../services/userService';
-import '../styles/Login.css';
 
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+  const [errors, setErrors] = useState({});
   const [error, setError] = useState(null);
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState(''); 
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isForgotPasswordModalOpen, setForgotPasswordModalOpen] = useState(false);
   const [submitAllowed, setSubmitAllowed] = useState(false);
 
   const navigate = useNavigate();
   const dispatch = useDispatch(); 
 
-  const [isForgotPasswordModalIsOpen, setForgotPasswordModalIsOpen] = useState(false); 
 
   useEffect(() => {
-    if (!emailError && !passwordError) {
-      setSubmitAllowed(true);
-    } else {
-      setSubmitAllowed(false);
-    }
-  }, [email, password]);
+    setSubmitAllowed(!Object.values(errors).some(Boolean));
+  }, [errors]);
 
-  // Function to open the Forgot Password modal
   const openForgotPasswordModal = () => {
-    console.log('openForgotPasswordModal');
-    setForgotPasswordModalIsOpen(true);
+    setForgotPasswordModalOpen(true);
+  };
+
+  const closeForgotPasswordModal = () => {
+    setForgotPasswordModalOpen(false);
+  };
+
+  const validateField = (name, value) => {
+    let errorMessage = '';
+
+    switch (name) {
+      case 'email':
+        errorMessage = value
+          ? isValidEmail(value)
+            ? ''
+            : 'Invalid email format'
+          : 'Email is required';
+        break;
+      case 'password':
+        errorMessage = value
+          ? value.length >= 3
+            ? ''
+            : 'Password must be at least 8 characters long'
+          : 'Password is required';
+        break;
+      default:
+        break;
+    }
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: errorMessage }));
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    validateField(name, value);
   };
 
   const togglePasswordVisibility = () => {
-  setIsPasswordVisible(!isPasswordVisible);
+    setIsPasswordVisible(!isPasswordVisible);
   };
 
-  const handleSubmit =  async (event) => {
-    console.log(event);
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // Clear other error states
-    setEmailError('');
-    setPasswordError('');
+    if (!submitAllowed) return;
 
-    // Perform validation checks:
-    if (!email) {
-      setEmailError('Email is required');
-      console.log(emailError);
-    } else if (!isValidEmail(email)) { 
-      setEmailError('Invalid email format');
-    }
-
-    if (!password) {
-      setPasswordError('Password is required');
-    } else if (password.length < 3) {
-      setPasswordError('Password must be at least 8 characters long');
-    }
-    // If all validation passes, proceed with form submission - make the HTTP request to the server
-    console.log(submitAllowed);
-
-    if(submitAllowed){
-      try {
-        //const hashedPassword = await hashPassword(password);
-
-        const loginData = await loginUser(email, password);
-        console.log('loginData: ', loginData);
-        if (loginData) {
-          dispatch({ type: 'SET_USER', payload: loginData });
-          navigate('/main');
-        }
-        
-      } catch (error) {
-        console.log('error: ', error);
-        // Handle specific error messages from the server
-        if (error.response && error.response.data && error.response.data.error) {
-            setError(error.response.data.error);
-        } else {
-            // Handle other errors
-            console.log(error);
-            setError('An error occurred while processing your request');
-        }
+    try {
+      const { email, password } = formData;
+      const loginData = await loginUser(email, password);
+      if (loginData) {
+        dispatch({ type: 'SET_USER', payload: loginData });
+        navigate('/main');
       }
-    }
+    } catch (error) {
+      setError(error.response?.data?.error || 'An error occurred while processing your request');
+  }
   };
   
-
   return (
-    <div className="login">
-      <div className="title bold text-center">Welcome back to Pet Watch</div>
+    <Box
+      sx={{
+        padding: '24px 20px 60px',
+        width: '100%',
+        backgroundColor: '#f9f9f9',
+        borderRadius: '10px',
+        border: '1px solid #ccc',
+        marginBottom: '30%',
+      }}
+    >
+      <Typography variant="h6" sx={{ color: '#795B4A', fontSize: '19px', textAlign: 'center', fontWeight: 'bold' }}>
+        Welcome back to Pet Watch
+      </Typography>
       <form onSubmit={handleSubmit}>
-        <div className="form">
-          <div className="form-row">
-            <label>Email address:</label>
-            <div className="input-group">
-                <FontAwesomeIcon icon={faEnvelope} className="input-icon"/> 
-                <input 
+        <Box
+          sx={{
+            marginTop: '20px',
+            marginBottom: '15px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          {[
+            { label: 'Email', name: 'email', icon: faEnvelope, type: 'email' },
+            { label: 'Password', name: 'password', icon: faLock, type: isPasswordVisible ? 'text' : 'password' },
+          ].map(({ label, name, icon, type }) => (
+            <Box key={name} sx={{ width: '70%', marginBottom: '26px' }}>
+              <Typography component="label" sx={{ fontWeight: 'bold', color: '#795B4A' }}>
+                {label}:
+              </Typography>
+              <TextField
+                fullWidth
                 required
-                type="email" 
-                id="email" 
-                value={email} 
-                onChange={(e) => setEmail(e.target.value)} 
-                />
-            </div>
-            {emailError && <p className="error-message">{emailError}</p>}
-          </div>
+                name={name}
+                type={type}
+                value={formData[name]}
+                onChange={handleChange}
+                error={Boolean(errors[name])}
+                helperText={errors[name]}
+                sx={{ mt: 1 }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <FontAwesomeIcon icon={icon} style={{ color: '#795B4A' }} />
+                    </InputAdornment>
+                  ),
+                  endAdornment:
+                    name === 'password' && (
+                      <InputAdornment position="end">
+                        <IconButton onClick={togglePasswordVisibility} edge="end">
+                          <FontAwesomeIcon icon={isPasswordVisible ? faEye : faEyeSlash} style={{ color: '#795B4A' }} />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                }}
+              />
+            </Box>
+          ))}
 
-    
-          <div className="form-row">
-            <label>Password:</label>
-            <div className="input-group">
-                <FontAwesomeIcon icon={faLock} className="input-icon"/> 
-                <input
-                required
-                type={isPasswordVisible ? 'text' : 'password'}
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                />
-                <FontAwesomeIcon
-                icon={isPasswordVisible ? faEye : faEyeSlash}
-                className="pass-icon"
-                onClick={togglePasswordVisibility} />
-            </div>
-            {passwordError && <p className="error-message">{passwordError}</p>}
-          </div>
-
-          <button className="sign-button" type="submit">Sign In</button>
-
-        </div>
-        {error && <p className="error-message">{error}</p>}
-
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{
+              height: '50px',
+              width: '70%',
+              fontSize: '16px',
+              backgroundColor: '#007bff',
+              color: '#fff',
+              borderRadius: '4px',
+              cursor: 'pointer',
+            }}
+            disabled={!submitAllowed}
+          >
+            Sign In
+          </Button>
+        </Box>
+        {error && <Typography sx={{ color: 'red', textAlign: 'center', mt: 2 }}>{error}</Typography>}
       </form>
-      <div className="forgot-password" onClick={openForgotPasswordModal}>
-        Forgot password?
-      </div>
 
-      {/* Forgot Password modal */}
-      {isForgotPasswordModalIsOpen && (
-        <ForgotPassword
-          onClose={() => setForgotPasswordModalIsOpen(false)}
-        />
-      )}
-    </div>
+      <Typography
+        onClick={openForgotPasswordModal}
+        sx={{
+          marginTop: '22px',
+          opacity: 0.8,
+          fontSize: '16px',
+          color: '#795B4A',
+          width: '70%',
+          textAlign: 'center',
+          cursor: 'pointer',
+          '&:hover': { opacity: 1 },
+        }}
+      >
+        Forgot password?
+      </Typography>
+
+      <Modal open={isForgotPasswordModalOpen} onClose={closeForgotPasswordModal}>
+        <Box sx={{ p: 4, backgroundColor: 'white', borderRadius: '8px', maxWidth: '400px', mx: 'auto', my: '10%' }}>
+          <ForgotPassword onClose={closeForgotPasswordModal} />
+        </Box>
+      </Modal>
+    </Box>
   );
 
 };

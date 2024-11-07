@@ -4,8 +4,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMars, faVenus, faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { Grid, Typography, Button, IconButton, Avatar, Box, Card, CircularProgress } from '@mui/material';
 import { getPetActivityLog, getPetUpcomingEvents, getPetExpensesArrays, 
-  getPetWeightTracker, addPetActivity, deleteAllergyById, deleteMedicalConditionById, deleteMedicationById,
+  getPetWeightTracker, addPetActivity, deleteAllergyById, deleteMedicalConditionById, deleteMedicationById, deletePet,
 updateMedicalConditionById, updateAllergyById, updateMedicationById, updatePetById } from '../services/petService';
 import WeightTracker from './WeightTracker';
 import NoteSection from './NoteSection';
@@ -21,8 +22,9 @@ import { ActivityType } from '../utils/utils';
 import petDefaultImage from '../images/paw.png';
 import EditHealthItemModal from './EditHealthItemModal';
 import EditPetDetailsModal from './EditPetDetailsModal';
-import '../styles/PetProfile.css';
-
+import GenericActivityForm from './GenericActivityForm';
+import EditItemModal from './EditItemModal';
+import { FormFieldsType } from '../utils/utils';
 
 const PetProfile = () => {
   const location = useLocation();
@@ -31,16 +33,18 @@ const PetProfile = () => {
   const token = useSelector((state) => state.token);
 
   const [petDetails, setPetDetails] = useState(pet);
-  const [activityLogs, setActivityLogs] = useState([]);
-  const [upcomingEvents, setUpcomingEvents] = useState([]);
-  const [expenses, setExpenses] = useState([]);
-  const [weights, setWeights] = useState([]);
-  const [medications, setMedications] = useState([]);
-  const [allergies, setAllergies] = useState([]);
-  const [medicalConditions, setMedicalConditions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [popupVisible, setPopupVisible] = useState(false);
+  const [activityRecords, setActivityRecords] = useState({
+    activityLogs: [],
+    upcomingEvents: [],
+    expensesRecord: [],
+    allergies: [],
+    medications: [],
+    medicalConditions: [],
+    weights: []
+  });
 
   const [editHealthModalVisible, setEditHealthModalVisible] = useState(false); 
   const [itemToEdit, setItemToEdit] = useState(null); 
@@ -54,24 +58,21 @@ const PetProfile = () => {
         const events = await getPetUpcomingEvents(petDetails._id, token);
         const petExpenses = await getPetExpensesArrays(petDetails._id, token);
         const petWeights = await getPetWeightTracker(petDetails._id, token);
-        setActivityLogs(logs);
-        setUpcomingEvents(events);
-        setExpenses(petExpenses);
-        setWeights(petWeights);
-        setMedications(pet.medications);
-        setAllergies(pet.allergies);
-        setMedicalConditions(pet.medicalConditions);
+        setActivityRecords((prevRecords) => ({
+          ...prevRecords,
+          activityLogs: logs,
+          upcomingEvents: events,
+          expensesRecord: petExpenses,
+          allergies: pet.allergies,
+          medications: pet.medications,
+          medicalConditions: pet.medicalConditions,
+          weights: petWeights
+        }));
         setLoading(false);
     } catch (error) {
-      if (error.response && error.response.status === 401) {
-        console.error('UNAUTHORIZED_ERROR');
-        setError(true);
-        setLoading(false);
-        navigate('/login');
-      }
-        console.error('Error fetching data:', error);
-        setError(true);
-        setLoading(false);
+      handleError(error);
+      setError(true);
+      setLoading(false);
     }
   };
 
@@ -81,22 +82,30 @@ const PetProfile = () => {
     }
   }, [petDetails]);
 
+  const handleError = (error) => {
+    if (error.response && error.response.status === 401) {
+      console.error('UNAUTHORIZED_ERROR');
+      navigate('/login');
+    } else {
+      console.error('Error fetching data:', error);
+    }
+  };
 
   if (loading) {
     return (
-      <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <div>Loading...</div>
-      </div>
+      <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" mt={4}>
+        <CircularProgress />
+        <Typography mt={2}>Loading...</Typography>
+      </Box>
     );
   }
 
   if (error) {
     return (
-      <div className='error-container'>
-          <p>Failed to fetch pet data. Please try again later.</p>
-          <button className='btn' onClick={fetchData}>Retry</button>
-      </div>
+      <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" mt={4}>
+        <Typography>Failed to fetch pet data. Please try again later.</Typography>
+        <Button variant="contained" onClick={fetchData} sx={{ mt: 2 }}>Retry</Button>
+      </Box>
     );
   }
 
@@ -116,16 +125,13 @@ const PetProfile = () => {
         toast.success('Activity added successfully!');
         fetchData();
       } catch (error) {
-        if (error.response && error.response.status === 401) {
-          console.error('UNAUTHORIZED_ERROR');
-          navigate('/login');
-        }
-        console.error('Error adding activity:', error);
+        handleError(error);
         toast.error('Failed to adding activity. Please try again.');
     }
   };
 
   const handleHealthEdit = (item, type) => {
+    console.log('health type: ', type);
     setItemToEdit(item);
     setHealthEditType(type);
     setEditHealthModalVisible(true);
@@ -133,188 +139,194 @@ const PetProfile = () => {
 
   const handleEditSubmit = async (updatedItem, type) => {
     try {
-      switch (type) {
-        case ActivityType.MEDICAL_CONDITION:
-          console.log('edit medical condition ', updatedItem);
-          // await updateMedicalConditionById(updatedItem, token);
-          // setMedicalConditions(medicalConditions.map(condition => condition._id === updatedItem._id ? updatedItem : condition));
-          toast.success('Medical Condition edit successfully!');
-          break;
-        case ActivityType.MEDICATION:
-          console.log('edit medication', updatedItem);
-          // await updateMedicationById(updatedItem, token);
-          // setMedications(medications.map(medication => medication._id === updatedItem._id ? updatedItem : medication));
-          toast.success('Medication edit successfully!');
-          break;
-        case ActivityType.ALLERGY:
-          console.log('edit allergy ', updatedItem);
-          // await updateAllergyById(updatedItem, token);
-          // setAllergies(allergies.map(allergy => allergy._id === updatedItem._id ? updatedItem : allergy));
-          toast.success('Allergy edit successfully!');
-          break;
-        case 'pet':
-          console.log('edit pet ', updatedItem);
-          // await updatePetById(updatedItem, token);
-          // setAllergies(allergies.map(allergy => allergy._id === updatedItem._id ? updatedItem : allergy));
-          toast.success(`${petDetails.name} edit successfully!`);
-          break;
-        default:
-          return;
+      // Dynamically select the update function based on type
+      const updateFunctions = {
+        [ActivityType.MEDICAL_CONDITION]: updateMedicalConditionById,
+        [ActivityType.MEDICATION]: updateMedicationById,
+        [ActivityType.ALLERGY]: updateAllergyById,
+        pet: updatePetById, // handle pet update separately if needed
+      };
+  
+      // Call the respective update function
+      if (updateFunctions[type]) {
+        await updateFunctions[type](updatedItem, token);
+  
+        // Update the local state in `activityRecords`
+        setActivityRecords((prevRecords) => ({
+          ...prevRecords,
+          [type.toLowerCase()]: prevRecords[type.toLowerCase()].map((item) =>
+            item._id === updatedItem._id ? updatedItem : item
+          ),
+        }));
+  
+        toast.success(`${type} updated successfully!`);
       }
-      if(type === 'pet') {
+  
+      // Close modal if editing health details or pet details
+      if (type === 'pet') {
         setEditBasicDetailsModalVisible(false);
       } else {
         setEditHealthModalVisible(false);
       }
-      // fetchData();
+      fetchData();
     } catch (error) {
-      toast.error('Failed to update item. Please try again.');
+      toast.error(`Failed to update ${type}. Please try again.`);
     }
   };
 
   const handleDelete = async (item, type) => {
-    console.log('type: ', type);
     try {
-      switch(type){
-        case ActivityType.MEDICAL_CONDITION:
-          await deleteMedicalConditionById(item._id, token);
-          setMedicalConditions(medicalConditions.filter(conditon => conditon._id !== item._id));
-          toast.success('Medical Condition deleted successfully!');
-          return;
-        case ActivityType.MEDICATION:
-          await deleteMedicationById(item._id, token);
-          setMedications(medications.filter(medication => medication._id !== item._id));
-          toast.success('Medication deleted successfully!');
-          return;
-        case ActivityType.ALLERGY:
-          await deleteAllergyById(item._id, token);
-          setAllergies(allergies.filter(allergy => allergy._id !== item._id));
-          toast.success('Allergy deleted successfully!');
-          return;
-        case 'pet':
-          await deleteAllergyById(item._id, token);
-          setAllergies(allergies.filter(allergy => allergy._id !== item._id));
-          toast.success(`${petDetails.name} deleted successfully!`);
-          return;
+      // Dynamically select the delete function based on type
+      const deleteFunctions = {
+        [ActivityType.MEDICAL_CONDITION]: deleteMedicalConditionById,
+        [ActivityType.MEDICATION]: deleteMedicationById,
+        [ActivityType.ALLERGY]: deleteAllergyById,
+        pet: deletePet, // handle pet deletion separately if needed
+      };
+  
+      // Call the respective delete function
+      if (deleteFunctions[type]) {
+        await deleteFunctions[type](item._id, token);
+  
+        // Update local state by removing the deleted item
+        setActivityRecords((prevRecords) => ({
+          ...prevRecords,
+          [type.toLowerCase()]: prevRecords[type.toLowerCase()].filter(
+            (record) => record._id !== item._id
+          ),
+        }));
+  
+        toast.success(`${type} deleted successfully!`);
+        fetchData();
       }
     } catch (error) {
-      toast.error('Failed to delete item. Please try again.');
+      toast.error(`Failed to delete ${type}. Please try again.`);
     }
   };
 
+
   return (
-    <div className="pet-profile-container">
-      <div className="pet-details-card">
-        <div className='pet-details-headers'>
-          <div className='name-species-section'>
-                <h1>{pet.name}</h1>
-                {petDetails.species === 'MALE' ? (
-                <FontAwesomeIcon icon={faMars} className='species-icon'/> 
-                ) : (
-                <FontAwesomeIcon icon={faVenus} className='species-icon'/> 
-                )} 
-          </div>
-          <div className='pet-details-actions'>
-            <FontAwesomeIcon icon={faEdit} onClick={() => setEditBasicDetailsModalVisible(true)} /> 
-            <FontAwesomeIcon icon={faTrash}  /> 
-          </div>
-        </div>
-        <img className='img-profile'
-          src={petDetails.image ? `http://localhost:5001/${petDetails.image}` : petDefaultImage} alt={petDetails.name} 
-        />
-        <p> Breed: {petDetails.breed}</p>
-        <p> Age: {petDetails.age} </p>
-        <p> Weight: {petDetails.weight} kg</p>
-        <p> Birthday: {petDetails.birthday ? formatDate(petDetails.birthday) : 'No Birthday date added'} </p>
-        <p> About {petDetails.name}: {petDetails.description}</p>
-        <p>Chip Number: {petDetails.chipNumber ? petDetails.chipNumber : 'No chip number'}</p>
-      
-        <div className="health-information">
-          <HealthInformationSection 
-          medicalConditions={medicalConditions}
-          medications={medications}
-          allergies={allergies}
-          onEdit={handleHealthEdit}
-          onDelete={handleDelete}
+    <Box sx={{ padding: 3 }}>
+    <Card sx={{ backgroundColor: '#f2f2f2', padding: 3, mb: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Typography variant="h4">{petDetails.name}</Typography>
+          <FontAwesomeIcon
+            icon={petDetails.species === 'MALE' ? faMars : faVenus}
+            style={{ marginLeft: 8, color: petDetails.species === 'MALE' ? '#007bff' : '#ff69b4' }}
           />
-        </div> 
+        </Box>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          <IconButton onClick={() => setEditBasicDetailsModalVisible(true)}>
+            <FontAwesomeIcon icon={faEdit} />
+          </IconButton>
+          <IconButton>
+            <FontAwesomeIcon icon={faTrash} />
+          </IconButton>
+        </Box>
+      </Box>
+      <Grid container spacing={3}>
+        <Grid item xs={12} sm={4}>
+          <Avatar
+            src={petDetails.image ? `http://localhost:5001/${petDetails.image}` : petDefaultImage}
+            alt={petDetails.name}
+            sx={{ width: 120, height: 120, mt: 2, border: '1px solid #ccc' }}
+          />
+        </Grid>
+        <Grid item xs={12} sm={8}>
+          <Typography>Breed: {petDetails.breed}</Typography>
+          <Typography>Age: {petDetails.age}</Typography>
+          <Typography>Weight: {petDetails.weight} kg</Typography>
+          <Typography>Birthday: {petDetails.birthday ? formatDate(petDetails.birthday) : 'No Birthday date added'}</Typography>
+          <Typography>About {petDetails.name}: {petDetails.description}</Typography>
+          <Typography>Chip Number: {petDetails.chipNumber || 'No chip number'}</Typography>
+        </Grid>
+      </Grid>
+    </Card>
 
-        <button className='btn' onClick={handleAddActivityClick}>Add Activity</button>
-        {popupVisible && <AddActivityPopup onActivitySelect={handleActivitySelect} onClose={handleCancel}/>} 
+    <Box sx={{ mb: 4 }}>
+      <HealthInformationSection
+        medicalConditions={activityRecords.medicalConditions}
+        medications={activityRecords.medications}
+        allergies={activityRecords.allergies}
+        onEdit={handleHealthEdit}
+        onDelete={handleDelete}
+      />
+    </Box>
 
-        </div>
+    <Box display="flex"  mb={3}>
+      <Button variant="contained" onClick={handleAddActivityClick}>Add Activity</Button>
+    </Box>
 
-    
-      <div className="activity-log">
-        <ActivityLog
-          activityLogs={activityLogs}
-          upcomingEvents={upcomingEvents}
-          petName={petDetails.name}
-        />
-      </div>
+    {popupVisible && (
+      <AddActivityPopup
+        onActivitySelect={handleActivitySelect}
+        onClose={handleCancel}
+      />
+    )}
 
-      <div className="weight-tracker">
-        <WeightTracker weightUpdateLogs={weights}/>
-      </div>
-
-      <div className="expenses">
-        <ExpenseTracker 
-        expenses={expenses}
-        from={'pet'}
+    <Box sx={{ mb: 4 }}>
+      <ActivityLog
+        activityLogs={activityRecords.activityLogs}
+        upcomingEvents={activityRecords.upcomingEvents}
         petName={petDetails.name}
-        currencySign={currencySign}
-        />
-      </div>
+      />
+    </Box>
 
-      <div className="meal-planner">
-        <MealPlannerSection 
-        propsMeals={petDetails.mealPlanner}
-        petId={petDetails._id} 
-        token={token} 
-        />
-      </div>
+    <Box sx={{ mb: 4 }}>
+      <WeightTracker weightUpdateLogs={activityRecords.weights} />
+    </Box>
 
-      <div className="gallery">
-        <GallerySection 
-        additionalImages={petDetails.additionalImages} 
-        petId={petDetails._id}
-        token={token}
-        />
-      </div>
+    <Box sx={{ mb: 4 }}>
+      <ExpenseTracker expenses={activityRecords.expensesRecord} from="pet" petName={petDetails.name} currencySign={currencySign} />
+    </Box>
 
-      <div className="notes">
-        <NoteSection 
-        propsNotes={petDetails.notes}
-        petId={petDetails._id} 
-        />
-      </div>
+    <Box sx={{ mb: 4 }}>
+      <MealPlannerSection propsMeals={petDetails.mealPlanner} petId={petDetails._id} token={token} />
+    </Box>
 
-      <div className="emergency-contacts">
-        <EmergencyContactsSection 
-        propsContacts={petDetails.emergencyContacts}
-        petId={petDetails._id} 
-        token={token} 
-        />
-      </div>
+    <Box sx={{ mb: 4 }}>
+      <GallerySection additionalImages={petDetails.additionalImages} petId={petDetails._id} token={token} />
+    </Box>
 
-      {editHealthModalVisible && (
-        <EditHealthItemModal
-          item={itemToEdit}
-          type={healthEditType}
-          onClose={() => setEditHealthModalVisible(false)}
-          onSubmit={handleEditSubmit}
-        />
-      )}
+    <Box sx={{ mb: 4 }}>
+      <NoteSection propsNotes={petDetails.notes} petId={petDetails._id} />
+    </Box>
 
-      {editBasicDetailsModalVisible && (
-        <EditPetDetailsModal
-          pet={petDetails}
-          onClose={() => setEditBasicDetailsModalVisible(false)}
-          onSubmit={handleEditSubmit}
-        />
-      )}
+    <Box sx={{ mb: 4 }}>
+      <EmergencyContactsSection propsContacts={petDetails.emergencyContacts} petId={petDetails._id} token={token} />
+    </Box>
 
-    </div>
+    {editHealthModalVisible && (
+      <EditItemModal 
+      item={itemToEdit}
+      type={healthEditType}
+      onClose={() => setEditHealthModalVisible(false)}
+      onSubmit={handleEditSubmit}
+      />
+      // <EditHealthItemModal
+      //   item={itemToEdit}
+      //   type={healthEditType}
+      //   onClose={() => setEditHealthModalVisible(false)}
+      //   onSubmit={handleEditSubmit}
+      // />
+    )}
+
+    {editBasicDetailsModalVisible && (
+      <EditItemModal 
+        item={petDetails}
+        type={FormFieldsType.PET}
+        onClose={() => setEditBasicDetailsModalVisible(false)}
+        onSubmit={handleEditSubmit}
+      />
+      // <EditPetDetailsModal
+      //   pet={petDetails}
+      //   onClose={() => setEditBasicDetailsModalVisible(false)}
+      //   onSubmit={handleEditSubmit}
+      //   type={'pet'}
+      // />
+    )}
+  </Box>
   );
 };
 

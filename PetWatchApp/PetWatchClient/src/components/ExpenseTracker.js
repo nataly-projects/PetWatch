@@ -5,13 +5,13 @@ import { useTable, useSortBy, usePagination } from 'react-table';
 import { Chart, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSortUp, faSortDown, faSort, faDownload } from '@fortawesome/free-solid-svg-icons';
+import { faSortUp, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
+import { Box, Typography, Button } from '@mui/material';
 import { Currency } from '../utils/utils';
 import FilterSection from './FilterSection';
 import { ExpensesType } from '../utils/utils';
 import ExportToCSVButton from './ExportToCSVButton';
 import { formatDateUniversal } from '../utils/utils';
-import '../styles/ExpenseTracker.css';
 
 Chart.register(ArcElement, Tooltip, Legend);
 
@@ -37,7 +37,6 @@ const ExpenseTracker = ({ expenses, from, petName }) => {
   const columns = useMemo(
     () => [
       { Header: 'Date', accessor: 'date', Cell: ({ value }) => formatDateUniversal(new Date(value)) },
-    //   { Header: 'Pet Name', accessor: 'petName' },
       petName == null ? { Header: 'Pet Name', accessor: 'petName', show: petName == null } : { Header: 'Pet Name', accessor: 'petName', show: false },
       { Header: 'Category', accessor: 'category' },
       { Header: 'Amount', accessor: 'amount', Cell: ({ value }) => value.toFixed(2) },
@@ -58,7 +57,7 @@ const ExpenseTracker = ({ expenses, from, petName }) => {
     maintainAspectRatio: false,
   };
 
-  const { allExpenses, monthlyExpensesChartData, categoryExpensesChartData } = expenses;
+  const { allExpenses, monthlyExpensesChartData, categoryExpensesChartData, petExpensesData } = expenses;
 
   const filteredExpenses = useMemo(() => {
     return allExpenses.filter((expense) => {
@@ -96,115 +95,78 @@ const ExpenseTracker = ({ expenses, from, petName }) => {
     return processedData;
   };
 
-  const renderExpensesTable = () => {
-    return allExpenses.length > 0 ? (
-      <>
-        <Table instance={expensesTableInstance} />
-      </>
-    ) : (
-      <p>No expenses yet.</p>
-    );
-  };
-
-  const renderPetExpensesDataChart = () => {
-    const { petExpensesData } = expenses;
-    return (
-      <div className="chart-container">
-        <h3>Chart Expenses By Pet</h3>
-        <div className="chart-wrapper">
-          <Pie
-            data={{
-              labels: petExpensesData.map((item) => item.petName),
-              datasets: [
-                {
-                  label: 'Total Expenses',
-                  data: petExpensesData.map((item) => item.totalExpenses),
-                  backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-                },
-              ],
-            }}
-            options={pieChartOptions}
-          />
-        </div>
-      </div>
-    );
-  };
-
   return (
-    <div className="expense-tracker">
-      <h3>{from === 'user' ? 'Your Expense Tracker' : 'Expenses'}</h3>
+    <Box sx={{ backgroundColor: '#fff', boxShadow: 1, border: 1, borderColor: '#ccc', p: 3, mb: 3, height: '100vh' }}>
+      <Typography variant="h5" gutterBottom>
+        {from === 'user' ? 'Your Expense Tracker' : 'Expenses'}
+      </Typography>
       {allExpenses.length > 0 && (
-        <div className='table-filter-container'>
-            <FilterSection
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+          <FilterSection
             filterType={categoryFilter}
             handleTypeChange={handleCategoryChange}
             startDate={startDateFilter}
             handleStartDateChange={handleStartDateChange}
             endDate={endDateFilter}
             handleEndDateChange={handleEndDateChange}
-            category={categoryFilter}
-            handleCategoryChange={handleCategoryChange}
             minAmount={minAmountFilter}
             handleMinAmountChange={handleMinAmountChange}
             selectOptions={ExpensesType}
             isExpenseFilter={true}
-            />
-             <ExportToCSVButton
-                className="btn"
-                petName={petName}
-                data={exportToCSV()}
-                filename={petName == null ? 'expenses.csv' : petName + '-expenses.csv'}
-                isExpense={true}
-                />
-        </div>
+          />
+          <ExportToCSVButton
+            className="btn"
+            petName={petName}
+            data={exportToCSV()}
+            filename={petName == null ? 'expenses.csv' : petName + '-expenses.csv'}
+            isExpense={true}
+          />
+        </Box>
       )}
-      {renderExpensesTable()}
+
+      {allExpenses.length > 0 ? (
+        <Table instance={expensesTableInstance} />
+      ) : (
+        <Typography>No expenses yet.</Typography>
+      )}
+
       {allExpenses.length > 0 && (
-        <div className="charts-row">
+        <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 4 }}>
           {from === 'user' && (
-            <div className="chart-container">
-              {renderPetExpensesDataChart()}
-            </div>
+            <Box sx={{ width: 300, height: 300 }}>
+              <Typography variant="h6" align="center">Chart Expenses By Pet</Typography>
+              <Pie
+                data={{
+                  labels: petExpensesData.map((item) => item.petName),
+                  datasets: [{ data: petExpensesData.map((item) => item.totalExpenses), backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'] }],
+                }}
+                options={pieChartOptions}
+              />
+            </Box>
           )}
-          <div className="chart-container">
-            <h3>Chart Expenses By Monthly</h3>
-            <div className="chart-wrapper">
-              <Pie
-                data={{
-                  labels: monthlyExpensesChartData.map((item) => item.month),
-                  datasets: [
-                    {
-                      label: 'Total Expenses',
-                      data: monthlyExpensesChartData.map((item) => item.amount),
-                      backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-                    },
-                  ],
-                }}
-                options={pieChartOptions}
-              />
-            </div>
-          </div>
-          <div className="chart-container">
-            <h3>Chart Expenses By Category</h3>
-            <div className="chart-wrapper">
-              <Pie
-                data={{
-                  labels: categoryExpensesChartData.map((item) => item.category),
-                  datasets: [
-                    {
-                      label: 'Total Expenses',
-                      data: categoryExpensesChartData.map((item) => item.amount),
-                      backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-                    },
-                  ],
-                }}
-                options={pieChartOptions}
-              />
-            </div>
-          </div>
-        </div>
+          <Box sx={{ width: 300, height: 300 }}>
+            <Typography variant="h6" align="center">Chart Expenses By Monthly</Typography>
+            <Pie
+              data={{
+                labels: monthlyExpensesChartData.map((item) => item.month),
+                datasets: [{ data: monthlyExpensesChartData.map((item) => item.amount), backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'] }],
+              }}
+              options={pieChartOptions}
+            />
+          </Box>
+          <Box sx={{ width: 300, height: 300 }}>
+            <Typography variant="h6" align="center">Chart Expenses By Category</Typography>
+            <Pie
+              data={{
+                labels: categoryExpensesChartData.map((item) => item.category),
+                datasets: [{ data: categoryExpensesChartData.map((item) => item.amount), backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'] }],
+              }}
+              options={pieChartOptions}
+            />
+          </Box>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 };
 
@@ -228,72 +190,48 @@ const Table = ({ instance }) => {
 
   return (
     <>
-      <table {...getTableProps()} className="table">
-        <thead>
+      <Box component="table" {...getTableProps()} sx={{ width: '100%', borderCollapse: 'collapse', mb: 2 }}>
+        <Box component="thead">
           {headerGroups.map((headerGroup) => (
-            <tr {...headerGroup.getHeaderGroupProps()}>
-              {headerGroup.headers.map(
-                (column) =>
-                  column.show !== false && (
-                    <th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        {column.render('Header')}
-                        {column.isSorted ? (
-                          column.isSortedDesc ? (
-                            <FontAwesomeIcon icon={faSortDown} />
-                          ) : (
-                            <FontAwesomeIcon icon={faSortUp} />
-                          )
-                        ) : (
-                          !column.disableSortBy && (
-                            <div style={{ display: 'flex', flexDirection: 'column' }}>
-                              <FontAwesomeIcon icon={faSort} className="sort" />
-                            </div>
-                          )
-                        )}
-                      </div>
-                    </th>
-                  )
-              )}
-            </tr>
+            <Box component="tr" {...headerGroup.getHeaderGroupProps()}>
+              {headerGroup.headers.map((column) => column.show !== false && (
+                <Box component="th" {...column.getHeaderProps(column.getSortByToggleProps())} sx={{ border: 1, borderColor: '#ddd', p: 1, bgcolor: '#f2f2f2' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    {column.render('Header')}
+                    {column.isSorted && (column.isSortedDesc ? <FontAwesomeIcon icon={faSortDown} /> : <FontAwesomeIcon icon={faSortUp} />)}
+                  </Box>
+                </Box>
+              ))}
+            </Box>
           ))}
-        </thead>
-        <tbody {...getTableBodyProps()}>
+        </Box>
+        <Box component="tbody" {...getTableBodyProps()}>
           {page.map((row, i) => {
             prepareRow(row);
             return (
-              <tr {...row.getRowProps()}>
-                {row.cells.map(
-                  (cell) =>
-                    cell.show !== false && <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                )}
-              </tr>
+              <Box component="tr" {...row.getRowProps()} sx={{ '&:nth-of-type(even)': { bgcolor: '#f2f2f2' } }}>
+                {row.cells.map((cell) => (
+                  <Box component="td" {...cell.getCellProps()} sx={{ border: 1, borderColor: '#ddd', p: 1 }}>
+                    {cell.render('Cell')}
+                  </Box>
+                ))}
+              </Box>
             );
           })}
-        </tbody>
-      </table>
-      <div className="pagination">
-        <span className="pagination-info">
-          Showing: {pageIndex * pageSize + 1} - {Math.min((pageIndex + 1) * pageSize, totalItems)} of {totalItems}
-        </span>
-        <div className="pagination-controls">
-          <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-            Previous
-          </button>
+        </Box>
+      </Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography>Showing {pageIndex * pageSize + 1} - {Math.min((pageIndex + 1) * pageSize, totalItems)} of {totalItems}</Typography>
+        <Box>
+          <Button onClick={previousPage} disabled={!canPreviousPage} sx={{ mr: 1 }}>Previous</Button>
           {pageOptions.map((page, index) => (
-            <button
-              key={index}
-              onClick={() => gotoPage(index)}
-              className={pageIndex === index ? 'active' : ''}
-            >
+            <Button key={index} onClick={() => gotoPage(index)} variant={pageIndex === index ? 'contained' : 'outlined'} sx={{ mx: 0.5 }}>
               {index + 1}
-            </button>
+            </Button>
           ))}
-          <button onClick={() => nextPage()} disabled={!canNextPage}>
-            Next
-          </button>
-        </div>
-      </div>
+          <Button onClick={nextPage} disabled={!canNextPage} sx={{ ml: 1 }}>Next</Button>
+        </Box>
+      </Box>
     </>
   );
 };

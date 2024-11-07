@@ -3,16 +3,18 @@ import { Link, NavLink } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faBell } from "@fortawesome/free-solid-svg-icons";
 import { useSelector  } from "react-redux";
+import { AppBar, Toolbar, Typography, IconButton, Avatar, Box, Badge } from '@mui/material';
 import logoImage from "../images/logo.png"; 
 import UserPopup from "./UserPopup";
 import NotificationPopup from './NotificationPopup';
-import '../styles/NavBar.css';
 
 const NavBar = () => {
     const isLoggedIn = useSelector((state) => state.isLoggedIn);
     const user = useSelector((state) => state.user);
     const [isUserPopupVisible, setUserPopupVisible] = useState(false);
     const [isNotificationPopupVisible, setNotificationPopupVisible] = useState(false);
+    const [anchorElUser, setAnchorElUser] = useState(null);
+    const [anchorElNotification, setAnchorElNotification] = useState(null);
     
     const handleUserIconClick = () => {
         setUserPopupVisible(!isUserPopupVisible);
@@ -22,49 +24,60 @@ const NavBar = () => {
         setNotificationPopupVisible(!isNotificationPopupVisible);
     };
 
+
     const renderGuestNavBar = () => {
         return (
-            <nav className='nav_guest'>
-                <div className='limit'>
-                    <div className="logo">
-                     <img className='logo-image' src={(user && user.imageUrl) ? `http://localhost:5001/${user.imageUrl}` : logoImage} alt="Logo" />
-                    </div>    
-                    <ul>
-                        <li>
-                            <NavLink to="/about" active-link="active">About</NavLink>
-                        </li>
-                        <li>
-                            <NavLink to="/info" active-link="active">Information</NavLink>
-                        </li>
-                        <li>
-                            <NavLink to="/contact" active-link="active">Contact</NavLink>
-                        </li>
-                    </ul>
-                    <Link to="/login" className="join_us">
-                        <FontAwesomeIcon icon={faUser} className="join_us_icon" />
+        <AppBar position="static" color="primary">
+            <Toolbar sx={{ justifyContent: 'space-between' }}>
+                <Box display="flex" alignItems="center">
+                    <Avatar src={logoImage} alt="Logo" sx={{ marginRight: 2 }} />
+                    <Typography variant="h6" component="div">
+                        PetWatch
+                    </Typography>
+                </Box>
+                <Box>
+                    <NavLink to="/about" className="nav-link">About</NavLink>
+                    <NavLink to="/info" className="nav-link">Information</NavLink>
+                    <NavLink to="/contact" className="nav-link">Contact</NavLink>
+                    <Link to="/login">
+                        <IconButton color="inherit">
+                            <FontAwesomeIcon icon={faUser} />
+                        </IconButton>
                     </Link>
-                </div>
-            </nav>
-        );
+                </Box>
+            </Toolbar>
+        </AppBar>
+        )
     };
 
     const renderUserNavBar = () => {
         return (
-            <nav className='nav_user'>
-                <div className="limit">
-                    <div className="actions">
-                        <FontAwesomeIcon icon={faBell}  onClick={handleNotificationIconClick}/>
-                        <div className="user" onClick={handleUserIconClick}>
-                            <FontAwesomeIcon icon={faUser}  />
-                            <span>{user.fullName}</span>
-                        </div>
-                        {isUserPopupVisible && <UserPopup onClose={() => setUserPopupVisible(false)} />}
-                        {isNotificationPopupVisible && <NotificationPopup onClose={() => setNotificationPopupVisible(false)} />}
-
-                    </div>
-                </div>
-            </nav>
-        );
+        <AppBar >
+            <Toolbar sx={{ justifyContent: 'space-between' }}>
+                <Box display="flex" alignItems="center">
+                    <Avatar src={logoImage} alt="Logo" sx={{ marginRight: 2 }} />
+                    <Typography variant="h6" component="div">
+                        PetWatch
+                    </Typography>
+                </Box>
+                <Box>
+                    <IconButton color="inherit" onClick={handleNotificationIconClick}>
+                        <Badge color="secondary" variant="dot">
+                            <FontAwesomeIcon icon={faBell} />
+                        </Badge>
+                    </IconButton>
+                    <IconButton color="inherit" onClick={handleUserIconClick}>
+                        <FontAwesomeIcon icon={faUser} />
+                        <Typography variant="body1" sx={{ marginLeft: 1 }}>
+                            {user.fullName}
+                        </Typography>
+                    </IconButton>
+                    {isNotificationPopupVisible && <NotificationPopup onClose={() => setNotificationPopupVisible(false)} />}
+                    {isUserPopupVisible && <UserPopup onClose={() => setUserPopupVisible(false)} />}
+                </Box>
+            </Toolbar>
+        </AppBar>
+        )
     };
 
 

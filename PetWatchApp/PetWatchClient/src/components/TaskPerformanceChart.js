@@ -1,43 +1,49 @@
 import React, { useState, useEffect } from 'react';
-import { RadialBarChart, RadialBar, Legend, Tooltip } from 'recharts';
-import '../styles/TaskPerformanceChart.css';
+import { RadialBarChart, RadialBar, Tooltip } from 'recharts';
+import { Box, Typography } from '@mui/material';
 
+const TaskPerformanceChart = ({ tasks }) => {
+  const [data, setData] = useState([]);
+  const [assigned, setAssigned] = useState(0);
+  const [completed, setCompleted] = useState(0);
+  const [active, setActive] = useState(0);
 
-const TaskPerformanceChart = ({tasks}) => {
-    console.log('tasks: ', tasks);
-    const [data, setData] = useState([]);
-    const [assigned, setAssigned] = useState(0);
-    const [completed, setCompleted] = useState(0);
-    const [active, setActive] = useState(0);
+  useEffect(() => {
+    if (tasks.length > 0) {
+      const assignedCount = tasks.length;
+      const completedCount = tasks.filter((task) => task.completed).length;
+      const activeCount = tasks.filter((task) => !task.completed).length;
 
-    useEffect(() => {
-        if (tasks.length > 0) {
-            // Process tasks to get counts for "Assigned", "Completed", and "Active"
-            const assignedCount  = tasks.length;
-            const completedCount  = tasks.filter(task => task.completed === true).length;
-            const activeCount  = tasks.filter(task => task.completed === false).length;
+      setAssigned(assignedCount);
+      setCompleted(completedCount);
+      setActive(activeCount);
 
-            // Set counts
-            setAssigned(assignedCount);
-            setCompleted(completedCount);
-            setActive(activeCount);
-    
-            // Set data for the RadialBarChart
-            setData([
-                { name: 'Assigned', value: assignedCount, fill: '#007bff' },
-                { name: 'Completed', value: completedCount, fill: 'green' },
-                { name: 'Active', value: activeCount, fill: 'darkblue' }
-            ]);
-        }
-    }, [tasks]);
+      setData([
+        { name: 'Assigned', value: assignedCount, fill: '#007bff' },
+        { name: 'Completed', value: completedCount, fill: 'green' },
+        { name: 'Active', value: activeCount, fill: 'darkblue' },
+      ]);
+    }
+  }, [tasks]);
 
-    const getPercentage = (count, total) => {
-        return total > 0 ? ((count / total) * 100) : 0;
-    };
+  const getPercentage = (count, total) => {
+    return total > 0 ? ((count / total) * 100).toFixed(2) : 0;
+  };
 
   return (
-    <div className='tasks-chart-container'>
-      <h3 className='chart-title'>Tasks Performance</h3>
+    <Box
+      sx={{
+        width: '100%',
+        backgroundColor: '#fff',
+        boxShadow: 2,
+        border: '1px solid #ccc',
+        p: 3,
+        textAlign: 'center',
+      }}
+    >
+      <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold', color: 'text.primary' }}>
+        Tasks Performance
+      </Typography>
       <RadialBarChart
         width={500}
         height={300}
@@ -55,23 +61,32 @@ const TaskPerformanceChart = ({tasks}) => {
           clockWise
           dataKey="value"
         />
-        {/* <Legend
-          iconSize={10}
-          width={120}
-          height={140}
-          layout='vertical'
-          verticalAlign='middle'
-          wrapperStyle={style}
-        /> */}
         <Tooltip />
-       
       </RadialBarChart>
-      <div className='info'>
-        <span><span className="dot assigned"></span> {getPercentage(assigned, assigned)}% Assigned</span>
-        <span><span className="dot completed"></span> {getPercentage(completed, assigned)}% Completed</span>
-        <span><span className="dot active"></span> {getPercentage(active, assigned)}% Active</span>
-      </div>
-    </div>
+      <Box
+        sx={{
+          fontSize: '1rem',
+          mt: 3,
+          borderTop: '1px solid #ddd',
+          display: 'flex',
+          justifyContent: 'space-around',
+          p: 2,
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ bgcolor: '#007bff', width: 10, height: 10, borderRadius: '50%', mr: 1 }} />
+          <Typography>{getPercentage(assigned, assigned)}% Assigned</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ bgcolor: 'green', width: 10, height: 10, borderRadius: '50%', mr: 1 }} />
+          <Typography>{getPercentage(completed, assigned)}% Completed</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ bgcolor: 'darkblue', width: 10, height: 10, borderRadius: '50%', mr: 1 }} />
+          <Typography>{getPercentage(active, assigned)}% Active</Typography>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

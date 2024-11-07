@@ -1,14 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate, Link as RouterLink } from 'react-router-dom'; 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'; 
 import { faPaw, faHome, faBook, faDog, faCat, faAmbulance, faMoneyCheck,
   faCog, faRightFromBracket, faSignature, faEye, faMessage, faTasks  } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
+  import { Box, Typography, Avatar, List, ListItem, ListItemIcon, ListItemText, Divider, ListItemButton } from '@mui/material';
+
 import { fetchUserActivityLog, fetchUserUpcomingEvents, fetchUserExpensesArray } from '../services/userService';
 import logoImage from "../images/logo.png"; 
-import { UNAUTHORIZED_ERROR } from '../utils/utils';
-import '../styles/SideBar.css';
 
 const Sidebar = () => {
   const dispatch = useDispatch();
@@ -46,13 +45,8 @@ const Sidebar = () => {
     dispatch({ type: 'LOGOUT' });
   };
 
-  const isActivityLogPath = (path) => {
-    return path === '/main/activity-log';
-  };
-
-  const isExpensesPath = (path) => {
-    return  path === '/main/expenses';
-  };
+  const isActivityLogPath = (path) => path === '/main/activity-log';
+  const isExpensesPath = (path) => path === '/main/expenses';
 
   const sideBarItems = [
     {title: 'Main', items: [{text: 'Dashboard', link: '/main/', icon: faHome} ]},
@@ -83,36 +77,57 @@ const Sidebar = () => {
 
 
   return (
-    <div className="sidebar">
-      <div className="logo-container">
-        <img src={logoImage} alt="Project Logo" className="logo" />
-        <h2>Pet Watch</h2>
-      </div>
+    <Box
+    sx={{
+      width: '250px',
+      backgroundColor: '#f0f0f0',
+      padding: '20px',
+      flexShrink: 0,
+      overflowY: 'auto',
+      position: 'fixed',
+      top: 0,
+      bottom: 0,
+      left: 0,
+      borderRight: '1px solid #ccc',
+    }}
+    >      
+      <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 3 }}>
+        <Avatar src={logoImage} alt="Project Logo" sx={{ width: 60, height: 60, marginRight: 2 }} />
+        <Typography variant="h5" color="primary">
+        Pet Watch
+        </Typography>
+      </Box>
       {sideBarItems.map((section, index) => (
-        <div key={index} className="sidebar-section">
-          {section.title && <h2 className="section-title">{section.title}</h2>}
-          <ul className="section-items">
-            {section.items.map((item, index) => (
-              <li key={index}>
-                <FontAwesomeIcon icon={item.icon} />
-              { isActivityLogPath(item.link) 
-                ?
-                <Link to={item.link} state={{activityLogs, upcomingEvents, petName:null}} >{item.text}</Link>
-                :
-                ( isExpensesPath(item.link) ?
-                  <Link to={item.link} state={{expenses, from:'user'}} >{item.text}</Link>
-                  :
-                  <>
-                  <Link to={item.link} onClick={item.onClick}>{item.text}</Link>
-                  </>
-                )
-              }
-              </li>
+        <Box key={index} sx={{ marginBottom: 2 }}>
+<         Typography variant="h6" sx={{ fontSize: '14px', marginBottom: '10px', paddingLeft: 2 }}>
+            {section.title}
+          </Typography>          
+          <List sx={{ padding: 0 }}>
+            {section.items.map((item, itemIndex) => (
+              <ListItem key={itemIndex} disablePadding sx={{ borderBottom: '1px solid #795B4A' }}>
+                <ListItemButton
+                  component={RouterLink}
+                  to={item.link}
+                  onClick={item.onClick}
+                  state={
+                    isActivityLogPath(item.link) ? { activityLogs, upcomingEvents, petName: null } :
+                    isExpensesPath(item.link) ? { expenses, from: 'user' } :
+                    undefined
+                  }
+                  sx={{ color: 'text.primary' }}
+                >
+                  <ListItemIcon>
+                    <FontAwesomeIcon icon={item.icon} />
+                  </ListItemIcon>
+                  <ListItemText primary={item.text} />
+                </ListItemButton>
+              </ListItem>
             ))}
-          </ul>
-        </div>
+          </List>
+          {index < sideBarItems.length - 1 && <Divider />}
+        </Box>
       ))}
-  </div>
+  </Box>
   );
 
 };

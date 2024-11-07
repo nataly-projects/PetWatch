@@ -1,53 +1,64 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { Card, CardContent, CardActions, Button, Typography, Avatar, Collapse, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMars, faVenus } from '@fortawesome/free-solid-svg-icons';
 import petDefaultImage from '../images/paw.png';
-import '../styles/PetCard.css';
 
 const PetCard = ({ pet }) => {
-    if(pet.image) {
-        console.log(pet.image.replace(/\\/g, '/'))
-    }
     const navigate = useNavigate();
-
     const [expanded, setExpanded] = useState(false);
 
-    const toggleExpand = () => {
-        setExpanded(!expanded);
+    const toggleExpand = (e) => {
+        e.stopPropagation();
+        setExpanded((prev) => !prev);
     };
 
-    const onPetClick = () => {
-        navigate( `/pet-profile/${pet._id}`,  { state: { pet }});
-      };
+    const onPetClick = (e) => {
+        e.stopPropagation();
+        navigate(`/pet-profile/${pet._id}`, { state: { pet } });
+    };
 
     return (
-        <div className="pet-card" onClick={toggleExpand}>
-            <div className='pet-basic-details'>
-                <img className='img-profile'
-                src={pet.image ? `http://localhost:5001/${pet.image}` : petDefaultImage} alt={pet.name} 
+        <Card 
+            onClick={toggleExpand} 
+            sx={{
+                width: 300,
+                margin: '20px auto',
+                boxShadow: 3,
+                transition: 'box-shadow 0.3s ease',
+                '&:hover': {
+                    boxShadow: 6,
+                    cursor: 'pointer'
+                }
+            }}
+        >
+            <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Avatar
+                    src={pet.image ? `http://localhost:5001/${pet.image.replace(/\\/g, '/')}` : petDefaultImage}
+                    alt={pet.name}
+                    sx={{ width: 80, height: 80, border: '1px solid #ccc' }}
                 />
-                <div className='name-species-section'>
-                    <h3>{pet.name}</h3>
-                    {pet.species === 'MALE' ? (
-                    <FontAwesomeIcon icon={faMars}  /> 
-                    ) : (
-                    <FontAwesomeIcon icon={faVenus}  /> 
-                    )} 
-                </div>
-            </div>
-        
-        {expanded && (
-            <div className="extended-details">
-                {/* <p>About {pet.name}: {pet.description}</p> */}
-                <p>Breed: {pet.breed}</p>
-                <p>Age: {pet.age}</p>
-                <p>Weight: {pet.weight}</p>
-                <button className='btn' onClick={onPetClick}> View Pet Page </button>
-            </div>
-            )}
-        </div>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Typography variant="h5">{pet.name}</Typography>
+                    <FontAwesomeIcon icon={pet.species === 'MALE' ? faMars : faVenus} />
+                </Box>
+            </CardContent>
+
+            <Collapse in={expanded} timeout="auto" unmountOnExit>
+                <CardContent sx={{ mt: 1 }}>
+                    <Typography variant="body1">Breed: {pet.breed}</Typography>
+                    <Typography variant="body1">Age: {pet.age}</Typography>
+                    <Typography variant="body1">Weight: {pet.weight}</Typography>
+                </CardContent>
+                <CardActions>
+                    <Button size="small" color="primary" onClick={onPetClick}>
+                        View Pet Page
+                    </Button>
+                </CardActions>
+            </Collapse>
+        </Card>
     );
 };
 

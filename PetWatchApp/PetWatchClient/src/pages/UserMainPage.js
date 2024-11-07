@@ -1,32 +1,32 @@
 import React from 'react';
-import { Route, Routes } from 'react-router-dom';
-
-import UserProfile from './UserProfile';
+import { Box } from '@mui/material';
+import AppRoutes from '../components/AppRoutes';
 import Sidebar from '../components/SideBar';
-import ActivityLog from '../components/ActivityLog';
-import Dashboard from '../components/Dashboard';
-import DogCarePage from './DogCarePage';
-import CatCarePage from './CatCarePage';
-import CatGuide from '../components/CatGuide';
-import DogGuide from '../components/DogGuide';
-import PetNamesIdea from '../components/PetNamesIdea';
-import EmergencyGuide from './EmergencyGuide';
-import ExpenseTracker from '../components/ExpenseTracker';
-import PetProfile from '../components/PetProfile';
-import AccountSettings from '../components/AccountSettings';
-import PetsSection from '../components/PetsSection';
-import AddPetForm from '../components/AddPetForm';
-import ContactPage from './ContactPage';
-import TaskListPage from './TaskListPage';
-import '../styles/UserMainPage.css';
 
 
 const UserMainPage = () => {
   return (
-    <div className="user-main-container">
+    <Box 
+      sx={{
+        display: 'flex',
+        flexDirection: 'row',
+        minHeight: '100vh', 
+        width: '100%'
+      }}
+    >
       <Sidebar />
-      <div className="user-main-content">
-        <Routes>
+      <Box 
+        sx={{
+          flex: 1,
+          padding: '20px',
+          backgroundColor: 'background.default', 
+          height: '100%',
+          marginLeft: '270px',
+          // overflowY: 'auto',
+        }}
+      >
+         <AppRoutes isUserRoute /> 
+        {/* <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/pet-profile/:petId" element={<PetProfile />} />
           <Route path="/dog-care" element={<DogCarePage />} />
@@ -43,10 +43,10 @@ const UserMainPage = () => {
           <Route path="/pets" element={<PetsSection />} />
           <Route path="/add-pet" element={<AddPetForm />} />
           <Route path="/contact-us" element={<ContactPage />} />
-          {/* <Route path="/calendar" element={<CalendarSection />} /> */}
-        </Routes>
-      </div>
-    </div>
+          // <Route path="/calendar" element={<CalendarSection />} /> 
+        </Routes> */}
+        </Box>
+      </Box>
   );
 };
 

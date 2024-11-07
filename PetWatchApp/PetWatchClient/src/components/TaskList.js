@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom'; 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAdd, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { IconButton } from '@mui/material';
+import { Add as AddIcon, ArrowRight as ArrowRightIcon } from '@mui/icons-material';
 import { addUserTask, updateUserTask } from '../services/userService';
 import TaskItem from './TaskItem';
 import AddTaskModal from './AddTaskPopup';
 import '../styles/TaskList.css';
+
 
 const TaskList = ({propTasks, token, userId}) => {
     const navigate = useNavigate();
@@ -67,7 +68,9 @@ const TaskList = ({propTasks, token, userId}) => {
             <div style={{display: 'flex', flexDirection: 'column'}}>
             <div className='header'>
                 <h3 >Active Tasks: To-Dos</h3>
-                <FontAwesomeIcon className='add-icon' icon={faAdd} onClick={openModal}/>
+                <IconButton onClick={openModal} style={{ color: 'black' }}>
+                    <AddIcon />
+                </IconButton>
             </div>
             { tasks.length > 0 ?(
                 <ul className='tasks-list'>
@@ -87,7 +90,9 @@ const TaskList = ({propTasks, token, userId}) => {
             
             <div className='footer' onClick={() => navigateToAllTasksPage()}>
                 <h4>View all</h4>
-                <FontAwesomeIcon icon={faArrowRight} />
+                <IconButton>
+                    <ArrowRightIcon />
+                </IconButton>
             </div>
 
             <AddTaskModal isOpen={isModalOpen} onClose={closeModal} onAddTask={handleAddTask} />

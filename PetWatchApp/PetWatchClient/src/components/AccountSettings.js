@@ -1,71 +1,61 @@
-import React, { useState, useEffect  } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { updateUserSettings, fetchUserAccountSettings } from '../services/userService';
 import { Currency } from '../utils/utils';
-import '../styles/AccountSettings.css';
+import { Box, Typography, FormControl, InputLabel, Select, MenuItem, Button, Checkbox, FormControlLabel, CircularProgress } from '@mui/material';
 
 const AccountSettings = () => {
   const navigate = useNavigate();
-  const user = useSelector(state => state.user);
-  const token = useSelector(state => state.token);
+  const user = useSelector((state) => state.user);
+  const token = useSelector((state) => state.token);
 
   const [loading, setLoading] = useState(true);
   const [accountSettings, setAccountSettings] = useState({});
   const [notificationPreferences, setNotificationPreferences] = useState({});
-
   const [theme, setTheme] = useState('');
   const [currency, setCurrency] = useState('');
 
-
   useEffect(() => {
-      const fetchAccountSettings = async () => {
-          try {
-            const userAccountSettings  = await fetchUserAccountSettings(user._id, token);
-            console.log('accountSettings: ', userAccountSettings.accountSettings);
-            setAccountSettings(userAccountSettings.accountSettings);
-            setNotificationPreferences(userAccountSettings.accountSettings.notificationPreferences);
-            setCurrency(userAccountSettings.accountSettings.currency ? userAccountSettings.accountSettings.currency : Currency.ILS.name);
-            setTheme(userAccountSettings.accountSettings.theme ? userAccountSettings.accountSettings.theme : 'light');
-
-            console.log('notificationPreferences: ', notificationPreferences);
-            setLoading(false);
-          } catch (error) {
-            if (error.response && error.response.status === 401) {
-              console.error('UNAUTHORIZED_ERROR');
-              setLoading(false);
-              navigate('/login');
-            }
-            console.error('Error fetching account settings:', error);
-          }
-      };
-
-      if (user) {
-          fetchAccountSettings();
+    const fetchAccountSettings = async () => {
+      try {
+        const userAccountSettings = await fetchUserAccountSettings(user._id, token);
+        setAccountSettings(userAccountSettings.accountSettings);
+        setNotificationPreferences(userAccountSettings.accountSettings.notificationPreferences);
+        setCurrency(userAccountSettings.accountSettings.currency || Currency.ILS.name);
+        setTheme(userAccountSettings.accountSettings.theme || 'light');
+        setLoading(false);
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          navigate('/login');
+        }
+        setLoading(false);
+        console.error('Error fetching account settings:', error);
       }
-  }, [user]);
+    };
+
+    if (user) {
+      fetchAccountSettings();
+    }
+  }, [user, token, navigate]);
 
   const handleNotificationChange = (event) => {
-      const { name, checked } = event.target;
-      setNotificationPreferences(prevState => ({ ...prevState, [name]: checked }));
+    const { name, checked } = event.target;
+    setNotificationPreferences((prev) => ({ ...prev, [name]: checked }));
   };
 
-   
-  // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-    await updateUserSettings(user._id, {
+      await updateUserSettings(user._id, {
         notificationPreferences,
         theme,
-        currency
-    }, token);
-    toast.success('Account settings updated successfully!');
+        currency,
+      }, token);
+      toast.success('Account settings updated successfully!');
     } catch (error) {
       if (error.response && error.response.status === 401) {
-        console.error('UNAUTHORIZED_ERROR');
-        setLoading(false);
         navigate('/login');
       }
       console.error('Error updating profile:', error);
@@ -75,72 +65,94 @@ const AccountSettings = () => {
 
   if (loading) {
     return (
-      <div className="loading-container">
-        <div className="loading-spinner"></div>
-        <div>Loading...</div>
-      </div>
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
+        <CircularProgress />
+        <Typography variant="body1" ml={2}>Loading...</Typography>
+      </Box>
     );
   }
 
   return (
-    <div className='account-settings-container'>
-        <h2>Account Settings</h2>
-        <p>
-            Welcome to your account settings page! Here, you can customize various
-            aspects of your account to suit your preferences.
-        </p>
-        <div className="notification-option">
-          <div className='notification-header'>
-            <h4>Email Notification</h4>
-            <p>Do you want to get email notifications?</p>
-          </div>
-          <input type="checkbox" name="email" checked={notificationPreferences.email} onChange={handleNotificationChange} />
-          <label className="notification-label" htmlFor="emailNotification">Email Notification</label>
-        </div>
-        {notificationPreferences.email && (
-            <div className="other-options">
-              <div className='notification-header'>
-                {/* Other options related to email notification */}
-                <h4>Activity Notifications</h4>
-                <p>Notify me via email when...</p>
-              </div>  
-              <div>
-                  <input type="checkbox" name="vaccineTime" checked={notificationPreferences.vaccineTime} onChange={handleNotificationChange} />
-                  <label className="notification-label" htmlFor="vaccineNotification">Vaccine Notification</label>
-              </div>
-              <div>
-                  <input type="checkbox" name="routineCareTime" checked={notificationPreferences.routineCareTime} onChange={handleNotificationChange} />
-                  <label className="notification-label" htmlFor="routineCareNotification">Routine Care Notification</label>
-              </div>   
-            </div>
-        )}
-         <div className='select-container'>
-          <label className="select-label">Theme:</label>
-          <select
-            className="select"
-            value={theme}
-            onChange={(e) => setTheme(e.target.value)} >
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-          </select>
-        </div>
-        <div className='select-container'>
-          <label className="select-label">Currency:</label>
-          <select
-            className="select"
-            value={currency}
-            onChange={(e) => setCurrency(e.target.value)} >
-            {/* Render the curreny options */}
-            {Object.keys(Currency).map(currencyCode => (
-              <option key={currencyCode} value={currencyCode}>
-                  {Currency[currencyCode].name} ({Currency[currencyCode].sign})
-              </option>
-            ))}
-          </select>
-        </div>
+    <Box maxWidth="600px" mx="auto" p={3} border={1} borderColor="grey.300" borderRadius={2} bgcolor="background.paper">
+      <Typography variant="h5" mb={2}>Account Settings</Typography>
+      <Typography variant="body1" mb={3}>
+        Customize various aspects of your account to suit your preferences.
+      </Typography>
+      
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={notificationPreferences.email || false}
+            onChange={handleNotificationChange}
+            name="email"
+          />
+        }
+        label="Email Notification"
+      />
+      
+      {notificationPreferences.email && (
+        <Box ml={3}>
+          <Typography variant="subtitle1">Activity Notifications</Typography>
+          <Typography variant="body2" color="textSecondary" mb={2}>Notify me via email when...</Typography>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={notificationPreferences.vaccineTime || false}
+                onChange={handleNotificationChange}
+                name="vaccineTime"
+              />
+            }
+            label="Vaccine Notification"
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={notificationPreferences.routineCareTime || false}
+                onChange={handleNotificationChange}
+                name="routineCareTime"
+              />
+            }
+            label="Routine Care Notification"
+          />
+        </Box>
+      )}
 
-        <button className='save-button' onClick={handleSubmit} >Save Settings</button>
-    </div>
+      <FormControl fullWidth margin="normal">
+        <InputLabel>Theme</InputLabel>
+        <Select
+          value={theme}
+          onChange={(e) => setTheme(e.target.value)}
+          label="Theme"
+        >
+          <MenuItem value="light">Light</MenuItem>
+          <MenuItem value="dark">Dark</MenuItem>
+        </Select>
+      </FormControl>
+
+      <FormControl fullWidth margin="normal">
+        <InputLabel>Currency</InputLabel>
+        <Select
+          value={currency}
+          onChange={(e) => setCurrency(e.target.value)}
+          label="Currency"
+        >
+          {Object.keys(Currency).map((currencyCode) => (
+            <MenuItem key={currencyCode} value={currencyCode}>
+              {Currency[currencyCode].name} ({Currency[currencyCode].sign})
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleSubmit}
+        sx={{ mt: 3 }}
+      >
+        Save Settings
+      </Button>
+    </Box>
   );
 };
 

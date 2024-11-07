@@ -3,189 +3,189 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faLock, faEyeSlash, faEye, faUser, faPhone } from '@fortawesome/free-solid-svg-icons';
+import { Box, Typography, Button, TextField, InputAdornment, IconButton } from '@mui/material';
 import {isValidEmail, hashPassword, isValidPhoneNumber} from '../utils/utils';
 import { signupUser } from '../services/userService';
-import '../styles/Login.css';
 
 
 const Register = () => {
-    const [fullName, setFullName] = useState('');
-    const [email, setEmail] = useState('');
-    const [phoneNumber, setPhoneNumber] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [error, setError] = useState(null);
-    const [fullNameError, setFullNameError] = useState('');
-    const [emailError, setEmailError] = useState('');
-    const [phoneNumberError, setPhoneNumberError] = useState('');
-    const [passwordError, setPasswordError] = useState(''); 
-    const [confirmPasswordError, setConfirmPasswordError] = useState(''); 
-    const [submitAllowed, setSubmitAllowed] = useState(false);
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    phoneNumber: '',
+    password: '',
+    confirmPassword: '',
+  });
+  const [errors, setErrors] = useState({});
+  const [error, setError] = useState(null);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [submitAllowed, setSubmitAllowed] = useState(false);
 
-    const dispatch = useDispatch();
-
-    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-    const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
 
-    useEffect(() => {
-      if (!fullNameError && !emailError && !passwordError && !confirmPasswordError && !phoneNumberError) {
-        setSubmitAllowed(true);
-      } else {
-        setSubmitAllowed(false);
+  useEffect(() => {
+    setSubmitAllowed(!Object.values(errors).some(Boolean));
+  }, [errors]);
+
+  const validateField = (name, value) => {
+    let errorMessage = '';
+
+    switch (name) {
+      case 'fullName':
+        errorMessage = value ? '' : 'Full Name is required';
+        break;
+      case 'email':
+        errorMessage = value
+          ? isValidEmail(value)
+            ? ''
+            : 'Invalid email format'
+          : 'Email is required';
+        break;
+      case 'phoneNumber':
+        errorMessage = value
+          ? isValidPhoneNumber(value)
+            ? ''
+            : 'Invalid phone number format'
+          : 'Phone Number is required';
+        break;
+      case 'password':
+        errorMessage = value
+          ? value.length >= 3
+            ? ''
+            : 'Password must be at least 8 characters long'
+          : 'Password is required';
+        break;
+      case 'confirmPassword':
+        errorMessage = value
+          ? value === formData.password
+            ? ''
+            : 'Passwords do not match'
+          : 'Confirm Password is required';
+        break;
+      default:
+        break;
+    }
+    setErrors((prevErrors) => ({ ...prevErrors, [name]: errorMessage }));
+  };
+
+  const togglePasswordVisibility = () => {
+    setIsPasswordVisible(!isPasswordVisible);
+  };
+
+  
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    validateField(name, value);
+  };
+  
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (!submitAllowed) return;
+
+    try {
+      const { fullName, email, phoneNumber, password } = formData;
+      const registerUser = await signupUser(fullName, email, phoneNumber, password);
+      if (registerUser) {
+        dispatch({ type: 'SET_USER', payload: registerUser });
+        navigate('/dashboard/adopt');
       }
-    }, [fullName, email, password, confirmPassword, phoneNumber]);
+    } catch (error) {
+      setError(error.response?.data?.error || 'An error occurred while processing your request');
+    }
+  };
 
-    const togglePasswordVisibility = () => {
-      setIsPasswordVisible(!isPasswordVisible);
-    };
+  return (
+    <Box
+      sx={{
+        padding: '24px 20px 60px',
+        width: '100%',
+        backgroundColor: '#f9f9f9',
+        borderRadius: '10px',
+        border: '1px solid #ccc',
+        marginBottom: '30%',
+      }}
+    >
+      <Typography variant="h6" sx={{ color: '#795B4A', fontSize: '19px', textAlign: 'center', fontWeight: 'bold' }}>
+        Become a Pet Watch member
+      </Typography>
+      <Typography variant="body1" sx={{ color: '#795B4A', fontSize: '16px', textAlign: 'center', marginBottom: '10px' }}>
+        Sign up to get the most of Pet Watch website
+      </Typography>
+      <form onSubmit={handleSubmit}>
+        <Box
+          sx={{
+            marginTop: '20px',
+            marginBottom: '15px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
+        >
+          {[
+            { label: 'Full Name', name: 'fullName', icon: faUser },
+            { label: 'Email', name: 'email', icon: faEnvelope },
+            { label: 'Phone', name: 'phoneNumber', icon: faPhone },
+            { label: 'Password', name: 'password', icon: faLock, type: isPasswordVisible ? 'text' : 'password' },
+            { label: 'Confirm Password', name: 'confirmPassword', icon: faLock, type: isPasswordVisible ? 'text' : 'password' },
+          ].map(({ label, name, icon, type = 'text' }) => (
+            <Box key={name} sx={{ width: '70%', marginBottom: '26px' }}>
+              <Typography component="label" sx={{ fontWeight: 'bold', color: '#795B4A' }}>
+                {label}:
+              </Typography>
+              <TextField
+                fullWidth
+                required
+                name={name}
+                type={type}
+                value={formData[name]}
+                onChange={handleChange}
+                error={Boolean(errors[name])}
+                helperText={errors[name]}
+                sx={{ mt: 1 }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <FontAwesomeIcon icon={icon} style={{ color: '#795B4A' }} />
+                    </InputAdornment>
+                  ),
+                  endAdornment:
+                    name.includes('password') && (
+                      <InputAdornment position="end">
+                        <IconButton onClick={togglePasswordVisibility} edge="end">
+                          <FontAwesomeIcon icon={isPasswordVisible ? faEye : faEyeSlash} style={{ color: '#795B4A' }} />
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                }}
+              />
+            </Box>
+          ))}
 
-    const clearErrors = () => {
-        setFullNameError('');
-        setEmailError('');
-        setPhoneNumberError('');
-        setPasswordError('');
-        setConfirmPasswordError('');
-    };
-
-    
-    const handleSubmit = async (event) => {
-      event.preventDefault();
-      // Clear other error states
-      clearErrors();
-
-      if (!fullName) {
-        setFullNameError('Full Name is required');
-      }
-
-      if (!email) {
-        setEmailError('Email is required');
-      } else if (!isValidEmail(email)) { 
-        setEmailError('Invalid email format');
-      }
-
-      if (!phoneNumber) {
-        setPhoneNumberError('Phone Number is required');
-      } else if (!isValidPhoneNumber(phoneNumber)) {
-        setPhoneNumberError('Invalid phone number format');
-      }
-
-      if (!password) {
-        setPasswordError('Password is required');
-      } else if (password.length < 3) { // Example password validation rule
-        setPasswordError('Password must be at least 3 characters long');
-      }
-
-      if (!confirmPassword) {
-        setConfirmPasswordError('Confirm Password is required');
-      } else if (confirmPassword.length < 3) { 
-        setConfirmPasswordError('Password must be at least 3 characters long');
-      } else if( password !== confirmPassword) {
-        setConfirmPasswordError('Passwords do not match');
-        return;
-      }
-
-      // If all validation passes, make the HTTP request to the server
-      if(submitAllowed){
-        try {
-          //const hashedPassword = await hashPassword(password);
-
-          const registerUser = await signupUser(fullName, email, phoneNumber, password);
-          console.log('registerUser: ', registerUser);
-          if (registerUser) {
-            dispatch({ type: 'SET_USER', payload: registerUser });
-            navigate('/dashboard/adopt');
-          }
-        } catch (error) {
-          // Handle specific error messages from the server
-          if (error.response && error.response.data && error.response.data.error) {
-              setError(error.response.data.error);
-          } else {
-              // Handle other errors
-              console.log(error);
-              setError('An error occurred while processing your request');
-          }
-        }
-      }
-    };
-
-    return (
-      <div className="login">
-        <div className="title bold text-center">Become a Pet Watch member</div>
-        <div className="secondary-title text-center">
-          Sign up to get the most of Pet Watch website
-        </div>
-        <form onSubmit={handleSubmit} >
-          <div className="form">
-          <div className="form-row">
-            <label htmlFor="fullName">Full Name:</label>
-            <div className="input-group">
-              <FontAwesomeIcon icon={faUser} className="input-icon"/> 
-              <input required type="text" id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} />
-            </div>
-            {fullNameError && <div className="error-message">{fullNameError}</div>}
-          </div>
-            <div className="form-row">
-              <label htmlFor="email">Email:</label>
-              <div className="input-group">
-                <FontAwesomeIcon icon={faEnvelope} className="input-icon"/> 
-                <input required type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-              </div>
-              {emailError && <div className="error-message">{emailError}</div>}
-            </div>
-            <div className="form-row">
-              <label htmlFor="phone">Phone:</label>
-              <div className="input-group">
-                <FontAwesomeIcon icon={faPhone} className="input-icon"/> 
-                <input required type="number" id="phoneNumber" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
-              </div>
-              {phoneNumberError && <div className="error-message">{phoneNumberError}</div>}
-            </div>
-            <div className="form-row">
-              <label htmlFor="password">Password:</label>
-              <div className="input-group">
-                <FontAwesomeIcon icon={faLock} className="input-icon"/> 
-                <input
-                  required
-                  type={isPasswordVisible ? 'text' : 'password'}
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <FontAwesomeIcon
-                  icon={isPasswordVisible ? faEye : faEyeSlash}
-                  className="pass-icon"
-                  onClick={togglePasswordVisibility}
-                />
-              </div>
-              {passwordError && <div className="error-message">{passwordError}</div>}
-            </div>
-            <div className="form-row">
-              <label htmlFor="confirmPassword">Confirm Password:</label>
-              <div className="input-group">
-                <FontAwesomeIcon icon={faLock} className="input-icon"/> 
-                <input
-                  required
-                  type={isPasswordVisible ? 'text' : 'password'}
-                  id="confirmPassword"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
-                <FontAwesomeIcon
-                  icon={isPasswordVisible ? faEye : faEyeSlash}
-                  className="pass-icon"
-                  onClick={togglePasswordVisibility}
-                />
-              </div>
-              {confirmPasswordError && <div className="error-message">{confirmPasswordError}</div>}
-            </div>
-            <button className="sign-button" type="submit">Sign Up</button>
-          </div>
-        </form>
-        {error && <div className="error-message">{error}</div>}
-      </div>
-
-    );
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            sx={{
+              height: '50px',
+              width: '70%',
+              fontSize: '16px',
+              backgroundColor: '#007bff',
+              color: '#fff',
+              borderRadius: '4px',
+              cursor: 'pointer',
+            }}
+            disabled={!submitAllowed}
+          >
+            Sign Up
+          </Button>
+        </Box>
+        {error && <Typography sx={{ color: 'red', textAlign: 'center', mt: 2 }}>{error}</Typography>}
+      </form>
+    </Box>
+  );
 
 };
 

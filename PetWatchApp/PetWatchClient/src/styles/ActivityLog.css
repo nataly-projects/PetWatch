@@ -18,20 +18,19 @@
     }
 }
 
-.logs-warpper {
+.logs-wrapper {
     display: flex;
     flex-direction: column;
     width: 70%;
+    flex: 1;
 }
 
 .log-container {
-    /* width: 70%; */
     padding: 20px;
     background-color: #fff;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     border: 1px solid #ccc;
     margin-top: 10px;
-    /* border-radius: 8px; */
   }
   
   .table {
@@ -113,6 +112,7 @@
     border: 1px solid #ddd;
     border-radius: 4px;
     cursor: pointer;
+    color: black;
 }
 
 .pagination-controls button:hover {

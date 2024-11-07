@@ -1,170 +1,113 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
+import { Dialog, DialogTitle, DialogContent, IconButton, Grid, Box, Typography, Paper } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { ActivityTypeObject, ExpenseCategory, RoutineCareActivityItems, VaccineRecordType } from '../utils/utils';
-import VaccineRecordActivity from './VaccineRecordActivity';
-import RoutineCareActivity from './RoutineCareActivity';
-import ExpenseActivity from './ExpenseActivity';
-import NoteActivity from './NoteActivity';
-import AllergyActivity from './AllergyActivity';
-import MedicationActivity from './MedicationActivity';
-import VetVisitActivity from './VetVisitActivity';
-import MedicalConditionActivity from './MedicalConditionActivity';
-import OtherActivity from './OtherActivity';
-import '../styles/AddActivityPopup.css';
+import GenericActivityForm from './GenericActivityForm';
+import { formFieldsConfig, FormFieldsType } from '../utils/utils';
 
 const AddActivityPopup = ({ onActivitySelect, onClose }) => {
     const [initialItems, setInitialItems] = useState(ActivityTypeObject);
-    const [expandedActivity, setExpandedActivity] = useState(false);
     const [expandedItems, setExpandedItems] = useState(null);
     const [selectedActivity, setSelectedActivity] = useState(null);
     const [selectedNestedActivity, setSelectedNestedActivity] = useState(null);
-    const [showActivityComponent, setShowActivityComponent] = useState(false);
 
     const handleActivityClick = (activity) => {
-        console.log('choosen activity: ', activity);
         if (activity.items) {
-            switch (activity.name){
-                case 'VACCINE_RECORD':
-                    setInitialItems(null);
-                    setShowActivityComponent(false);
-                    setExpandedItems(VaccineRecordType);
-                    setSelectedActivity(activity);
-                    setExpandedActivity(true);
-                    return;
-                case 'ROUTINE_CARE':
-                    setInitialItems(null);
-                    setShowActivityComponent(false);
-                    setExpandedActivity(true);
-                    setSelectedActivity(activity);
-                    setExpandedItems(RoutineCareActivityItems);
-                    return;
-                case 'EXPENSE': 
-                    setInitialItems(null);
-                    setShowActivityComponent(false);
-                    setExpandedActivity(true);
-                    setSelectedActivity(activity);
-                    setExpandedItems(ExpenseCategory);
-                    return;
-                default:
-                    setInitialItems(ActivityTypeObject);
-                    setExpandedActivity(false);
-                    setExpandedItems(null);
-                    return null;
-            }
-        } else {
-            setShowActivityComponent(true);
+            const itemsMap = {
+                VACCINE_RECORD: VaccineRecordType,
+                ROUTINE_CARE: RoutineCareActivityItems,
+                EXPENSE: ExpenseCategory,
+            };
+            setExpandedItems(itemsMap[activity.name] || null);
             setSelectedActivity(activity);
-            setInitialItems(ActivityTypeObject);
-            setExpandedActivity(false);
-            setExpandedItems(null); 
-            // onActivitySelect(activity);
+        } else {
+            setSelectedActivity(activity);
+            setExpandedItems(null);
         }
     };
 
     const handleNestedItemClick = (item) => {
-        console.log('handleNestedItemClick: ', item);
         setSelectedNestedActivity(item);
-        setShowActivityComponent(true);
     };
 
     const handleSave = (data) => {
-        // Handle saving data based on the selected activity type
-        console.log('Saving data:', data);
-        // Call onActivitySelect or any other appropriate function
         onActivitySelect(selectedActivity, data);
+        onClose();
+    };
+    
+    const getFormFields = () => {
+        return formFieldsConfig(selectedNestedActivity ? selectedNestedActivity : {})[FormFieldsType[selectedActivity.name]];
     };
 
+    const formConfig = selectedActivity ? getFormFields() : null;
 
     return (
-        <div className="add-activity-popup">
-            
-            {!showActivityComponent 
-            ? 
-            <>
-                <div className='hedaer-container'>
-                    <h3>Choose Activity to Add</h3>
-                    <button className="close-btn" onClick={onClose}>X</button>
-                </div>
-                
-                <div className="activity-grid">
-                {initialItems !== null && (
-                <>
-                    {initialItems.map((activity, index) => (
-                    <div key={index} className="activity-card" onClick={() => handleActivityClick(activity)}>
-                        <FontAwesomeIcon className="icon" icon={activity.icon} />
-                        <span>{activity.value}</span>
-                    </div>
-                    ))}
-                </>   
-                )}
-                {expandedItems !== null && expandedActivity  && (
-                <>
-                    {expandedItems.map((item, idx) => (
-                        <div key={idx} className="activity-card" onClick={() => handleNestedItemClick(item)}>
-                        {item.icon ? <FontAwesomeIcon className="icon" icon={item.icon} /> : null}
-                        <span>{item.value}</span>
-                        </div>
-                    ))}
-                </>
-                )}
-                </div>
-            </>     
-            :
-            <div>
-                {selectedActivity.name === 'VACCINE_RECORD' && 
-                <VaccineRecordActivity 
-                onSave={handleSave} 
-                vaccineType={selectedNestedActivity} 
-                onClose={onClose}
-                />}
-                {selectedActivity.name === 'ROUTINE_CARE' && 
-                <RoutineCareActivity 
-                onSave={handleSave} 
-                routineCareType={selectedNestedActivity}
-                onClose={onClose}
-                />} 
-                {selectedActivity.name === 'EXPENSE' && 
-                <ExpenseActivity 
-                onSave={handleSave}
-                expenseCategory={selectedNestedActivity} 
-                onClose={onClose}
-                />} 
-                {selectedActivity.name === 'NOTE' && 
-                <NoteActivity 
-                onSave={handleSave} 
-                onClose={onClose}
-                />}
-                {selectedActivity.name === 'ALLERGY' && 
-                <AllergyActivity 
-                onSave={handleSave} 
-                onClose={onClose}
-                />}
-                {selectedActivity.name === 'MEDICATION' && 
-                <MedicationActivity 
-                onSave={handleSave} 
-                onClose={onClose}
-                />}
-                {selectedActivity.name === 'VET_VISIT' && 
-                <VetVisitActivity 
-                onSave={handleSave} 
-                onClose={onClose}
-                />}
-                {selectedActivity.name === 'MEDICAL_CONDITION' && 
-                <MedicalConditionActivity 
-                onSave={handleSave} 
-                onClose={onClose}
-                />}
-                {selectedActivity.name === 'OTHER' && 
-                <OtherActivity 
-                onSave={handleSave} 
-                onClose={onClose}
-                />}
-            </div>
-            }
-        </div>
+        <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
+            <DialogTitle>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                    <Typography variant="h6">Choose Activity to Add</Typography>
+                    <IconButton onClick={onClose}>
+                        <CloseIcon />
+                    </IconButton>
+                </Box>
+            </DialogTitle>
+            <DialogContent dividers>
+            {!selectedActivity ? (
+                    <Grid container spacing={2}>
+                        {initialItems.map((activity, index) => (
+                            <Grid item xs={6} sm={4} key={index}>
+                                <Paper
+                                    onClick={() => handleActivityClick(activity)}
+                                    sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        padding: 2,
+                                        cursor: 'pointer',
+                                        '&:hover': { backgroundColor: 'grey.200' },
+                                    }}
+                                >
+                                    <FontAwesomeIcon icon={activity.icon} size="2x" />
+                                    <Typography mt={1}>{activity.value}</Typography>
+                                </Paper>
+                            </Grid>
+                        ))}
+                    </Grid>
+                ) : !selectedNestedActivity && expandedItems ? (
+                    <Grid container spacing={2}>
+                        {expandedItems.map((item, index) => (
+                            <Grid item xs={6} sm={4} key={index}>
+                                <Paper
+                                    onClick={() => handleNestedItemClick(item)}
+                                    sx={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        padding: 2,
+                                        cursor: 'pointer',
+                                        '&:hover': { backgroundColor: 'grey.200' },
+                                    }}
+                                >
+                                    {item.icon && <FontAwesomeIcon icon={item.icon} size="2x" />}
+                                    <Typography mt={1}>{item.value}</Typography>
+                                </Paper>
+                            </Grid>
+                        ))}
+                    </Grid>
+                ) : (
+                    <GenericActivityForm
+                        title={formConfig.title}
+                        fields={formConfig.fields}
+                        validationRules={formConfig.validationRules}
+                        onSave={handleSave}
+                        onClose={onClose}
+                    />
+                    )
+                }
+            </DialogContent>
+        </Dialog>
     );
 };
-
-
 
 export default AddActivityPopup;

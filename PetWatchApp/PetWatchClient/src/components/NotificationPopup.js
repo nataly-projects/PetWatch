@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 import { fetchUserUpcomingEvents } from '../services/userService';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { formatDate, formatDateUniversal } from '../utils/utils';
-import '../styles/Popup.css';
+import { Box, Paper, Typography, IconButton, Divider } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import { formatDateUniversal } from '../utils/utils';
 
 const NotificationPopup = ({ onClose }) => {
     const navigate = useNavigate();
@@ -15,55 +15,74 @@ const NotificationPopup = ({ onClose }) => {
     const [events, setEvents] = useState([]);
 
     useEffect(() => {
-    if (user) {
-        const fetchData = async () => {
-            try {
-                const events = await fetchUserUpcomingEvents(user._id, token);
-                setEvents(events);
-            } catch (error) {
-                if (error.response && error.response.status === 401) {
-                    console.error('UNAUTHORIZED_ERROR');
-                    navigate('/login');
+        if (user) {
+            const fetchData = async () => {
+                try {
+                    const events = await fetchUserUpcomingEvents(user._id, token);
+                    setEvents(events);
+                } catch (error) {
+                    if (error.response && error.response.status === 401) {
+                        console.error('UNAUTHORIZED_ERROR');
+                        navigate('/login');
+                    }
+                    console.error('Error fetching data:', error);
                 }
-                console.error('Error fetching data:', error);
-            }
-        };
-        fetchData();
-    }
+            };
+            fetchData();
+        }
     }, [user]);
 
-    const handleClick = (event) => {
-        onClose();
-    };
-
     return (
-        <div className="popup" onClick={handleClick}>
-            <div className="popup-content">
-                <div className='popup-header'>
-                    <h3>Upcoming Events</h3>
-                    <FontAwesomeIcon icon={faTimes} className='close-btn' onClick={onClose}/>
-                </div>
-                
-                {events.length > 0 ?
-                <>
-                  {events.map((event, index) => (
-                    <div key={index} className="notification-card">
-                        <div className='notifcation-header'>
-                            <FontAwesomeIcon icon={faBell} />
-                            <h3>{event.actionType}</h3>
-                        </div>
-                        <p>{event.pet.name}</p>
-                        <p>{event.details}</p>
-                        <p>Date: {formatDateUniversal(new Date(event.nextDate))}</p>
-                    </div>
-                ))}
-                </>
-                : 
-                <p>No Upcoming Events</p>
-                }
-               
-            </div>
-        </div>
+        <Paper
+            sx={{
+                position: 'absolute',
+                top: '50px',
+                right: '200px',
+                minWidth: '400px',
+                maxWidth: '600px',
+                backgroundColor: '#f0f0f0',
+                borderRadius: '10px',
+                padding: '20px',
+                zIndex: 9999,
+                boxShadow: '0 2px 5px rgba(0, 0, 0, 0.3)',
+                overflowY: 'auto',
+                maxHeight: '400px'
+            }}
+        >
+            <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+                <Typography variant="h6">Upcoming Events</Typography>
+                <IconButton onClick={onClose} size="small">
+                    <CloseIcon />
+                </IconButton>
+            </Box>
+            <Divider sx={{ mb: 2 }} />
+            {events.length > 0 ? (
+                events.map((event, index) => (
+                    <Box
+                        key={index}
+                        sx={{
+                            border: '1px solid #ccc',
+                            borderRadius: '8px',
+                            padding: '10px',
+                            backgroundColor: '#fff',
+                            marginBottom: '10px'
+                        }}
+                    >
+                        <Box display="flex" alignItems="center" gap={1} mb={1}>
+                            <NotificationsIcon color="primary" />
+                            <Typography variant="subtitle1">{event.actionType}</Typography>
+                        </Box>
+                        <Typography variant="body2">Pet: {event.pet.name}</Typography>
+                        <Typography variant="body2">Details: {event.details}</Typography>
+                        <Typography variant="body2">
+                            Date: {formatDateUniversal(new Date(event.nextDate))}
+                        </Typography>
+                    </Box>
+                ))
+            ) : (
+                <Typography variant="body2">No Upcoming Events</Typography>
+            )}
+        </Paper>
     );
 };
 

@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom'; 
+import { Grid, Typography, Button, CircularProgress, Box } from '@mui/material';
 import { faPaw, faMoneyCheck, faCalendarAlt, faTasks } from '@fortawesome/free-solid-svg-icons'; 
 import { getPetsByUserId } from '../services/petService'; 
 import { fetchUserActivityLog, fetchUserNotes, fetchUserUpcomingEvents, fetchUserExpensesArray, 
@@ -15,7 +16,6 @@ import CalendarSection from './Calendar';
 import TaskList from './TaskList';
 import TaskPerformanceChart from './TaskPerformanceChart';
 import AddPetForm from './AddPetForm';
-import '../styles/Dashboard.css';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -67,27 +67,28 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (user) {
-        fetchData();
-    }
+      fetchData();
+    } 
   }, [user]);
 
   if (loading) {
     return (
-      <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <div>Loading...</div>
-      </div>
+      <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" mt={4}>
+        <CircularProgress />
+        <Typography mt={2}>Loading...</Typography>
+      </Box>
     );
   }
 
   if (error) {
     return (
-      <div className='error-container'>
-        <p>Failed to fetch user data. Please try again later.</p>
-        <button className='btn' onClick={fetchData}>Retry</button>
-      </div>
+      <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" mt={4}>
+        <Typography>Failed to fetch pet data. Please try again later.</Typography>
+        <Button variant="contained" onClick={fetchData} sx={{ mt: 2 }}>Retry</Button>
+      </Box>
     );
   }
+
 
   const handleAddNewPetClick = () => {
     // navigate('/add-pet');
@@ -99,81 +100,71 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="dashboard-container">
-      <div className='top-row-container'>
-        <div className="top-row">
+    <Box px={3} py={2} >
+      <Grid container spacing={3} mb={4}>
+        <Grid item xs={12} sm={6} md={3}>
           <DashboardCard 
           title="Number of Pets" 
           icon={faPaw}
-          content={`${pets.length}`} />
-      
+          content={`${pets.length}`} 
+          />
+        </Grid>
+        
+        <Grid item xs={12} sm={6} md={3}>
           <DashboardCard 
           title="Total Expenses" 
           icon={faMoneyCheck}
-          content={`${user.totalExpenses}  ${Currency[currency].sign}`} />
-
+          content={`${user.totalExpenses} ${Currency[currency].sign}`}
+          />
+        </Grid>
+       
+        <Grid item xs={12} sm={6} md={3}>
           <DashboardCard 
             title="Upcoming Events" 
             icon={faCalendarAlt}
-            content={`${upcomingEvents.length}`} />
-        </div>
-          <DashboardCard 
-          title="Opening Tasks" 
-          icon={faTasks}
-          content={`${tasks.filter(task => task.completed === false).length}`} />
-      </div>
-
-      <div className='slider-calendar-warpper'>
-        <div className='pet-slider-wrapper'>
-          <h3 className='pet-section-title'>Your pets:</h3>
-          <div className="pet-section">
-            <PetSlider 
-            pets={pets} 
+            content={`${upcomingEvents.length}`}
             />
-          </div>
-        </div>
-        <CalendarSection />
-      </div>    
+        </Grid>
 
-    <div className='warpper'>
-      <ActivityLog
-        activityLogs={activityLogs}
-        upcomingEvents={upcomingEvents}
-        petName={null}
-      />
-      <div className='tasks-section'>
-        <TaskList 
-        propTasks={tasks}
-        token={token}
-        userId={user._id}
-        />
-        <TaskPerformanceChart tasks={tasks}/>
-      </div>
-     
-    </div>
-      
-    <div className='note-section'>
-      <NoteSection 
-      propsNotes={notes}
-      petId={null} 
-      />
-      </div>
+        <Grid item xs={12} sm={6} md={3}>
+          <DashboardCard 
+            title="Open Tasks" 
+            icon={faTasks}
+            content={`${tasks.filter(task => !task.completed).length}`}
+          />
+        </Grid>
+      </Grid>
 
-      <div className='expense-section'>
-        <ExpenseTracker 
-        expenses={expenses}
-        from={'user'}
-        />
-      </div>
 
-      <button className='btn' onClick={handleAddNewPetClick}>Add New Pet</button>
+    <Box sx={{backgroundColor: '#fff', boxShadow: 2, border: 1, borderColor: '#ccc', p: 3, mt: 3}}>
+      <Typography variant="h6">Your Pets:</Typography>
+      <PetSlider pets={pets} />
+    </Box>
+       
+    <ActivityLog activityLogs={activityLogs} upcomingEvents={upcomingEvents} />
 
-      <AddPetForm 
-       open={isAddPetPopupOpen}
-       handleClose={handleClosePopup}
-      />
+    <ExpenseTracker expenses={expenses} from="user" />
 
-    </div>
+    <Grid container spacing={3} mb={4}>
+      <Grid item xs={12} md={8}>
+          <NoteSection propsNotes={notes} />
+          <CalendarSection />
+      </Grid>
+      <Grid item xs={12} md={4}>
+        <Box display="flex" flexDirection="column" gap="10px" p={1}>
+          <TaskList propTasks={tasks} token={token} userId={user._id} />
+          <TaskPerformanceChart tasks={tasks} />
+        </Box>
+      </Grid>
+    </Grid>  
+
+    <Box display="flex" mt={4}>
+      <Button variant="contained" onClick={handleAddNewPetClick}>Add New Pet</Button>
+    </Box>
+
+    <AddPetForm open={isAddPetPopupOpen} handleClose={handleClosePopup} />
+
+  </Box>
 
   );
 

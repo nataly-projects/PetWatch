@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import Modal from 'react-modal';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box, Typography, IconButton, Radio, RadioGroup, FormControl, FormControlLabel } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { formatDateAndTimeForInput } from '../utils/utils';
-import '../styles/PetEditModal.css';
+import GenericActivityForm from './GenericActivityForm';
 
 const EditPetDetailsModal = ({ pet, onClose, onSubmit }) => {
     const [updatedPetDetails, setUpdatedPetDetails] = useState({ ...pet });
@@ -11,103 +12,74 @@ const EditPetDetailsModal = ({ pet, onClose, onSubmit }) => {
         setUpdatedPetDetails({ ...pet });
     }, [pet]);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setUpdatedPetDetails((prevState) => ({
-        ...prevState,
-        [name]: value
-        }));
+ 
+    const handleSave = (data) => {
+        onSubmit(data, type);  
+        onClose();
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onSubmit(updatedPetDetails, type);
+    const formConfig = {
+        title: `Edit ${updatedPetDetails.name} Details`,
+        fields: [
+            { name: 'name', label: 'Name', type: 'text', value: updatedPetDetails.name },
+            {
+                name: 'species',
+                label: 'Species',
+                type: 'radio',
+                options: [
+                    { label: 'Male', value: 'MALE' },
+                    { label: 'Female', value: 'FEMALE' }
+                ],
+                value: updatedPetDetails.species,
+            },
+            { name: 'breed', label: 'Breed', type: 'text', value: updatedPetDetails.breed },
+            { name: 'age', label: 'Age', type: 'number', value: updatedPetDetails.age },
+            { name: 'weight', label: 'Weight', type: 'number', value: updatedPetDetails.weight },
+            {
+                name: 'birthday',
+                label: 'Birthday',
+                type: 'datetime-local',
+                value: updatedPetDetails.birthday ? formatDateAndTimeForInput(updatedPetDetails.birthday) : '',
+            },
+            {
+                name: 'description',
+                label: `About ${updatedPetDetails.name}`,
+                type: 'textarea',
+                value: updatedPetDetails.description,
+            },
+            { name: 'chipNumber', label: 'Chip Number', type: 'text', value: updatedPetDetails.chipNumber },
+        ],
+        validationRules: {
+            name: 'Name',
+            age: 'Age',
+            weight: 'Weight',
+            breed: 'Breed',
+            species: 'Species',
+            description: 'Description'
+        },
     };
 
     return (
-        <Modal isOpen className="modalContent" contentLabel="Edit Item">
-            <div className='hedaer-container'>
-                <h2>Edit {updatedPetDetails.name} Details:</h2>
-                <button className="close-btn" onClick={onClose}>X</button>
-            </div>
-        
-        <form onSubmit={handleSubmit}>
-
-            <div className='input-container'>
-            <label className='label'>Name:</label>
-            <input className='input-field' name="name" type="text" value={updatedPetDetails.name} onChange={handleChange} />
-            </div>
-
-            <div className='input-container'>
-            <label className='label'>Species:</label>
-            <input className='input-field' name="species" type="text" value={updatedPetDetails.species} onChange={handleChange} />
-            </div>
-
-            <div className='input-container'>
-                <label className='label'>Species:</label>
-                <div className='radio-buttons'> 
-                    <div>
-                        <input
-                            type="radio"
-                            id="male"
-                            name="species"
-                            value="MALE"
-                            checked={updatedPetDetails.species === 'MALE'}
-                            onChange={handleChange}
-                        />
-                        <label htmlFor="male">Male</label>
-                    </div>
-                    <div>
-                        <input
-                            type="radio"
-                            id="female"
-                            name="species"
-                            value="FEMALE"
-                            checked={updatedPetDetails.species === 'FEMALE'}
-                            onChange={handleChange}
-                        />
-                        <label htmlFor="female">Female</label>
-                    </div>
-                </div>
-            </div>
-            
-            <div className='input-container'>
-                <label className='label'>Breed:</label>
-                <input className='input-field' name="breed" type="text" value={updatedPetDetails.breed} onChange={handleChange} />
-            </div>
-
-            <div className='input-container'>
-            <label className='label'>Age:</label>
-            <input className='input-field' name="age" type="number" value={updatedPetDetails.age} onChange={handleChange} />
-            </div>
-
-            <div className='input-container'>
-            <label className='label'>Weight:</label>
-            <input className='input-field' name="weight" type="number" value={updatedPetDetails.weight} onChange={handleChange} />
-            </div>
-
-            <div className='input-container'>
-            <label className='label'>Birthday:</label>
-            <input className='input-field' name="birthday" type="datetime-local" value={updatedPetDetails.birthday ? formatDateAndTimeForInput(updatedPetDetails.birthday): ''} onChange={handleChange} />
-            </div> 
-            
-            <div className='textarea-container'>
-                <label className='label'>About {updatedPetDetails.name}:</label>
-                <textarea className='textarea-field' name="description" value={updatedPetDetails.description} onChange={handleChange} />
-            </div>
-            
-            <div className='input-container'>
-            <label className='label'>Chip Number:</label>
-            <input className='input-field' name="chipNumber" type="text" value={updatedPetDetails.chipNumber} onChange={handleChange} />
-            </div>
-
-            <div className='actions'>
-                <button className='btn' type="submit">Save</button>
-                <button className='btn' type="button" onClick={onClose}>Cancel</button>
-            </div>
-            
-        </form>
-        </Modal>
+        <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
+        <DialogTitle>
+            <Box display="flex" justifyContent="space-between" alignItems="center">
+                <Typography variant="h6">{formConfig.title}</Typography>
+                <IconButton onClick={onClose}>
+                    <CloseIcon />
+                </IconButton>
+            </Box>
+        </DialogTitle>
+        <DialogContent dividers>
+            <GenericActivityForm
+                title={formConfig.title}
+                fields={formConfig.fields}
+                validationRules={formConfig.validationRules}
+                initialData={updatedPetDetails}
+                onSave={handleSave}
+                onClose={onClose}
+            />
+        </DialogContent>
+    </Dialog>
     );
 };
 

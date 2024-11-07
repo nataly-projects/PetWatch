@@ -56,14 +56,19 @@
     .warpper {
         display: flex;
         gap: 10px;
-        max-width: 100%;
+        width: 100%;
         align-items: stretch;
         margin-top: 20px;
     }
 
     .note-section {
-        width: 70%;
-        /* padding: 20px; */
+        width: 100%;
+        display: flex;
+        gap: 10px;
+    }
+
+    .note-wrapper {
+        width: 69%;
         background-color: #fff;
         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         border: 1px solid #ccc;
@@ -86,6 +91,7 @@
         align-items: stretch;
         margin-top: 20px;
     }
+
     /* Slick slider */
     .pet-slider-wrapper {
         width: 70%;

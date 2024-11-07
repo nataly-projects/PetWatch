@@ -2,13 +2,12 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useTable, useSortBy, usePagination } from 'react-table';
+import { Button, IconButton, Box, CircularProgress, Typography } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAdd, faEdit, faTrash, faSortUp, faSortDown, faSort, faDownload } from '@fortawesome/free-solid-svg-icons';
-import AddTaskModal from '../components/AddTaskPopup';
-import EditTaskModal from '../components/EditTaskModal';
+import TaskModal from '../components/TaskModal';
 import { formatDateUniversal } from '../utils/utils';
 import { fetchUserTasks, updateUserTask, deleteUserTask } from '../services/userService';
-import '../styles/TaskListPage.css';
 
 const TaskListPage = () => {
     const navigate = useNavigate();
@@ -16,9 +15,9 @@ const TaskListPage = () => {
     const token = useSelector((state) => state.token);
 
     const [tasks, setTasks] = useState([]);
-    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const [currentTask, setCurrentTask] = useState(null);
+    const [isEditMode, setIsEditMode] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
 
@@ -52,7 +51,6 @@ const TaskListPage = () => {
                     <input
                         type="checkbox"
                         checked={row.original.completed}
-                        // onChange={() => handleToggleComplete(row.original)}
                     />
                 ),
             },
@@ -62,16 +60,12 @@ const TaskListPage = () => {
             { Header: 'Due Date', accessor: 'dueDate', Cell: ({ value }) => formatDateUniversal(new Date(value)) },
             { Header: 'Actions', accessor: 'actions', disableSortBy: true, Cell: ({ row }) => (
                 <div>
-                    <FontAwesomeIcon
-                        icon={faEdit}
-                        onClick={() => openEditModal(row.original)}
-                        style={{ cursor: 'pointer', marginRight: '10px' }}
-                    />
-                    <FontAwesomeIcon
-                        icon={faTrash}
-                        onClick={() => handleDeleteTask(row.original._id)}
-                        style={{ cursor: 'pointer' }}
-                    />
+                    <IconButton color="primary" onClick={() => openEditModal(row.original)}>
+                        <FontAwesomeIcon icon={faEdit} />
+                    </IconButton>
+                    <IconButton color="secondary" onClick={() => handleDeleteTask(row.original._id)}>
+                        <FontAwesomeIcon icon={faTrash} />
+                    </IconButton>
                 </div>
             ), },
         ],
@@ -90,20 +84,19 @@ const TaskListPage = () => {
 
     const handleAddTask = (newTask) => {
         setTasks([...tasks, newTask]);
-        // Optionally, make an API call to save the new task to the backend
     };
 
     const handleEditTask = async (updatedTask) => {
         try {
             await updateUserTask(user._id, updatedTask, token)
             setTasks(tasks.map(task => (task._id === updatedTask._id ? updatedTask : task)));
-            setIsEditModalOpen(false);
+            setIsModalOpen(false);
         } catch (error) {
             if (error.response && error.response.status === 401) {
                 console.error('UNAUTHORIZED_ERROR');
                 navigate('/login');
             } else {
-                console.error('Error updated task:', error);
+                console.error('Error updating task:', error);
             }
         }
     };
@@ -123,61 +116,93 @@ const TaskListPage = () => {
     };
 
     const openAddModal = () => {
-        setIsAddModalOpen(true);
+        setIsEditMode(false);
+        setCurrentTask(null);
+        setIsModalOpen(true);
     };
 
     const openEditModal = (task) => {
+        setIsEditMode(true);
         setCurrentTask(task);
-        setIsEditModalOpen(true);
+        setIsModalOpen(true);
     };
 
     const closeModal = () => {
-        setIsAddModalOpen(false);
-        setIsEditModalOpen(false);
+        setIsModalOpen(false);
+    };
+
+    const handleDownload = () => {
+        const headers = ["Title", "Description", "Create Date", "Due Date", "Completed"];
+        
+        // Convert tasks data to CSV format
+        const csvRows = tasks.map(task => [
+            task.title,
+            task.description,
+            formatDateUniversal(new Date(task.createdAt)),
+            task.dueDate ? formatDateUniversal(new Date(task.dueDate)) : "",
+            task.completed ? "Yes" : "No"
+        ]);
+
+        // Combine headers and rows into a CSV string
+        const csvContent = [
+            headers.join(","), 
+            ...csvRows.map(row => row.map(item => `"${item}"`).join(","))
+        ].join("\n");
+
+        // Create a blob and trigger download
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'tasks.csv');
+        link.click();
     };
 
     if (loading) {
         return (
-            <div className="loading-container">
-                <div className="loading-spinner"></div>
-                <div>Loading...</div>
-            </div>
+            <Box className="loading-container" display="flex" justifyContent="center" alignItems="center" height="100vh">
+                <CircularProgress />
+                <Typography variant="h6" ml={2}>Loading...</Typography>
+            </Box>
         );
     }
 
     if (error) {
         return (
-            <div className='error-container'>
-                <p>Failed to fetch user data. Please try again later.</p>
-                <button className='btn' onClick={fetchTasks}>Retry</button>
-            </div>
+            <Box className="error-container" display="flex" flexDirection="column" alignItems="center">
+                <Typography color="error">Failed to fetch user data. Please try again later.</Typography>
+                <Button variant="contained" color="primary" onClick={fetchTasks}>Retry</Button>
+            </Box>
         );
     }
 
     return (
-        <div className='task-list-page'>
-            <div className='header'>
-                <h3>All Tasks</h3>
-                {/* <button className='add-task-button' onClick={openAddModal}>Add Task</button> */}
-                <div style={{display: 'flex', gap: '10px', cursor: 'pointer'}}>
-                    <FontAwesomeIcon icon={faAdd} onClick={openAddModal}/>
-                    <FontAwesomeIcon icon={faDownload} />
-                </div>
-              
-            </div>
+        <Box style={{padding: '20px', width: '90%', margin: '0 auto'}} >
+            <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}   mb={2}>
+                <Typography variant="h4">All Tasks</Typography>
+                <Box display="flex" gap="10px">
+                    <IconButton color="primary" onClick={openAddModal}>
+                        <FontAwesomeIcon icon={faAdd} />
+                    </IconButton>
+                    <IconButton color="primary" onClick={handleDownload}>
+                        <FontAwesomeIcon icon={faDownload} />
+                    </IconButton>
+                </Box>
+            </Box>
             {tasks.length > 0 ? (
                 <Table instance={tasksTableInstance} />
             ) : (
-                <p>No Tasks yet.</p>
+                <Typography>No Tasks yet.</Typography>
             )}
-            <AddTaskModal isOpen={isAddModalOpen} onClose={closeModal} onAddTask={handleAddTask} />
-            <EditTaskModal
-                isOpen={isEditModalOpen}
+            <TaskModal
+                isOpen={isModalOpen}
                 onClose={closeModal}
+                onSubmit={isEditMode ? handleEditTask : handleAddTask}
                 task={currentTask}
-                onEditTask={handleEditTask}
+                isEditMode={isEditMode}
             />
-        </div>
+        </Box>
     );
 };
 
@@ -209,7 +234,7 @@ const Table = ({ instance }) => {
                             {headerGroup.headers.map(column => (
                                 column.show !== false && (
                                     <th {...column.getHeaderProps(column.getSortByToggleProps())}>
-                                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                        <Box display="flex" justifyContent="space-between" alignItems="center">
                                             {column.render('Header')}
                                             {column.isSorted ? (
                                                 column.isSortedDesc ? (
@@ -218,12 +243,9 @@ const Table = ({ instance }) => {
                                                     <FontAwesomeIcon icon={faSortUp} />
                                                 )
                                             ) : (   
-                                                column.disableSortBy ? null : 
-                                                <div style={{ display: 'flex', flexDirection: 'column' }}>
-                                                    <FontAwesomeIcon icon={faSort} className="sort" />
-                                                </div>
+                                                !column.disableSortBy && <FontAwesomeIcon icon={faSort} className="sort" />
                                             )}
-                                        </div>
+                                        </Box>
                                     </th>
                                 )
                             ))}
@@ -243,28 +265,24 @@ const Table = ({ instance }) => {
                     })}
                 </tbody>
             </table>
-            <div className="pagination">
-                <span className="pagination-info">
-                    Showing: {pageIndex * pageSize + 1} - {Math.min((pageIndex + 1) * pageSize, totalItems)} of {totalItems}
-                </span>
-                <div className="pagination-controls">
-                    <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-                        Previous
-                    </button>
-                    {pageOptions.map((page, index) => (
-                        <button
+            <Box display="flex" justifyContent="space-between" alignItems="center" mt={2}>
+                <Typography>
+                    Showing {pageIndex * pageSize + 1} - {Math.min((pageIndex + 1) * pageSize, totalItems)} of {totalItems}
+                </Typography>
+                <Box display="flex" gap={1}>
+                    <Button onClick={() => previousPage()} disabled={!canPreviousPage}>Previous</Button>
+                    {pageOptions.map((_, index) => (
+                        <Button
                             key={index}
                             onClick={() => gotoPage(index)}
-                            className={pageIndex === index ? 'active' : ''}
+                            variant={pageIndex === index ? 'contained' : 'outlined'}
                         >
                             {index + 1}
-                        </button>
+                        </Button>
                     ))}
-                    <button onClick={() => nextPage()} disabled={!canNextPage}>
-                        Next
-                    </button>
-                </div>
-            </div>
+                    <Button onClick={() => nextPage()} disabled={!canNextPage}>Next</Button>
+                </Box>
+            </Box>
         </>
     );
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/VaccinationPage.css';
+import { Box, Typography, List, ListItem, Table, TableBody, TableCell, TableHead, TableRow, Divider } from '@mui/material';
 import fruitsCanEatImg from '../images/catFruitCanEat.jpg';
 import meatCanEatImg from '../images/catMeatCanEat.jpg';
 import otherCanEatImg from '../images/catOtherCanEat.jpg';
@@ -7,117 +7,142 @@ import eatCautiousImg from '../images/catEatCautious.jpg';
 import notToEatImg from '../images/catNotEat.jpg';
 
 const CatCarePage = () => {
-
     const vaccinations = [
-        { name: 'FVRCP vaccine', description: 'Protects against serious and contagious viral diseases. Feline leukemia, Calicivirus, and Rhinotracheitis are included. Chlamydia, if required, should be administered separately. ' },
-        { name: 'Rabies vaccine', description: 'Fatal disease that affects many mammals, including humans. Cats that go outdoors and are at risk of being bitten should be vaccinated.' },
-        { name: 'FeLV vaccine', description: 'Recommended for cats that live in areas with a high prevalence of FeLV, cats that go outdoors and are exposed to other cats, and cats of susceptible breeds.' },
+        { name: 'FVRCP vaccine', description: 'Protects against serious and contagious viral diseases. Feline leukemia, Calicivirus, and Rhinotracheitis are included.' },
+        { name: 'Rabies vaccine', description: 'Fatal disease that affects many mammals, including humans. Cats that go outdoors and are at risk should be vaccinated.' },
+        { name: 'FeLV vaccine', description: 'Recommended for cats that live in areas with a high prevalence of FeLV.' },
     ];
 
     const vaccinationsFrequency = [
         { name: 'FVRCP (Quad/Triple)**', kittenAge: '6-8 weeks, 12-16 weeks, 16-20 weeks', adultCatAge: 'Once a year' },
-        { name: 'Rabies', kittenAge: '16-20 weeks', adultCatAge: 'Once every three years'},
-        { name: 'FeLV (Optional)', kittenAge: '6-8 weeks, repeat as recommended by veterinarian', adultCatAge: 'Repeat as recommended by veterinarian' }
+        { name: 'Rabies', kittenAge: '16-20 weeks', adultCatAge: 'Once every three years' },
+        { name: 'FeLV (Optional)', kittenAge: '6-8 weeks, repeat as recommended by veterinarian', adultCatAge: 'Repeat as recommended by veterinarian' },
     ];
 
     const routineCare = [
-        { name: 'Deworming', description: 'It is recommended to give cats a preventive treatment for internal and external parasites once a month.' },
-        { name: 'Flea and Tick Control', description: 'It is important to regularly treat for fleas and ticks, both by applying a direct treatment to the cat (such as ampoules) and by treating the environment in which they live.' },
-        { name: 'Ear Cleaning', description: 'It is recommended to clean your cat\'s ears regularly using a special cleaning solution.' },
-        { name: 'Teeth Brushing', description: 'Daily teeth brushing will help prevent gum disease and tartar buildup.' }
+        { name: 'Deworming', description: 'It is recommended to give cats preventive treatment for parasites once a month.' },
+        { name: 'Flea and Tick Control', description: 'Regular treatments for fleas and ticks, including the environment.' },
+        { name: 'Ear Cleaning', description: 'Regular ear cleaning prevents infections.' },
+        { name: 'Teeth Brushing', description: 'Daily teeth brushing helps prevent gum disease and tartar buildup.' },
     ];
 
-    const renderVaccineScheduleTable = () => {
-        return (
-            <table>
-             <thead>
-                <tr>
-                    <th>Vaccine</th>
-                    <th>Kitten Age</th>
-                    <th>Adult Cat Age</th>
-                </tr>
-            </thead>
-            <tbody>
+    const renderVaccineScheduleTable = () => (
+        <Table>
+            <TableHead>
+                <TableRow>
+                    <TableCell>Vaccine</TableCell>
+                    <TableCell>Kitten Age</TableCell>
+                    <TableCell>Adult Cat Age</TableCell>
+                </TableRow>
+            </TableHead>
+            <TableBody>
                 {vaccinationsFrequency.map((vaccination, index) => (
-                    <tr key={index}>
-                        <td>{vaccination.name}</td>
-                        <td>{vaccination.kittenAge}</td>
-                        <td>{vaccination.adultCatAge}</td>
-                    </tr>
+                    <TableRow key={index}>
+                        <TableCell>{vaccination.name}</TableCell>
+                        <TableCell>{vaccination.kittenAge}</TableCell>
+                        <TableCell>{vaccination.adultCatAge}</TableCell>
+                    </TableRow>
                 ))}
-            </tbody>
-            </table>
-        );
-    };
+            </TableBody>
+        </Table>
+    );
 
     return (
-        <div className="care-container">
-            <div className="section">
-                <h2>Cat Vaccinations and Routine Care</h2>
-                <p>Below is a list of common cat vaccinations and their descriptions:</p>
-                <ul>
+        <Box sx={{ maxWidth: 800, margin: '0 auto', padding: 3 }}>
+            <Box className="section" sx={{ mb: 4 }}>
+                <Typography variant="h4" gutterBottom>Cat Vaccinations and Routine Care</Typography>
+                <Typography variant="body1">Below is a list of common cat vaccinations and their descriptions:</Typography>
+                <List>
                     {vaccinations.map((vaccination, index) => (
-                    <li key={index}>
-                        <h3>{vaccination.name}</h3>
-                        <p>{vaccination.description}</p>
-                    </li>
+                        <ListItem key={index} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', mb: 2 }}>
+                            <Typography variant="h6">{vaccination.name}</Typography>
+                            <Typography variant="body2">{vaccination.description}</Typography>
+                        </ListItem>
                     ))}
-                </ul>
-            </div>
-            <div className="section">
-                <h2>Cat Vaccination Schedule:</h2>
-                {renderVaccineScheduleTable()}
-            </div>
-            <div className="section">
-                <h2>Routine Care:</h2>
-                <ul>
-                    {routineCare.map((care, index) => (
-                        <li key={index}>
-                            <h3>{care.name}</h3>
-                            <p>{care.description}</p>
-                        </li>
-                    ))}
-                    <p><strong>It is important to consult with a veterinarian about the vaccination program that is most appropriate for your cat.</strong></p>
-                </ul>
-            </div>
-            <h2>Feeding Your Cat</h2>
-            <h3>What Can Cats Eat?</h3>
-            <p>
-            Cats can enjoy a variety of foods that are beneficial for their health. Here are some foods that cats can eat:
-            </p>
-            <ul>
-                <li><strong>Fruit and Vegetables:</strong>Apples, bananas, strawberries, carrots, and other fruits and vegetables are rich in vitamins, minerals, fiber, and protein.
-                </li>
-                <img src={fruitsCanEatImg} alt= 'fruits and vagetables cats can eat'/>
-                <li><strong>Meat & Fish:</strong> Chicken, beef, salmon, and other meats and fish are high in protein and essential fatty acids.
-                <img src={meatCanEatImg} alt= 'meats and fish cats can eat' />
-                </li>
-                <li><strong>Other Foods:</strong> Grains, dairy, and eggs can also be given to cats in moderation.
-                <img src={otherCanEatImg} alt= 'other foods cats can eat' />
-                </li>
-            </ul>
-            <h3>Foods to Be Cautious About</h3>
-            <p>
-            Foods in this group are ones that can be given to your cat, but you should be cautious about them. In general, what cats eat should be monitored, but with these, you need to be extra careful; most of these foods should be given to your cat in small quantities as too much can cause them potential harm. Others are foods that you need to watch carefully when giving your cat. For example, your cat can enjoy gnawing on a bone, but they can splinter and become sharp and dangerous so will then need to be taken away and safely disposed of if this happens.
-            <img src={eatCautiousImg} alt='food to be cautious about giving your cat'/>
-            </p>
-            
-            <h3>What Can Cats Not Eat?</h3>
-            <p>
-            Certain foods are toxic to cats and should be avoided. Here are some foods that cats can't eat
-            </p>
-                <ul>
-                <li><strong>Chocolate:</strong> Contains theobromine and caffeine, which are toxic to cats.</li>
-                <li><strong>Onions and Garlic:</strong> Can cause damage to a cat's red blood cells.</li>
-                <li><strong>Grapes and Raisins:</strong> Can cause kidney failure in cats.</li>
-                <img src={notToEatImg} alt= 'foods cats cant eat' />
-            </ul>
-            <h3>Summary</h3>
-            <p>
-            Understanding what cats can and can't eat is crucial for their health. While some human foods can be incorporated into their diet, others should be avoided entirely. By providing a balanced diet and avoiding harmful foods, you can ensure your cat stays healthy and happy.
-            </p>
+                </List>
+            </Box>
 
-        </div>
+            <Divider />
+
+            <Box className="section" sx={{ mb: 4 }}>
+                <Typography variant="h4" gutterBottom>Cat Vaccination Schedule:</Typography>
+                {renderVaccineScheduleTable()}
+            </Box>
+
+            <Divider />
+
+            <Box className="section" sx={{ mb: 4 }}>
+                <Typography variant="h4" gutterBottom>Routine Care</Typography>
+                <List>
+                    {routineCare.map((care, index) => (
+                        <ListItem key={index} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', mb: 2 }}>
+                            <Typography variant="h6">{care.name}</Typography>
+                            <Typography variant="body2">{care.description}</Typography>
+                        </ListItem>
+                    ))}
+                </List>
+                <Typography variant="body2" sx={{ mt: 2 }}>
+                    <strong>It is important to consult with a veterinarian about the vaccination program that is most appropriate for your cat.</strong>
+                </Typography>
+            </Box>
+
+            <Divider />
+
+            <Box className="section" sx={{ mb: 4 }}>
+                <Typography variant="h4" gutterBottom>Feeding Your Cat</Typography>
+                <Typography variant="h5" gutterBottom>What Can Cats Eat?</Typography>
+                <Typography variant="body1">Cats can enjoy a variety of foods that are beneficial for their health. Here are some foods that cats can eat:</Typography>
+                <List>
+                    <ListItem>
+                        <Typography variant="h6">Fruit and Vegetables</Typography>
+                        <Typography>Apples, bananas, strawberries, carrots, and more.</Typography>
+                        <Box component="img" src={fruitsCanEatImg} alt="Fruits cats can eat" sx={{ width: '100%', mt: 2 }} />
+                    </ListItem>
+                    <ListItem>
+                        <Typography variant="h6">Meat & Fish</Typography>
+                        <Typography>Chicken, beef, salmon, and other meats.</Typography>
+                        <Box component="img" src={meatCanEatImg} alt="Meat cats can eat" sx={{ width: '100%', mt: 2 }} />
+                    </ListItem>
+                    <ListItem>
+                        <Typography variant="h6">Other Foods</Typography>
+                        <Typography>Grains, dairy, and eggs in moderation.</Typography>
+                        <Box component="img" src={otherCanEatImg} alt="Other foods cats can eat" sx={{ width: '100%', mt: 2 }} />
+                    </ListItem>
+                </List>
+            </Box>
+
+            <Divider />
+
+            <Box className="section" sx={{ mb: 4 }}>
+                <Typography variant="h5" gutterBottom>Foods to Be Cautious About</Typography>
+                <Typography>
+                    Some foods can be given to your cat, but should be monitored closely to avoid issues.
+                </Typography>
+                <Box component="img" src={eatCautiousImg} alt="Foods to be cautious about giving your cat" sx={{ width: '100%', mt: 2 }} />
+            </Box>
+
+            <Divider />
+
+            <Box className="section" sx={{ mb: 4 }}>
+                <Typography variant="h5" gutterBottom>What Can Cats Not Eat?</Typography>
+                <Typography>
+                    Certain foods are toxic to cats and should be avoided. Here are some examples:
+                </Typography>
+                <List>
+                    <ListItem><strong>Chocolate:</strong> Contains theobromine and caffeine, which are toxic to cats.</ListItem>
+                    <ListItem><strong>Onions and Garlic:</strong> Can cause damage to a cat's red blood cells.</ListItem>
+                    <ListItem><strong>Grapes and Raisins:</strong> Can cause kidney failure in cats.</ListItem>
+                </List>
+                <Box component="img" src={notToEatImg} alt="Foods cats can't eat" sx={{ width: '100%', mt: 2 }} />
+            </Box>
+
+            <Box className="section" sx={{ mb: 4 }}>
+                <Typography variant="h5" gutterBottom>Summary</Typography>
+                <Typography variant="body1">
+                    Understanding what cats can and can't eat is crucial for their health. By providing a balanced diet and avoiding harmful foods, you can ensure your cat stays healthy and happy.
+                </Typography>
+            </Box>
+        </Box>
     );
 };
 

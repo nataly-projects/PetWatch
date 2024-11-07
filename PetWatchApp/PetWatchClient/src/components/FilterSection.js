@@ -1,53 +1,95 @@
 import React from 'react';
+import { IconButton, Select, MenuItem, TextField, InputAdornment, FormControl, InputLabel, Input, Box } from '@mui/material';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFilter } from '@fortawesome/free-solid-svg-icons';
 
-const FilterSection = (
-    { filterType, handleTypeChange, startDate, handleStartDateChange, endDate, 
-        handleEndDateChange, handleMinAmountChange, minAmount, selectOptions, isExpenseFilter  }) => {
+const FilterSection = ({
+    filterType, handleTypeChange, startDate, handleStartDateChange, endDate, 
+    handleEndDateChange, handleMinAmountChange, minAmount, selectOptions, isExpenseFilter 
+}) => {
   return (
-    <div className='filter-section'>
-      <div className='input-container'>
-        <label>Type:</label>
-        <select value={filterType} onChange={handleTypeChange} className='input-field'>
-          <option value="">All</option>
+    <Box 
+      display="flex"
+      gap={2}
+      mb={2}
+      sx={{ width: '100%' }}
+    >
+      {/* Filter Type */}
+      <FormControl variant="standard" size="small" sx={{ minWidth: 120 }}>
+        <InputLabel>Type</InputLabel>
+        <Select
+          value={filterType}
+          onChange={handleTypeChange}
+          input={<Input />}
+        >
+          <MenuItem value="">All</MenuItem>
           {Object.entries(selectOptions).map(([key, value]) => (
-            <option key={key} value={value}>{value}</option>
+            <MenuItem key={key} value={value}>{value}</MenuItem>
           ))}
-        </select>
-      </div>
+        </Select>
+      </FormControl>
 
-      <div className='input-container'>
-        <label>Start Date:</label>
-        <input
-          className='input-field'
+      {/* Start Date */}
+      <FormControl variant="standard" size="small">
+        <TextField
+          label="Start Date"
           type="date"
           value={startDate}
           onChange={handleStartDateChange}
+          InputLabelProps={{ shrink: true }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton size="small">
+                  <FontAwesomeIcon icon={faFilter} />
+                </IconButton>
+              </InputAdornment>
+            )
+          }}
         />
-      </div>
+      </FormControl>
 
-      <div className='input-container'>
-        <label>End Date:</label>
-        <input
-          className='input-field'
+      {/* End Date */}
+      <FormControl variant="standard" size="small">
+        <TextField
+          label="End Date"
           type="date"
           value={endDate}
           onChange={handleEndDateChange}
+          InputLabelProps={{ shrink: true }}
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton size="small">
+                  <FontAwesomeIcon icon={faFilter} />
+                </IconButton>
+              </InputAdornment>
+            )
+          }}
         />
-      </div>
+      </FormControl>
 
+      {/* Min Amount (only if isExpenseFilter is true) */}
       {isExpenseFilter && (
-        <div className='input-container'>
-          <label>Min Amount:</label>
-          <input
-            className='input-field'
+        <FormControl variant="standard" size="small">
+          <TextField
+            label="Min Amount"
             type="number"
             value={minAmount}
             onChange={handleMinAmountChange}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton size="small">
+                    <FontAwesomeIcon icon={faFilter} />
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
           />
-        </div>
+        </FormControl>
       )}
-
-    </div>
+    </Box>
   );
 };
 

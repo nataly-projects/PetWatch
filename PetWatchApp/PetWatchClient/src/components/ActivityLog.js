@@ -1,64 +1,36 @@
-import React, {useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
+import { Button, Typography, Box, Table, TableHead, TableRow, TableBody, TableCell, TableContainer, Paper, Pagination } from '@mui/material';
 import { useTable, useSortBy, usePagination } from 'react-table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSortUp, faSortDown, faSort, faDownload } from '@fortawesome/free-solid-svg-icons';
+import { faSortUp, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
 import { formatDateUniversal } from '../utils/utils';
 import ExportToCSVButton from './ExportToCSVButton';
 import FilterSection from './FilterSection';
 import { ActivityType } from '../utils/utils';
-import '../styles/ActivityLog.css';
 
 const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
     const location = useLocation();
-    if(location.pathname && location.pathname === "/main/activity-log") {
+    if (location.pathname === "/main/activity-log") {
         activityLogs = location.state.activityLogs;
         upcomingEvents = location.state.upcomingEvents;
         petName = location.state.petName;
     }
-    // State for activity logs
+
     const [activityFilterType, setActivityFilterType] = useState('');
     const [activityStartDate, setActivityStartDate] = useState('');
     const [activityEndDate, setActivityEndDate] = useState('');
-
-    // State for upcoming events
     const [eventFilterType, setEventFilterType] = useState('');
     const [eventStartDate, setEventStartDate] = useState('');
     const [eventEndDate, setEventEndDate] = useState('');
 
-    // Handlers for activity logs
     const handleActivityTypeChange = (event) => setActivityFilterType(event.target.value);
     const handleActivityStartDateChange = (event) => setActivityStartDate(event.target.value);
     const handleActivityEndDateChange = (event) => setActivityEndDate(event.target.value);
 
-    // Handlers for upcoming events
     const handleEventTypeChange = (event) => setEventFilterType(event.target.value);
     const handleEventStartDateChange = (event) => setEventStartDate(event.target.value);
     const handleEventEndDateChange = (event) => setEventEndDate(event.target.value);
-
-    const filteredActivities = useMemo(() => {
-        return activityLogs.filter(activity => {
-            const activityDate = new Date(activity.created_at);
-            const start = activityStartDate ? new Date(activityStartDate) : null;
-            const end = activityEndDate ? new Date(activityEndDate) : null;
-
-            return (!activityFilterType || (activity.type && activity.type === activityFilterType)) &&
-                (!start || activityDate >= start) &&
-                (!end || activityDate <= end.setHours(23, 59, 59, 999));
-        });
-    }, [activityLogs, activityFilterType, activityStartDate, activityEndDate]);
-
-    const filteredUpcomingEvents = useMemo(() => {
-        return upcomingEvents.filter(event => {
-            const eventDate = new Date(event.created_at);
-            const start = eventStartDate ? new Date(eventStartDate) : null;
-            const end = eventEndDate ? new Date(eventEndDate) : null;
-
-            return (!eventFilterType || (event.actionType === eventFilterType)) &&
-                (!start || eventDate >= start) &&
-                (!end || eventDate <= end.setHours(23, 59, 59, 999));
-        });
-    }, [upcomingEvents, eventFilterType, eventStartDate, eventEndDate]);
 
     const exportToCSV = (data) => {
         const processedData = data.map(item => ({
@@ -70,10 +42,34 @@ const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
         return processedData;
     };
 
+    const filteredActivities = useMemo(() => {
+        return activityLogs.filter(activity => {
+            const activityDate = new Date(activity.created_at);
+            const start = activityStartDate ? new Date(activityStartDate) : null;
+            const end = activityEndDate ? new Date(activityEndDate) : null;
+
+            return (!activityFilterType || activity.type === activityFilterType) &&
+                (!start || activityDate >= start) &&
+                (!end || activityDate <= end.setHours(23, 59, 59, 999));
+        });
+    }, [activityLogs, activityFilterType, activityStartDate, activityEndDate]);
+
+    const filteredUpcomingEvents = useMemo(() => {
+        return upcomingEvents.filter(event => {
+            const eventDate = new Date(event.created_at);
+            const start = eventStartDate ? new Date(eventStartDate) : null;
+            const end = eventEndDate ? new Date(eventEndDate) : null;
+
+            return (!eventFilterType || event.actionType === eventFilterType) &&
+                (!start || eventDate >= start) &&
+                (!end || eventDate <= end.setHours(23, 59, 59, 999));
+        });
+    }, [upcomingEvents, eventFilterType, eventStartDate, eventEndDate]);
+
     const columns = useMemo(
         () => [
-            { Header: 'Date', accessor: 'created_at', Cell: ({ value }) => formatDateUniversal(new Date(value))},
-            petName == null ? { Header: 'Pet Name', accessor: 'petId.name', show: petName == null } : { Header: 'Pet Name', accessor: 'petId.name', show: false },
+            { Header: 'Date', accessor: 'created_at', Cell: ({ value }) => formatDateUniversal(new Date(value)) },
+            petName == null ? { Header: 'Pet Name', accessor: 'petId.name' } : { Header: 'Pet Name', accessor: 'petId.name', show: false },
             { Header: 'Action Type', accessor: 'actionType' },
             { Header: 'Details', accessor: 'details' },
         ],
@@ -101,246 +97,135 @@ const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
     );
 
     return (
-        <div className='logs-wrapper'>
-        <div className="log-container">
-            <h3>{petName !== null ? `${petName} Activity Logs` : 'Your Activity Logs'}</h3>
-            {activityLogs.length > 0 && (
-                <div className='table-filter-container'>
-                <FilterSection
-                    filterType={activityFilterType}
-                    handleTypeChange={handleActivityTypeChange}
-                    startDate={activityStartDate}
-                    handleStartDateChange={handleActivityStartDateChange}
-                    endDate={activityEndDate}
-                    handleEndDateChange={handleActivityEndDateChange}
-                    selectOptions={ActivityType}
-                />
-                 <ExportToCSVButton
-                    className='btn'
-                    petName={petName}
-                    data={exportToCSV(filteredActivities)}
-                    filename={petName == null ? "activity-log.csv" : petName + "-activity-log.csv"}
-                />
-                </div>
-                
+        <Box sx={{ backgroundColor: '#fff', boxShadow: 2, border: 1, borderColor: '#ccc', p: 3, mt: 3 }}>
 
-            )}
-            {activityLogs.length > 0 ? (
-                <Table instance={activityTableInstance} petName={petName} />
-            ) : (
-                <p>No activity logs yet.</p>
-            )}
-        </div>
-        <div className="log-container">
-        <h3>{petName !== null ? `${petName} Upcoming Events` : 'Your Upcoming Events'}</h3>
-            {upcomingEvents.length > 0 && (
-                <div className='table-filter-container'>
-                    <FilterSection
-                        filterType={eventFilterType}
-                        handleTypeChange={handleEventTypeChange}
-                        startDate={eventStartDate}
-                        handleStartDateChange={handleEventStartDateChange}
-                        endDate={eventEndDate}
-                        handleEndDateChange={handleEventEndDateChange}
-                        selectOptions={ActivityType}
-                    />
-                    <ExportToCSVButton
-                        className='btn'
-                        petName={petName}
-                        data={exportToCSV(filteredUpcomingEvents)}
-                        filename={petName == null ? "upcoming-events.csv" : petName + "-upcoming-events.csv"}
-                    />
-                </div>
-            )}
-            {upcomingEvents.length > 0 ? (
-                <Table instance={eventTableInstance} petName={petName} />
-            ) : (
-                <p>No upcoming events yet.</p>
-            )}
-        </div>
-        </div>
+        {/* <Box sx={{ display: 'flex', flexDirection: 'column', width: '80%', margin: '0 auto' }}> */}
+            <ActivityTable
+                title={petName ? `${petName} Activity Logs` : 'Your Activity Logs'}
+                tableInstance={activityTableInstance}
+                filter={{
+                    type: activityFilterType,
+                    startDate: activityStartDate,
+                    endDate: activityEndDate,
+                    onTypeChange: handleActivityTypeChange,
+                    onStartDateChange: handleActivityStartDateChange,
+                    onEndDateChange: handleActivityEndDateChange
+                }}
+                exportData={exportToCSV(filteredActivities)}
+                csvFileName={petName ? `${petName}-activity-log.csv` : 'activity-log.csv'}
+            />
+
+            <ActivityTable
+                title={petName ? `${petName} Upcoming Events` : 'Your Upcoming Events'}
+                tableInstance={eventTableInstance}
+                filter={{
+                    type: eventFilterType,
+                    startDate: eventStartDate,
+                    endDate: eventEndDate,
+                    onTypeChange: handleEventTypeChange,
+                    onStartDateChange: handleEventStartDateChange,
+                    onEndDateChange: handleEventEndDateChange
+                }}
+                exportData={exportToCSV(filteredUpcomingEvents)}
+                csvFileName={petName ? `${petName}-upcoming-events.csv` : 'upcoming-events.csv'}
+            />
+        </Box>
     );
-
-
-    // return (
-    //     <div className="activity-log-container">
-    //         <h3>{petName !== null ? `${petName} Activity Logs` : 'Your Activity Logs'}</h3>
-    //         { activityLogs.length > 0 && <FilterSection
-    //             filterType={activityFilterType}
-    //             handleTypeChange={handleActivityTypeChange}
-    //             startDate={activityStartDate}
-    //             handleStartDateChange={handleActivityStartDateChange}
-    //             endDate={activityEndDate}
-    //             handleEndDateChange={handleActivityEndDateChange}
-    //             selectOptions={ActivityType}
-    //         />}
-    //         {activityLogs.length > 0 ?
-    //             <>
-    //             <table className='table'>
-    //                 <thead>
-    //                     <tr>
-    //                     <th>Date</th>
-    //                     {petName == null && <th>Pet Name</th>}
-    //                     <th>Action Type</th>
-    //                     <th>Details</th>
-    //                     </tr>
-    //                 </thead>
-    //                 <tbody>
-    //                     {filteredActivities.map((activity, index) => (
-    //                     <tr key={index}>
-    //                         <td>{formatDate(activity.created_at)}</td>
-    //                         {petName == null && <td>{activity.petId.name}</td>}
-    //                         <td>{activity.actionType}</td>
-    //                         <td>{activity.details}</td>
-    //                     </tr>
-    //                     ))}
-    //                 </tbody>
-                    
-    //             </table>
-    //             <ExportToCSVButton className='btn'
-    //             petName={petName}
-    //             data={exportToCSV(filteredActivities)} 
-    //             filename={petName == null ? "activity-log.csv" : petName +"-activity-log.csv"}
-    //             />
-    //             </>
-    //             :
-    //             <p>No activity logs yet.</p>
-    //         }
-    //         <h3>{petName !== null ? `${petName} Upcoming Events` : 'Your Upcoming Events'}</h3>
-    //         {upcomingEvents.length > 0 && <FilterSection
-    //             filterType={eventFilterType}
-    //             handleTypeChange={handleEventTypeChange}
-    //             startDate={eventStartDate}
-    //             handleStartDateChange={handleEventStartDateChange}
-    //             endDate={eventEndDate}
-    //             handleEndDateChange={handleEventEndDateChange}
-    //             selectOptions={ActivityType}
-    //         />}
-    //         {upcomingEvents.length > 0 ?
-    //         <>
-    //           <table className='table'>
-    //                 <thead>
-    //                     <tr>
-    //                         <th>Date</th>
-    //                         {petName == null && <th>Pet Name</th>}
-    //                         <th>Action Type</th>
-    //                         <th>Details</th>
-    //                     </tr>
-    //                 </thead>
-    //                 <tbody>
-    //                     {console.log(filteredUpcomingEvnets.length)}
-    //                     {filteredUpcomingEvnets.map((event, index) => ( 
-    //                     <tr key={index}>
-    //                         <td>{formatDate(event.nextDate)}</td>
-    //                         {petName == null && <td>{event.pet.name}</td>}
-    //                         <td>{event.actionType}</td>
-    //                         <td>{event.details}</td>
-    //                     </tr>
-    //                     ))}
-    //                 </tbody>
-    //             </table>
-    //             <ExportToCSVButton className='btn'
-    //             petName={petName}
-    //             data={exportToCSV(filteredUpcomingEvnets)} 
-    //             filename={petName == null ? "upcoming-events.csv" : petName +"-upcoming-events.csv"}
-    //             />
-    //         </>   
-    //         : 
-    //         <p>No upcoming events yet.</p>
-    //         }
-    //     </div>
-    // );
 };
 
-const Table = ({ instance, petName }) => {
+const ActivityTable = ({ title, tableInstance, filter, exportData, csvFileName }) => {
     const {
-      getTableProps,
-      getTableBodyProps,
-      headerGroups,
-      page,
-      prepareRow,
-      canPreviousPage,
-      canNextPage,
-      pageOptions,
-      state: { pageIndex, pageSize },
-      previousPage,
-      nextPage,
-      gotoPage,
-      pageCount,
-    } = instance;
-
-    const totalItems = instance.rows.length;
+        getTableProps,
+        getTableBodyProps,
+        headerGroups,
+        page,
+        prepareRow,
+        canPreviousPage,
+        canNextPage,
+        pageOptions,
+        state: { pageIndex, pageSize },
+        previousPage,
+        nextPage,
+        gotoPage,
+        pageCount,
+    } = tableInstance;
 
     return (
-      <>
-        <table {...getTableProps()} className='table'>
-          <thead>
-            {headerGroups.map(headerGroup => (
-              <tr {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map(column => (
-                  column.show !== false && (
-                    <th {...column.getHeaderProps(column.getSortByToggleProps())}
-                    className={(column.id === 'created_at' || column.id === 'petId.name') ? 'custom-column' : ''}
-                    >
-                        <div style={{display: 'flex', justifyContent: 'space-between',alignItems: 'center'}}>
-                        {column.render('Header')}
-                        {column.isSorted ? (
-                            column.isSortedDesc ? (
-                                <FontAwesomeIcon icon={faSortDown} />
-                            ) : (
-                                <FontAwesomeIcon icon={faSortUp} />
-                            )
-                            ) : (
-                            <div style={{display: 'flex', flexDirection: 'column'}}>
-                                <FontAwesomeIcon icon={faSort} className="sort" />
-                            </div>
-                            )}
-                      </div>
-                    </th>
-                  )
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody {...getTableBodyProps()}>
-            {page.map((row, i) => {
-              prepareRow(row);
-              return (
-                <tr {...row.getRowProps()}>
-                  {row.cells.map(cell => {
-                    return (
-                      <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-                    );
-                  })}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        <div className="pagination">
-                <span className="pagination-info">
-                    Showing: {pageIndex * pageSize + 1} - {Math.min((pageIndex + 1) * pageSize, totalItems)} of {totalItems}
-                </span>
-                <div className="pagination-controls">
-                    <button onClick={() => previousPage()} disabled={!canPreviousPage}>
-                        Previous
-                    </button>
-                    {pageOptions.map((page, index) => (
-                        <button
-                            key={index}
-                            onClick={() => gotoPage(index)}
-                            className={pageIndex === index ? 'active' : ''}
-                        >
-                            {index + 1}
-                        </button>
-                    ))}
-                    <button onClick={() => nextPage()} disabled={!canNextPage}>
-                        Next
-                    </button>
-                </div>
-            </div>
-      </>
+        <Box sx={{ backgroundColor: '#fff', boxShadow: 2, border: 1, borderColor: '#ccc', p: 3, mt: 3 }}>
+            <Typography variant="h5" gutterBottom>{title}</Typography>
+            <Box display='flex' gap='10px' alignItems='baseline'>
+                <FilterSection
+                    filterType={filter.type}
+                    handleTypeChange={filter.onTypeChange}
+                    startDate={filter.startDate}
+                    handleStartDateChange={filter.onStartDateChange}
+                    endDate={filter.endDate}
+                    handleEndDateChange={filter.onEndDateChange}
+                    selectOptions={ActivityType}
+                />
+                <ExportToCSVButton data={exportData} filename={csvFileName} />
+            </Box>
+            
+
+            <TableContainer component={Paper} sx={{ mt: 2 }}>
+                <Table {...getTableProps()}>
+                    <TableHead>
+                        {headerGroups.map(headerGroup => (
+                            <TableRow {...headerGroup.getHeaderGroupProps()}>
+                                {headerGroup.headers.map(column => (
+                                    <TableCell
+                                        {...column.getHeaderProps(column.getSortByToggleProps())}
+                                        sx={{ fontWeight: 'bold', borderBottom: '1px solid #ddd' }}
+                                    >
+                                        <Box display="flex" alignItems="center">
+                                            {column.render('Header')}
+                                            {column.isSorted ? (
+                                                column.isSortedDesc ? (
+                                                    <FontAwesomeIcon icon={faSortDown} style={{ marginLeft: 8 }} />
+                                                ) : (
+                                                    <FontAwesomeIcon icon={faSortUp} style={{ marginLeft: 8 }} />
+                                                )
+                                            ) : (
+                                                <FontAwesomeIcon icon={faSort} style={{ marginLeft: 8 }} />
+                                            )}
+                                        </Box>
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        ))}
+                    </TableHead>
+                    <TableBody {...getTableBodyProps()}>
+                        {page.map(row => {
+                            prepareRow(row);
+                            return (
+                                <TableRow {...row.getRowProps()}>
+                                    {row.cells.map(cell => (
+                                        <TableCell {...cell.getCellProps()} sx={{ borderBottom: '1px solid #ddd' }}>
+                                            {cell.render('Cell')}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            );
+                        })}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+
+            <Box display="flex" justifyContent="space-between" alignItems="center" mt={2}>
+                <Typography variant="body2">
+                    Showing: {pageIndex * pageSize + 1} - {Math.min((pageIndex + 1) * pageSize, tableInstance.rows.length)} of {tableInstance.rows.length}
+                </Typography>
+                <Pagination
+                    count={pageCount}
+                    page={pageIndex + 1}
+                    onChange={(e, page) => gotoPage(page - 1)}
+                    color="primary"
+                    showFirstButton
+                    showLastButton
+                />
+            </Box>
+        </Box>
     );
-  };
+};
 
 export default ActivityLog;

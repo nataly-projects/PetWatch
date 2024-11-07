@@ -1,4 +1,5 @@
 import React from 'react';
+import { Box, Typography, IconButton, Paper } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { ActivityType } from '../utils/utils';
@@ -20,77 +21,94 @@ const HealthInformationSection = ({
   };
 
   return (
-    <div className="health-information">
-      <h3>Health Information</h3>
+    <Box sx={{ mt: 3 }}>
+      <Typography variant="h5" sx={{ mb: 2 }}>Health Information</Typography>
 
-      <h4>Medical Conditions:</h4>
-      <div className="health-info-cards">
+      {/* Medical Conditions */}
+      <Typography variant="h6" sx={{ mb: 1 }}>Medical Conditions:</Typography>
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 2 }}>
         {medicalConditions.length > 0 ? (
-          medicalConditions.map(condition => (
-            <div className="health-info-card" key={condition._id}>
-              <div className='health-info-header'>
-                <h4>{condition.name}</h4>
-                <div className="health-info-actions">
-                  <FontAwesomeIcon icon={faEdit} onClick={() => handleEdit(condition, ActivityType.MEDICAL_CONDITION)} />
-                  <FontAwesomeIcon icon={faTrash} onClick={() => handleDelete(condition, ActivityType.MEDICAL_CONDITION)} />
-                </div>
-              </div>
-              <p><strong>Description:</strong> {condition.description}</p>
-              {condition.note && <p><strong>Note:</strong> {condition.note}</p>}
-              {condition.continuedTreatment && <p><strong>Continued Treatment:</strong> {condition.continuedTreatment}</p>}
-              <p><strong>Date Diagnosed:</strong> {new Date(condition.dateDiagnosed).toLocaleDateString()}</p>
-            </div>
+          medicalConditions.map((condition) => (
+            <Paper key={condition._id} sx={{ p: 2, border: '1px solid #ccc', borderRadius: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="h6">{condition.name}</Typography>
+                <Box>
+                  <IconButton onClick={() => handleEdit(condition, ActivityType.MEDICAL_CONDITION)} size="small">
+                    <FontAwesomeIcon icon={faEdit} />
+                  </IconButton>
+                  <IconButton onClick={() => handleDelete(condition, ActivityType.MEDICAL_CONDITION)} size="small">
+                    <FontAwesomeIcon icon={faTrash} />
+                  </IconButton>
+                </Box>
+              </Box>
+              <Typography><strong>Description:</strong> {condition.description}</Typography>
+              {condition.note && <Typography><strong>Note:</strong> {condition.note}</Typography>}
+              {condition.continuedTreatment && <Typography><strong>Continued Treatment:</strong> {condition.continuedTreatment}</Typography>}
+              <Typography><strong>Date Diagnosed:</strong> {new Date(condition.dateDiagnosed).toLocaleDateString()}</Typography>
+            </Paper>
           ))
         ) : (
-          <p>No Medical Conditions</p>
+          <Typography>No Medical Conditions</Typography>
         )}
-      </div>
+      </Box>
 
-      <h4>Medications:</h4>
-      <div className="health-info-cards">
+      {/* Medications */}
+      <Typography variant="h6" sx={{ mt: 3, mb: 1 }}>Medications:</Typography>
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 2 }}>
         {medications.length > 0 ? (
-          medications.map(medication => (
-            <div className="health-info-card" key={medication._id}>
-              <div className='health-info-header'>
-                <h4>{medication.name}</h4>
-                <div className="health-info-actions">
-                  <FontAwesomeIcon icon={faEdit} onClick={() => handleEdit(medication, ActivityType.MEDICATION)} />
-                  <FontAwesomeIcon icon={faTrash} onClick={() => handleDelete(medication, ActivityType.MEDICATION)} />
-                </div>
-              </div>
-              <p><strong>Dosage:</strong> {medication.dosage}</p>
-              {medication.note && <p><strong>Note:</strong> {medication.note}</p>}
-              <p><strong>Start Date:</strong> {new Date(medication.startDate).toLocaleDateString()} - 
-              <strong> End Date:</strong> {new Date(medication.endDate).toLocaleDateString()}</p>
-            </div>
+          medications.map((medication) => (
+            <Paper key={medication._id} sx={{ p: 2, border: '1px solid #ccc', borderRadius: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="h6">{medication.name}</Typography>
+                <Box>
+                  <IconButton onClick={() => handleEdit(medication, ActivityType.MEDICATION)} size="small">
+                    <FontAwesomeIcon icon={faEdit} />
+                  </IconButton>
+                  <IconButton onClick={() => handleDelete(medication, ActivityType.MEDICATION)} size="small">
+                    <FontAwesomeIcon icon={faTrash} />
+                  </IconButton>
+                </Box>
+              </Box>
+              <Typography><strong>Dosage:</strong> {medication.dosage}</Typography>
+              {medication.note && <Typography><strong>Note:</strong> {medication.note}</Typography>}
+              <Typography>
+                <strong>Start Date:</strong> {new Date(medication.startDate).toLocaleDateString()} - 
+                <strong> End Date:</strong> {new Date(medication.endDate).toLocaleDateString()}
+              </Typography>
+            </Paper>
           ))
         ) : (
-          <p>No Medications</p>
+          <Typography>No Medications</Typography>
         )}
-      </div>
+      </Box>
 
-      <h4>Allergies:</h4>
-      <div className="health-info-cards">
+      {/* Allergies */}
+      <Typography variant="h6" sx={{ mt: 3, mb: 1 }}>Allergies:</Typography>
+      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 2 }}>
         {allergies.length > 0 ? (
-          allergies.map(allergy => (
-            <div className="health-info-card" key={allergy._id}>
-              <div className='health-info-header'>
-                <h4>{allergy.name}</h4>
-                <div className="health-info-actions">
-                  <FontAwesomeIcon icon={faEdit} onClick={() => handleEdit(allergy, ActivityType.ALLERGY)} />
-                  <FontAwesomeIcon icon={faTrash} onClick={() => handleDelete(allergy, ActivityType.ALLERGY)} />
-                </div>
-              </div>
-              <p><strong>Treatment:</strong> {allergy.treatment}</p>
-              {allergy.note && <p><strong>Note:</strong> {allergy.note}</p>}
-              <p><strong>Date:</strong> {new Date(allergy.date).toLocaleDateString()}</p>
-            </div>
+          allergies.map((allergy) => (
+            <Paper key={allergy._id} sx={{ p: 2, border: '1px solid #ccc', borderRadius: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="h6">{allergy.name}</Typography>
+                <Box>
+                  <IconButton onClick={() => handleEdit(allergy, ActivityType.ALLERGY)} size="small">
+                    <FontAwesomeIcon icon={faEdit} />
+                  </IconButton>
+                  <IconButton onClick={() => handleDelete(allergy, ActivityType.ALLERGY)} size="small">
+                    <FontAwesomeIcon icon={faTrash} />
+                  </IconButton>
+                </Box>
+              </Box>
+              <Typography><strong>Treatment:</strong> {allergy.treatment}</Typography>
+              {allergy.note && <Typography><strong>Note:</strong> {allergy.note}</Typography>}
+              <Typography><strong>Date:</strong> {new Date(allergy.date).toLocaleDateString()}</Typography>
+            </Paper>
           ))
         ) : (
-          <p>No Allergies</p>
+          <Typography>No Allergies</Typography>
         )}
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 

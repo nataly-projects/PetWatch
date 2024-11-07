@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
 import { useDropzone } from 'react-dropzone';
+import {Avatar,Box,Button,Grid,TextField,Typography} from '@mui/material';
 import { toast } from 'react-toastify';
 import { editUserDetails, changePassword } from '../services/userService';
 import userDefaultImage from '../images/default-user-profile-image.png';
 import ForgotPassword from '../components/ForgotPassword';
-import '../styles/UserProfile.css';
 
 const UserProfile = () => {
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ const UserProfile = () => {
     fullName: user.fullName,
     email: user.email,
     phone: user.phone,
-    imageUrl: selectedImageProfile ? selectedImageProfile : null
+    imageUrl: selectedImageProfile ? selectedImageProfile : null,
   });
   const [changePasswordData, setChangePasswordData] = useState({
     email: formData.email,
@@ -27,11 +27,22 @@ const UserProfile = () => {
     newPassword: '',
     confirmPassword: '',
   });
-  const [deailsErrors, setDetailsErrors] = useState({});
+  const [detailsErrors, setDetailsErrors] = useState({});
   const [passwordErrors, setPasswordErrors] = useState({});
-  const [showForgotPassword, setShowForgotPassword] = useState(false); 
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
-// details functions
+  const onProfileImageDrop = (acceptedFiles) => {
+    if (acceptedFiles.length > 0) {
+      const selectedImage = acceptedFiles[0];
+      setSelectedImageProfile(selectedImage);
+    }
+  };
+
+  const profileImageDropzone = useDropzone({
+    onDrop: onProfileImageDrop,
+    accept: { 'image/*': ['.jpeg', '.jpg', '.png'] },
+    multiple: false,
+  });
 
   const initFormData = () => {
     setFormData({
@@ -41,30 +52,11 @@ const UserProfile = () => {
     });
   };
 
-  const validateDetailsInput = () => {
-    const validationErrors = {};
-    if (!formData.fullName) {
-      validationErrors.fullName = 'Name is required';
-    }
-    if (!formData.email) {
-      validationErrors.email = 'Email is required';
-    }
-    if (!formData.phone) {
-      validationErrors.phone = 'Phone is required';
-    }
-    setDetailsErrors(validationErrors);
-    return Object.keys(validationErrors).length === 0;
-  };
-
-  const handleEditDetailsClick = () => {
-    setEditDetailsMode(true);
-  };
-
   const handleSaveDetailsClick = async () => {
     if (validateDetailsInput()) {
       setEditDetailsMode(false);
       try {
-        await editUserDetails(user._id, formData, token); 
+        await editUserDetails(user._id, formData, token);
         toast.success('Details updated successfully!');
       } catch (error) {
         initFormData();
@@ -72,229 +64,208 @@ const UserProfile = () => {
           console.error('UNAUTHORIZED_ERROR');
           navigate('/login');
         }
-        console.error('Error fetching data:', error);
+        console.error('Error updating details:', error);
       }
     }
   };
 
-  const handleDetailsChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleCancelDetailsClick = () => {
-    setEditDetailsMode(false);
-    initFormData();
-    setDetailsErrors({});
-  };
-
-  const onProfileImageDrop = (acceptedFiles) => {
-    console.log(acceptedFiles);
-    if (acceptedFiles && acceptedFiles.length > 0) {
-        const selectedImage = acceptedFiles[0];
-        setSelectedImageProfile(selectedImage);
-    }
-  };
-
-  const profileImageDropzone = useDropzone({
-    onDrop: onProfileImageDrop,
-    accept: {
-        'image/*': ['.jpeg', '.jpg', '.png'],
-    },
-    multiple: false,
-  });
-
-// change password functions
-
-  const initPasswordForm = () => {
-    setChangePasswordData({
-      email: user.email,
-      oldPassword: '',
-      newPassword: '',
-      confirmPassword: '',
-    });
-  };
-
-  const validateChanePasswordInput = () => {
+  const validateChangePasswordInput = () => {
     const validationErrors = {};
+  
+    // Validate old password
     if (!changePasswordData.oldPassword) {
       validationErrors.oldPassword = 'Old password is required';
     }
+  
+    // Validate new password
     if (!changePasswordData.newPassword) {
       validationErrors.newPassword = 'New password is required';
     }
+  
+    // Confirm password and check match
     if (!changePasswordData.confirmPassword) {
       validationErrors.confirmPassword = 'Confirm new password is required';
-    } else if( changePasswordData.newPassword !== changePasswordData.confirmPassword) {
+    } else if (changePasswordData.newPassword !== changePasswordData.confirmPassword) {
       validationErrors.confirmPassword = 'Passwords do not match';
     }
+  
+    // Set the errors state and return if valid
     setPasswordErrors(validationErrors);
     return Object.keys(validationErrors).length === 0;
   };
+  
 
   const handleSaveChangePasswordClick = async () => {
-    if (validateChanePasswordInput()) {
+    if (validateChangePasswordInput()) {
       setChangePasswordMode(false);
       try {
-        await changePassword(changePasswordData, token); 
+        await changePassword(changePasswordData, token);
         toast.success('Password changed successfully!');
       } catch (error) {
         if (error.response && error.response.status === 401) {
           console.error('UNAUTHORIZED_ERROR');
           navigate('/login');
         }
-        console.error('Error fetching data:', error);
+        console.error('Error changing password:', error);
       }
     }
   };
+  
 
-  const handleCancelChangePasswordClick = () => {
-    setChangePasswordMode(false);
-    setPasswordErrors({});
-    initPasswordForm();
+  const validateDetailsInput = () => {
+    const validationErrors = {};
+    if (!formData.fullName) validationErrors.fullName = 'Name is required';
+    if (!formData.email) validationErrors.email = 'Email is required';
+    if (!formData.phone) validationErrors.phone = 'Phone is required';
+    setDetailsErrors(validationErrors);
+    return Object.keys(validationErrors).length === 0;
   };
-
-  const handlePasswordChange = (e) => {
-    const { name, value } = e.target;
-    setChangePasswordData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
 
   return (
-    <div className="user-profile">
-      <h2>{user.fullName} Profile</h2>
+    <Box
+      sx={{
+        maxWidth: 600,
+        margin: '0 auto',
+        padding: 3,
+      }}
+    >
+      <Typography variant="h4" align="center" gutterBottom>
+        {user.fullName} Profile
+      </Typography>
+
       {editDetailsMode ? (
-        <div className="edit-profile">
-          {/* add image section */}
-          <div className="user-image-container">
-            <label> Your image:</label>
-            <img className="user-image"
-            src={ (selectedImageProfile ? URL.createObjectURL(selectedImageProfile) : userDefaultImage)} 
-            alt="Pet Profile Image" 
+        <Box component="form" sx={{ mb: 3 }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Avatar
+              src={selectedImageProfile ? URL.createObjectURL(selectedImageProfile) : userDefaultImage}
+              sx={{ width: 120, height: 120, mb: 2 }}
             />
-            <div className="upload-overlay"  {...profileImageDropzone.getRootProps()}>
-              <input  {...profileImageDropzone.getInputProps()} />
-              <p>Drag & drop an image here, or click to select one</p>
+            <div {...profileImageDropzone.getRootProps()}>
+              <input {...profileImageDropzone.getInputProps()} />
+              <Button variant="outlined">Upload Image</Button>
             </div>
-          </div>
-          <div className='input-container'>
-            <label className='label'>Full Name:</label>
-            <input className='input-field'
-              type="text"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleDetailsChange}
-            />
-        {deailsErrors.fullName && <div className="error-message">{deailsErrors.fullName}</div>} 
-        </div>
+          </Box>
 
-        <div className='input-container'>
-          <label className='label'>Email:</label>
-          <input className='input-field'
-            type="email"
-            name="email"
-            value={formData.email}
-            onChange={handleDetailsChange}
-          />
-        {deailsErrors.email && <div className="error-message">{deailsErrors.email}</div>} 
-        </div>
+          <Grid container spacing={2} mt={2}>
+            <Grid item xs={12}>
+              <TextField
+                label="Full Name"
+                name="fullName"
+                fullWidth
+                value={formData.fullName}
+                onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                error={!!detailsErrors.fullName}
+                helperText={detailsErrors.fullName}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Email"
+                name="email"
+                fullWidth
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                error={!!detailsErrors.email}
+                helperText={detailsErrors.email}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="Phone"
+                name="phone"
+                fullWidth
+                value={formData.phone}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                error={!!detailsErrors.phone}
+                helperText={detailsErrors.phone}
+              />
+            </Grid>
+          </Grid>
 
-        <div className='input-container'>
-          <label className='label'>Phone:</label>
-          <input className='input-field'
-            type="phone"
-            name="phone"
-            value={formData.phone}
-            onChange={handleDetailsChange}
-          />
-        {deailsErrors.phone && <div className="error-message">{deailsErrors.phone}</div>} 
-        </div>
-
-          <div className='actions'>
-            <button onClick={handleSaveDetailsClick}>Save</button>
-            <button onClick={handleCancelDetailsClick}>Cancel</button>
-          </div>   
-        </div>
+          <Box mt={2} display="flex" gap={2}>
+            <Button variant="contained" onClick={handleSaveDetailsClick}>
+              Save
+            </Button>
+            <Button variant="outlined" onClick={() => setEditDetailsMode(false)}>
+              Cancel
+            </Button>
+          </Box>
+        </Box>
       ) : (
-        <div className="view-profile">
-          <h3>Your Details:</h3>
-          <div className="user-image-container">
-          <img className='user-image'
-          src={user.imageUrl ? `http://localhost:5001/${user.imageUrl}` : userDefaultImage} 
-          alt={user.fullName} 
-          />
-          </div>
-          <p>Full Name: {formData.fullName}</p>
-          <p>Email: {formData.email}</p>
-          <p>phone: {formData.phone}</p>
-          <button onClick={handleEditDetailsClick}>Edit</button>
-        </div>
+        <Box>
+          <Typography variant="h6">Your Details:</Typography>
+          <Avatar src={user.imageUrl ? `http://localhost:5001/${user.imageUrl}` : userDefaultImage} sx={{ width: 120, height: 120, mt: 1, mb: 2 }} />
+          <Typography>Full Name: {formData.fullName}</Typography>
+          <Typography>Email: {formData.email}</Typography>
+          <Typography>Phone: {formData.phone}</Typography>
+          <Button variant="contained" sx={{ mt: 2 }} onClick={() => setEditDetailsMode(true)}>
+            Edit
+          </Button>
+        </Box>
       )}
-      <div className="change-password">
-        <h3>Change Password</h3>
-        { changePasswordMode ? 
-          <>
-          <div className='input-container'>
-            <label className='label'>Old Password:</label>
-            <input className='input-field'
-              type="password"
-              name="oldPassword"
-              value={changePasswordData.oldPassword}
-              onChange={handlePasswordChange}
-            />
-          {passwordErrors.oldPassword && <div className="error-message">{passwordErrors.oldPassword}</div>} 
-          </div>
-          
-          <div className='input-container'>
-            <label className='label'>New Password:</label>
-            <input className='input-field'
-              type="password"
-              name="newPassword"
-              value={changePasswordData.newPassword}
-              onChange={handlePasswordChange}
-            />
-          {passwordErrors.newPassword && <div className="error-message">{passwordErrors.newPassword}</div>} 
-          </div>
 
-          <div className='input-container'>
-            <label className='label'>Confirm New Password:</label>
-            <input className='input-field'
-              type="password"
-              name="confirmPassword"
-              value={changePasswordData.confirmPassword}
-              onChange={handlePasswordChange}
-            />
-          {passwordErrors.confirmPassword && <div className="error-message">{passwordErrors.confirmPassword}</div>} 
-          </div>
-            
-          <div className='actions'>
-            <button onClick={handleSaveChangePasswordClick}>Save</button>
-            <button onClick={handleCancelChangePasswordClick}>Cancel</button>
-          </div>   
-          </>
-          :
+      <Box mt={4}>
+        <Typography variant="h6">Change Password</Typography>
+        {changePasswordMode ? (
           <>
-            <p>Here you can change your password </p>
-            <div className='actions'>
-              <button onClick={() =>  setChangePasswordMode(true)}>Change Password</button>
-              <button onClick={() => setShowForgotPassword(true)}>Forgot Password</button>
-            </div>
+            <TextField
+              label="Old Password"
+              name="oldPassword"
+              fullWidth
+              type="password"
+              value={changePasswordData.oldPassword}
+              onChange={(e) => setChangePasswordData({ ...changePasswordData, oldPassword: e.target.value })}
+              error={!!passwordErrors.oldPassword}
+              helperText={passwordErrors.oldPassword}
+              sx={{ mt: 2 }}
+            />
+            <TextField
+              label="New Password"
+              name="newPassword"
+              fullWidth
+              type="password"
+              value={changePasswordData.newPassword}
+              onChange={(e) => setChangePasswordData({ ...changePasswordData, newPassword: e.target.value })}
+              error={!!passwordErrors.newPassword}
+              helperText={passwordErrors.newPassword}
+              sx={{ mt: 2 }}
+            />
+            <TextField
+              label="Confirm New Password"
+              name="confirmPassword"
+              fullWidth
+              type="password"
+              value={changePasswordData.confirmPassword}
+              onChange={(e) => setChangePasswordData({ ...changePasswordData, confirmPassword: e.target.value })}
+              error={!!passwordErrors.confirmPassword}
+              helperText={passwordErrors.confirmPassword}
+              sx={{ mt: 2 }}
+            />
+            <Box mt={2} display="flex" gap={2}>
+              <Button variant="contained" onClick={handleSaveChangePasswordClick}>
+                Save
+              </Button>
+              <Button variant="outlined" onClick={() => setChangePasswordMode(false)}>
+                Cancel
+              </Button>
+            </Box>
           </>
-        }
-      </div>
-      {/* Forgot Password modal */}
-        {showForgotPassword && (
-          <ForgotPassword
-          onClose={() => setShowForgotPassword(false)}
-          />
+        ) : (
+          <Box display="flex" gap={2} mt={2}>
+            <Button variant="contained" onClick={() => setChangePasswordMode(true)}>
+              Change Password
+            </Button>
+            <Button variant="text" onClick={() => setShowForgotPassword(true)}>
+              Forgot Password
+            </Button>
+          </Box>
         )}
-    </div>
+      </Box>
+
+      {showForgotPassword && (
+        <ForgotPassword onClose={() => setShowForgotPassword(false)} />
+      )}
+    </Box>
   );
 };
 
