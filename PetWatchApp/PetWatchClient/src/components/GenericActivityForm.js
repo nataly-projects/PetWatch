@@ -61,17 +61,17 @@ const GenericActivityForm = ({ title, fields, onSave, onClose, initialData = {},
     return (
         <Container>
             {showHeader &&  
-            <Box className='header'>
+            <Box >
                 <Typography variant="h5">{title}</Typography>
-                <IconButton onClick={onClose} className='close-btn'>
+                <IconButton onClick={onClose} >
                     <FontAwesomeIcon icon={faTimes} />
                 </IconButton>
             </Box> 
             }   
 
             {fields.map((field) => (
-                <Box key={field.name} className='input-container'>
-                    <Typography className='label'>{field.label}</Typography> 
+                <Box key={field.name} >
+                    <Typography >{field.label}</Typography> 
                     {field.type === 'radio' ? (
                          <RadioGroup
                          value={formData[field.name] || ''}

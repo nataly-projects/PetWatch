@@ -39,8 +39,8 @@ const HealthInformation = ({
             <Typography variant="subtitle1">Medical Conditions</Typography>
             <Box sx={{ mb: 2 }}>
                 {medicalConditions.map((item, index) => (
-                    <Box key={index} className="activity-card">
-                        <Box className="activity-card-header">
+                    <Box key={index} >
+                        <Box >
                             <Typography><strong>{item.name}</strong></Typography>
                             <FontAwesomeIcon icon={faTrash} onClick={() => onDelete('medicalConditions', index)} />
                         </Box>
@@ -65,8 +65,8 @@ const HealthInformation = ({
             <Typography variant="subtitle1">Allergies</Typography>
             <Box sx={{ mb: 2 }}>
                 {allergies.map((item, index) => (
-                    <Box key={index} className="activity-card">
-                        <Box className="activity-card-header">
+                    <Box key={index} >
+                        <Box >
                             <Typography><strong>{item.name}</strong></Typography>
                             <FontAwesomeIcon icon={faTrash} onClick={() => onDelete('allergies', index)} />
                         </Box>
@@ -91,8 +91,8 @@ const HealthInformation = ({
             <Typography variant="subtitle1">Medications</Typography>
             <Box sx={{ mb: 2 }}>
                 {medications.map((item, index) => (
-                    <Box key={index} className="activity-card">
-                        <Box className="activity-card-header">
+                    <Box key={index} >
+                        <Box >
                             <Typography><strong>{item.name}</strong></Typography>
                             <FontAwesomeIcon icon={faTrash} onClick={() => onDelete('medications', index)} />
                         </Box>

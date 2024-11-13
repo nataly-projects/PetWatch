@@ -10,13 +10,13 @@ const PetSlider = ({ pets }) => {
     dots: true,
     infinite: true,
     speed: 500,
-    slidesToShow: 3,
+    slidesToShow: Math.min(3, pets.length),
     slidesToScroll: 1,
     responsive: [
       {
         breakpoint: 768,
         settings: {
-          slidesToShow: 2,
+          slidesToShow: Math.min(2, pets.length),
           slidesToScroll: 1,
         },
       },
@@ -34,7 +34,7 @@ const PetSlider = ({ pets }) => {
     <Box
       sx={{
         '.slick-slider': { display: 'grid', width: '100%' },
-        '.slick-list': {display: 'flex', gap: '10px'},
+        '.slick-track': { display: 'flex', gap: '10px' },
         '.slick-dots li button:before': {
           fontSize: '10px',
           color: '#ccc',
