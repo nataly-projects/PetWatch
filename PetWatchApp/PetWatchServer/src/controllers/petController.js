@@ -929,7 +929,7 @@ async function addPetEmergencyContacts (req, res) {
         const contact = new EmergencyContact({
             name: contactData.name,
             phone: contactData.phone,
-            relationship: contactData.type,
+            type: contactData.type,
             petId: petId
         });
         await contact.save();
@@ -949,7 +949,7 @@ async function addPetEmergencyContacts (req, res) {
             userId: pet.owner, 
             petId: petId,
             actionType: ActivityLogType.EMERGENCT_CONTACT_ADDED,
-            details: `Contact details:\n Name:${contact.name}, Relationship:${contact.relationship}` 
+            details: `Contact details:\n Name:${contact.name}, Relationship:${contact.type}` 
            
         });
         await activityLog.save();
@@ -1350,7 +1350,7 @@ async function updateEmergencyContactById (req, res) {
 
         contact.name = contactData.name;
         contact.phone = contactData.phone;
-        contact.relationship = contactData.type;
+        contact.type = contactData.type;
         await contact.save();
 
         const pet = await Pet.findById(contact.petId);

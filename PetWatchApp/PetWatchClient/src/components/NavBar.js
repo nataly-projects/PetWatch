@@ -8,6 +8,15 @@ import logoImage from "../images/logo.png";
 import UserPopup from "./UserPopup";
 import NotificationPopup from './NotificationPopup';
 
+const navLinkStyles = {
+    textDecoration: 'none',
+    color: '#795B4A',
+    margin: '0 10px',
+    '&:hover': {
+      color: 'lightblue',
+    },
+};
+
 const NavBar = () => {
     const isLoggedIn = useSelector((state) => state.isLoggedIn);
     const user = useSelector((state) => state.user);
@@ -27,18 +36,42 @@ const NavBar = () => {
 
     const renderGuestNavBar = () => {
         return (
-        <AppBar position="static" color="primary">
+        <AppBar position='static'>
             <Toolbar sx={{ justifyContent: 'space-between' }}>
                 <Box display="flex" alignItems="center">
                     <Avatar src={logoImage} alt="Logo" sx={{ marginRight: 2 }} />
-                    <Typography variant="h6" component="div">
+                    {/* <Typography variant="h6" component="div">
                         PetWatch
-                    </Typography>
+                    </Typography> */}
                 </Box>
                 <Box>
-                    <NavLink to="/about" className="nav-link">About</NavLink>
-                    <NavLink to="/info" className="nav-link">Information</NavLink>
-                    <NavLink to="/contact" className="nav-link">Contact</NavLink>
+                <NavLink
+                    to="/about"
+                    style={({ isActive }) =>
+                    isActive
+                        ? { ...navLinkStyles, fontWeight: 'bold' }
+                        : navLinkStyles
+                    } >
+                    About
+                </NavLink>
+                <NavLink
+                    to="/info"
+                    style={({ isActive }) =>
+                    isActive
+                        ? { ...navLinkStyles, fontWeight: 'bold' }
+                        : navLinkStyles
+                    } >
+                    Information
+                </NavLink>
+                <NavLink
+                    to="/contact"
+                    style={({ isActive }) =>
+                    isActive
+                        ? { ...navLinkStyles, fontWeight: 'bold' }
+                        : navLinkStyles
+                    }>
+                    Contact
+                </NavLink>
                     <Link to="/login">
                         <IconButton color="inherit">
                             <FontAwesomeIcon icon={faUser} />

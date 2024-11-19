@@ -4,7 +4,8 @@ import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 import { formatDate } from '../utils/utils';
 import { addPetEmergencyContact, updateEmergencyContactById, deleteEmergencyContactById } from '../services/petService';
-import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
+  Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { FormFieldsType, formFieldsConfig } from '../utils/utils';
 import GenericActivityForm from './GenericActivityForm';
 
@@ -13,14 +14,19 @@ const EmergencyContactsSection = ({ propsContacts, petId, token }) => {
   const [contacts, setContacts] = useState(propsContacts);
   const [editingContact, setEditingContact] = useState(null);
   const [editMode, setEditMode] = useState(false);
-  const [showAddContactActivity, setShowAddContactActivity] = useState(false);
+  // const [showAddContactActivity, setShowAddContactActivity] = useState(false);
+  const [isAddContactDialogOpen, setIsAddContactDialogOpen] = useState(false);
 
   const handleAddContactClick = () => {
-    setShowAddContactActivity(true);
+    setIsAddContactDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setIsAddContactDialogOpen(false);
   };
 
   const handleAddContact = async (contact) => {
-    setShowAddContactActivity(false);
+    setIsAddContactDialogOpen(false);
     try {
       const response = await addPetEmergencyContact(petId, contact, token);
       setContacts([...contacts, response.contact]);
@@ -38,6 +44,7 @@ const EmergencyContactsSection = ({ propsContacts, petId, token }) => {
   };
 
   const handleEditClick = (contact) => {
+    console.log(contact);
     setEditMode(true);
     setEditingContact(contact);
   };
@@ -65,7 +72,6 @@ const EmergencyContactsSection = ({ propsContacts, petId, token }) => {
       toast.error('Failed to delete emergency contact. Please try again.');
     }
   };
-console.log(editingContact);
   const formConfig = editMode ? formFieldsConfig(editingContact.name)[FormFieldsType.EMERGENCY_CONTACT] : formFieldsConfig()[FormFieldsType.EMERGENCY_CONTACT];
 
   return (
@@ -89,7 +95,7 @@ console.log(editingContact);
                 <TableRow key={contact._id}>
                   <TableCell>{contact.name}</TableCell>
                   <TableCell>{contact.phone}</TableCell>
-                  <TableCell>{contact.relationship}</TableCell>
+                  <TableCell>{contact.type}</TableCell>
                   <TableCell>{formatDate(contact.created_at)}</TableCell>
                   <TableCell>{contact.updatedDate ? formatDate(contact.updatedDate) : '-'}</TableCell>
                   <TableCell>
@@ -121,7 +127,7 @@ console.log(editingContact);
       )}
 
       <Button variant="contained" sx={{ mt: 2 }} onClick={handleAddContactClick}>Add Contact</Button>
-      {showAddContactActivity && formConfig && (
+      {/* {showAddContactActivity && formConfig && (
         <Box sx={{ padding: '10px', margin: '10px auto', width: '70%', border: '1px solid #ccc', borderRadius: '8px' }}>
            <GenericActivityForm
             title= {formConfig.title}
@@ -131,7 +137,23 @@ console.log(editingContact);
               validationRules={formConfig.validationRules}                
             />
         </Box>
-      )}
+      )} */}
+      <Dialog open={(isAddContactDialogOpen && formConfig)} onClose={handleDialogClose} fullWidth maxWidth="sm">
+        {/* <DialogTitle>{formConfig.title}</DialogTitle> */}
+        <DialogContent>
+          {formConfig && (
+            <GenericActivityForm
+              title={formConfig.title}
+              fields={formConfig.fields}
+              validationRules={formConfig.validationRules}
+            />
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose}>Cancel</Button>
+          <Button variant="contained" onClick={() => console.log('Expense added')}>Save</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

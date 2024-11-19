@@ -28,7 +28,7 @@ import { FormFieldsType } from '../utils/utils';
 
 const PetProfile = () => {
   const location = useLocation();
-  const { pet, currencySign } = location.state;
+  const { pet } = location.state;
   const navigate = useNavigate();
   const token = useSelector((state) => state.token);
 
@@ -278,7 +278,7 @@ const PetProfile = () => {
     </Box>
 
     <Box sx={{ mb: 4 }}>
-      <ExpenseTracker expenses={activityRecords.expensesRecord} from="pet" petName={petDetails.name} currencySign={currencySign} />
+      <ExpenseTracker expenses={activityRecords.expensesRecord} from="pet" petName={petDetails.name} />
     </Box>
 
     <Box sx={{ mb: 4 }}>

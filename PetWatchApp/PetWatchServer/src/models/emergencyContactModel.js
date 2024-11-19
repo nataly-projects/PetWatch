@@ -16,7 +16,7 @@ const emergencyContactsSchema = new Schema({
         type: String,
         required: true
     },
-    relationship: {
+    type: {
         type: String,
         required: true
     },

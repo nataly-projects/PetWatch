@@ -12,6 +12,8 @@ import FilterSection from './FilterSection';
 import { ExpensesType } from '../utils/utils';
 import ExportToCSVButton from './ExportToCSVButton';
 import { formatDateUniversal } from '../utils/utils';
+import { FormFieldsType, formFieldsConfig } from '../utils/utils';
+import GenericActivityForm from './GenericActivityForm';
 
 Chart.register(ArcElement, Tooltip, Legend);
 
@@ -28,21 +30,48 @@ const ExpenseTracker = ({ expenses, from, petName }) => {
   const [startDateFilter, setStartDateFilter] = useState('');
   const [endDateFilter, setEndDateFilter] = useState('');
   const [minAmountFilter, setMinAmountFilter] = useState('');
+  const [showAddExpenseActivity, setShowAddExpenseActivity] = useState(false);
 
   const handleCategoryChange = (event) => setCategoryFilter(event.target.value);
   const handleStartDateChange = (event) => setStartDateFilter(event.target.value);
   const handleEndDateChange = (event) => setEndDateFilter(event.target.value);
   const handleMinAmountChange = (event) => setMinAmountFilter(event.target.value);
 
-  const columns = useMemo(
-    () => [
-      { Header: 'Date', accessor: 'date', Cell: ({ value }) => formatDateUniversal(new Date(value)) },
-      petName == null ? { Header: 'Pet Name', accessor: 'petName', show: petName == null } : { Header: 'Pet Name', accessor: 'petName', show: false },
-      { Header: 'Category', accessor: 'category' },
-      { Header: 'Amount', accessor: 'amount', Cell: ({ value }) => value.toFixed(2) },
-    ],
-    []
-  );
+  const handleAddExpenseClick = () => {
+    setShowAddExpenseActivity(true);
+  };
+
+  const formConfig = formFieldsConfig()[FormFieldsType.EXPENSE];
+
+
+  const columns = useMemo(() => {
+    const baseColumns = [
+      {
+        Header: 'Date',
+        accessor: 'date',
+        Cell: ({ value }) => formatDateUniversal(new Date(value)),
+      },
+      {
+        Header: 'Category',
+        accessor: 'category',
+      },
+      {
+        Header: 'Amount',
+        accessor: 'amount',
+        Cell: ({ value }) => `${currencySign} ${value.toFixed(2)}`,
+      },
+    ];
+
+    // Conditionally add the Pet Name column
+    if (from === 'user') {
+      baseColumns.splice(1, 0, {
+        Header: 'Pet Name',
+        accessor: 'pet.name',
+      });
+    }
+
+    return baseColumns;
+  }, [from, currencySign]);
 
   const pieChartOptions = {
     plugins: {
@@ -164,6 +193,22 @@ const ExpenseTracker = ({ expenses, from, petName }) => {
               options={pieChartOptions}
             />
           </Box>
+        </Box>
+      )}
+      {
+        from === 'pet' && (
+          <Button variant="contained" sx={{ mt: 5 }} onClick={handleAddExpenseClick}>Add Expense</Button>
+        )
+      }
+       {showAddExpenseActivity && formConfig && (
+        <Box sx={{ padding: '10px', margin: '10px auto', width: '70%', border: '1px solid #ccc', borderRadius: '8px' }}>
+           <GenericActivityForm
+            title= {formConfig.title}
+            fields={formConfig.fields}
+            // onSave={(data) => handleAddContact(data)}
+            // onClose={() => setShowAddContactActivity(false)}
+            validationRules={formConfig.validationRules}                
+            />
         </Box>
       )}
     </Box>
