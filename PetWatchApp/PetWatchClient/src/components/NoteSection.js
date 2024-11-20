@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useTable, useSortBy, usePagination } from 'react-table';
-import { Box, Button, Table as MuiTable, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, IconButton } from '@mui/material';
+import { Box, Button, Table as MuiTable, TableBody, TableCell, TableHead, TableRow, Typography, Modal } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortUp, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
@@ -17,10 +17,18 @@ const NoteSection = ({ propsNotes, petId }) => {
   const [notes, setNotes] = useState(propsNotes);
   const [editingNote, setEditingNote] = useState(null);
   const [editMode, setEditMode] = useState(false);
-  const [showAddNoteActivity, setShowAddNoteActivity] = useState(false);
+  const [isAddNoteDialogOpen, setIsAddNoteDialogOpen] = useState(false);
+
+  const handleAddNoteClick = () => {
+    setIsAddNoteDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setIsAddNoteDialogOpen(false);
+  };
 
   const handleAddNote = async (note) => {
-    setShowAddNoteActivity(false);
+    setIsAddNoteDialogOpen(false);
     try {
       const response = await addPetNote(petId, note, token);
       setNotes([...notes, response.note]);
@@ -70,7 +78,10 @@ const NoteSection = ({ propsNotes, petId }) => {
       setNotes(notes.map((note) => (note._id === updatedNote._id ? updatedNote : note)));
       toast.success('Note updated successfully!');
     } catch (error) {
-      if (error.response && error.response.status === 401) navigate('/login');
+      console.log(error);
+      if (error.response && error.response.status === 401){
+        navigate('/login');
+      } 
       toast.error('Failed to update note. Please try again.');
     }
   };
@@ -99,38 +110,38 @@ const NoteSection = ({ propsNotes, petId }) => {
           <Table instance={notesTableInstance} />
           {petId && (
             <>
-              <Button variant="contained" sx={{ mt: 2 }} onClick={() => setShowAddNoteActivity(true)}>
+              <Button variant="contained" sx={{ mt: 2 }} onClick={handleAddNoteClick}>
                 Add Note
               </Button>
-              {showAddNoteActivity && formConfig &&(
-                <Box sx={{ mt: 2, p: 2, border: '1px solid #ccc', borderRadius: 1 }}>
-                    <GenericActivityForm
-                    title={formConfig.title}
+              <Modal open={(isAddNoteDialogOpen && formConfig)} onClose={handleDialogClose}>
+                <Box sx={{ p: 4, backgroundColor: 'white', borderRadius: '8px', width: '50%', mx: 'auto', my: '10%' }}>
+                  <GenericActivityForm
+                    title= {formConfig.title}
                     fields={formConfig.fields}
-                    validationRules={formConfig.validationRules}
-                    onClose={() => setShowAddNoteActivity(false)}
-                    onSave={handleAddNote}
+                    onSave={(data) => handleAddNote(data)}
+                    onClose={handleDialogClose}
+                    validationRules={formConfig.validationRules}                
                     />
                 </Box>
-              )}
+              </Modal>
             </>
           )}
         </>
       ) : (
         <Typography>No notes yet.</Typography>
       )}
-      {editMode && formConfig &&(
-        <Box sx={{ mt: 2, p: 2, border: '1px solid #ccc', borderRadius: 1 }}>
-          <GenericActivityForm
-          title={formConfig.title}
+      <Modal open={(editMode && formConfig)} onClose={handleDialogClose}>
+        <Box sx={{ p: 4, backgroundColor: 'white', borderRadius: '8px', width: '50%', mx: 'auto', my: '10%' }}>
+        <GenericActivityForm
+          title= {formConfig.title}
           fields={formConfig.fields}
-          validationRules={formConfig.validationRules}
-          initialData={editingNote}
+          onSave={(data) => handleEditNote(data)}
           onClose={() => setEditMode(false)}
-          onSave={handleEditNote}
-          />
+          validationRules={formConfig.validationRules}    
+          initialData={editingNote}            
+            />
         </Box>
-      )}
+      </Modal>
     </Box>
   );
 };

@@ -6,7 +6,7 @@ import { styled } from '@mui/system';
 
 const Container = styled(Box)({
   padding: '20px',
-  width: '80%',
+//   width: '80%',
   border: '1px solid #795B4A',
   borderRadius: '10px',
   marginTop: '5px',
@@ -30,10 +30,15 @@ const Container = styled(Box)({
 });
 
 const GenericActivityForm = ({ title, fields, onSave, onClose, initialData = {}, validationRules = {}, showHeader = true }) => {
-    const [formData, setFormData] = useState(initialData);
+    const [formData, setFormData] = useState(() => {
+        // Initialize formData with field values or defaults
+        return fields.reduce((acc, field) => {
+          acc[field.name] = field.value || initialData[field.name] || '';
+          return acc;
+        }, {});
+      });
     const [errors, setErrors] = useState({});
-
-
+    
     const handleInputChange = (field, value) => {
         setFormData((prevData) => {
             const updatedData = { ...prevData, [field]: value };
@@ -61,7 +66,7 @@ const GenericActivityForm = ({ title, fields, onSave, onClose, initialData = {},
     return (
         <Container>
             {showHeader &&  
-            <Box >
+            <Box sx={{display: 'flex', justifyContent: 'space-between'}}>
                 <Typography variant="h5">{title}</Typography>
                 <IconButton onClick={onClose} >
                     <FontAwesomeIcon icon={faTimes} />

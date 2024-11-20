@@ -81,7 +81,7 @@ const HealthInformation = ({
                   title= {allergyFormConfig.title}
                   fields={allergyFormConfig.fields}
                    onSave={(data) => onAdd('allergies', data)}
-                   onClose={() => toggleAddForm('allergies')}
+                   onClose={() => toggleAddForm('allergy')}
                    validationRules={allergyFormConfig.validationRules}                
                    />
             )}
@@ -108,7 +108,7 @@ const HealthInformation = ({
                   title= {medicationFormConfig.title}
                   fields={medicationFormConfig.fields}
                    onSave={(data) => onAdd('medications', data)}
-                   onClose={() => toggleAddForm('medications')}
+                   onClose={() => toggleAddForm('medication')}
                    validationRules={medicationFormConfig.validationRules}
                    />
             )}

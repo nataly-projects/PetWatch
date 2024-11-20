@@ -6,7 +6,7 @@ import { Chart, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortUp, faSortDown, faSort } from '@fortawesome/free-solid-svg-icons';
-import { Box, Typography, Button } from '@mui/material';
+import { Box, Typography, Button, Modal } from '@mui/material';
 import { Currency } from '../utils/utils';
 import FilterSection from './FilterSection';
 import { ExpensesType } from '../utils/utils';
@@ -30,7 +30,7 @@ const ExpenseTracker = ({ expenses, from, petName }) => {
   const [startDateFilter, setStartDateFilter] = useState('');
   const [endDateFilter, setEndDateFilter] = useState('');
   const [minAmountFilter, setMinAmountFilter] = useState('');
-  const [showAddExpenseActivity, setShowAddExpenseActivity] = useState(false);
+  const [isAddExpenseDialogOpen, setIsAddExpenseDialogOpen] = useState(false);
 
   const handleCategoryChange = (event) => setCategoryFilter(event.target.value);
   const handleStartDateChange = (event) => setStartDateFilter(event.target.value);
@@ -38,7 +38,11 @@ const ExpenseTracker = ({ expenses, from, petName }) => {
   const handleMinAmountChange = (event) => setMinAmountFilter(event.target.value);
 
   const handleAddExpenseClick = () => {
-    setShowAddExpenseActivity(true);
+    setIsAddExpenseDialogOpen(true);
+  };
+
+  const handleDialogClose = () => {
+    setIsAddExpenseDialogOpen(false);
   };
 
   const formConfig = formFieldsConfig()[FormFieldsType.EXPENSE];
@@ -200,17 +204,17 @@ const ExpenseTracker = ({ expenses, from, petName }) => {
           <Button variant="contained" sx={{ mt: 5 }} onClick={handleAddExpenseClick}>Add Expense</Button>
         )
       }
-       {showAddExpenseActivity && formConfig && (
-        <Box sx={{ padding: '10px', margin: '10px auto', width: '70%', border: '1px solid #ccc', borderRadius: '8px' }}>
-           <GenericActivityForm
+      <Modal open={(isAddExpenseDialogOpen && formConfig)} onClose={handleDialogClose}>
+        <Box sx={{ p: 4, backgroundColor: 'white', borderRadius: '8px', width: '50%', mx: 'auto', my: '10%' }}>
+          <GenericActivityForm
             title= {formConfig.title}
             fields={formConfig.fields}
             // onSave={(data) => handleAddContact(data)}
-            // onClose={() => setShowAddContactActivity(false)}
+            onClose={handleDialogClose}
             validationRules={formConfig.validationRules}                
             />
         </Box>
-      )}
+      </Modal>
     </Box>
   );
 };

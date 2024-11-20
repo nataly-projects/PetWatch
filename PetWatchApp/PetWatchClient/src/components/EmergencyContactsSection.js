@@ -4,8 +4,7 @@ import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 import { formatDate } from '../utils/utils';
 import { addPetEmergencyContact, updateEmergencyContactById, deleteEmergencyContactById } from '../services/petService';
-import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
+import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Modal } from '@mui/material';
 import { FormFieldsType, formFieldsConfig } from '../utils/utils';
 import GenericActivityForm from './GenericActivityForm';
 
@@ -14,7 +13,6 @@ const EmergencyContactsSection = ({ propsContacts, petId, token }) => {
   const [contacts, setContacts] = useState(propsContacts);
   const [editingContact, setEditingContact] = useState(null);
   const [editMode, setEditMode] = useState(false);
-  // const [showAddContactActivity, setShowAddContactActivity] = useState(false);
   const [isAddContactDialogOpen, setIsAddContactDialogOpen] = useState(false);
 
   const handleAddContactClick = () => {
@@ -113,47 +111,32 @@ const EmergencyContactsSection = ({ propsContacts, petId, token }) => {
         <Typography>No Emergency Contacts yet.</Typography>
       )}
 
-      {editMode && formConfig && (
-        <Box sx={{ padding: '10px', margin: '10px auto', width: '70%', border: '1px solid #ccc', borderRadius: '8px' }}>
+      <Modal open={(editMode && formConfig)} onClose={handleDialogClose}>
+        <Box sx={{ p: 4, backgroundColor: 'white', borderRadius: '8px', width: '50%', mx: 'auto', my: '10%' }}>
         <GenericActivityForm
             title= {formConfig.title}
             fields={formConfig.fields}
               onSave={(data) => handleEditContact(data)}
               onClose={() => setEditMode(false)}
-              validationRules={formConfig.validationRules}  
-              initialData={editingContact}              
+              validationRules={formConfig.validationRules}    
+              initialData={editingContact}            
             />
         </Box>
-      )}
+      </Modal>
 
       <Button variant="contained" sx={{ mt: 2 }} onClick={handleAddContactClick}>Add Contact</Button>
-      {/* {showAddContactActivity && formConfig && (
-        <Box sx={{ padding: '10px', margin: '10px auto', width: '70%', border: '1px solid #ccc', borderRadius: '8px' }}>
-           <GenericActivityForm
+       <Modal open={(isAddContactDialogOpen && formConfig)} onClose={handleDialogClose}>
+        <Box sx={{ p: 4, backgroundColor: 'white', borderRadius: '8px', width: '50%', mx: 'auto', my: '10%' }}>
+        <GenericActivityForm
             title= {formConfig.title}
             fields={formConfig.fields}
               onSave={(data) => handleAddContact(data)}
-              onClose={() => setShowAddContactActivity(false)}
+              onClose={handleDialogClose}
               validationRules={formConfig.validationRules}                
             />
         </Box>
-      )} */}
-      <Dialog open={(isAddContactDialogOpen && formConfig)} onClose={handleDialogClose} fullWidth maxWidth="sm">
-        {/* <DialogTitle>{formConfig.title}</DialogTitle> */}
-        <DialogContent>
-          {formConfig && (
-            <GenericActivityForm
-              title={formConfig.title}
-              fields={formConfig.fields}
-              validationRules={formConfig.validationRules}
-            />
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDialogClose}>Cancel</Button>
-          <Button variant="contained" onClick={() => console.log('Expense added')}>Save</Button>
-        </DialogActions>
-      </Dialog>
+      </Modal>
+
     </Box>
   );
 };

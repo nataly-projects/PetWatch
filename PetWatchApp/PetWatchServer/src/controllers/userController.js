@@ -618,10 +618,28 @@ async function updateUserTask(req, res) {
 async function deleteUserTask(req, res) {
   const { userId, taskId } = req.params;
   try {
-  
+    const task = await Task.findByIdAndDelete(taskId);
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+    const user = await User.findById(userId);
+    user.tasks = user.tasks.filter(t => t.toString() !== taskId);
+    await user.save();
+
+    // Log the activity
+    const activityLog = new ActivityLog({
+      userId: userId, 
+      type: ActivityType.TASK,
+      actionType: ActivityLogType.TASK_DELETE
+    });
+    await activityLog.save();
+    res.status(200).json({ message: 'Task deleted successfully' });
+
   } catch (error) {
-    return res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Error while deleting task, please try again later' });
   }
+
+   
 }
 
 // function genreateSecretKey () {

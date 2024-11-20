@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useTable, useSortBy, usePagination } from 'react-table';
-import { Button, IconButton, Box, CircularProgress, Typography } from '@mui/material';
+import { Button, IconButton, Box, CircularProgress, Typography, Modal } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAdd, faEdit, faTrash, faSortUp, faSortDown, faSort, faDownload } from '@fortawesome/free-solid-svg-icons';
-import TaskModal from '../components/TaskModal';
 import { formatDateUniversal } from '../utils/utils';
-import { fetchUserTasks, updateUserTask, deleteUserTask } from '../services/userService';
+import { fetchUserTasks, updateUserTask, deleteUserTask, addUserTask } from '../services/userService';
+import { FormFieldsType, formFieldsConfig } from '../utils/utils';
+import GenericActivityForm from '../components/GenericActivityForm';
 
 const TaskListPage = () => {
     const navigate = useNavigate();
@@ -15,11 +17,11 @@ const TaskListPage = () => {
     const token = useSelector((state) => state.token);
 
     const [tasks, setTasks] = useState([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [currentTask, setCurrentTask] = useState(null);
+    const [editingTask, setEditingTask] = useState(null);
     const [isEditMode, setIsEditMode] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(false);
+    const [isAddTaskDialogOpen, setIsAddTaskDialogOpen] = useState(false);
 
     useEffect(() => {
         fetchTasks();
@@ -28,6 +30,7 @@ const TaskListPage = () => {
     const fetchTasks = async () => {
         try {
             const response = await fetchUserTasks(user._id, token);
+            console.log(response);
             setTasks(response);
             setLoading(false);
         } catch (error) {
@@ -44,6 +47,41 @@ const TaskListPage = () => {
         }
     };
 
+    const handleDialogClose = () => {
+        setIsAddTaskDialogOpen(false);
+    };
+
+    const handleAddTaskClick = () => {
+        setIsAddTaskDialogOpen(true);
+    };
+
+    const handleEditClick = (task) => {
+        setIsEditMode(true);
+        setEditingTask(task);
+    };
+
+    const handleCheckboxChange = async (task) => {
+        const updatedTask = {
+            ...task,
+            completed: !task.completed, 
+        };
+        try {
+            await updateUserTask(user._id, updatedTask, token);
+            console.log(tasks);
+            setTasks(prevTasks => 
+                prevTasks.map(t => (t._id === task._id ? updatedTask : t))
+            );
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                console.error('UNAUTHORIZED_ERROR');
+                navigate('/login');
+            } else {
+                console.error('Error updating task:', error);
+            }
+        }
+
+    };
+
     const columns = useMemo(
         () => [
             { Header: '', accessor: 'checkbox', disableSortBy: true, 
@@ -51,6 +89,7 @@ const TaskListPage = () => {
                     <input
                         type="checkbox"
                         checked={row.original.completed}
+                        onChange={() => handleCheckboxChange(row.original)}
                     />
                 ),
             },
@@ -60,7 +99,7 @@ const TaskListPage = () => {
             { Header: 'Due Date', accessor: 'dueDate', Cell: ({ value }) => formatDateUniversal(new Date(value)) },
             { Header: 'Actions', accessor: 'actions', disableSortBy: true, Cell: ({ row }) => (
                 <div>
-                    <IconButton color="primary" onClick={() => openEditModal(row.original)}>
+                    <IconButton color="primary" onClick={() => handleEditClick(row.original)}>
                         <FontAwesomeIcon icon={faEdit} />
                     </IconButton>
                     <IconButton color="secondary" onClick={() => handleDeleteTask(row.original._id)}>
@@ -82,15 +121,36 @@ const TaskListPage = () => {
         usePagination
     );
 
-    const handleAddTask = (newTask) => {
-        setTasks([...tasks, newTask]);
+
+    const handleAddTask = async (newTask) => {
+        setIsAddTaskDialogOpen(false);
+        try{
+            const response = await addUserTask(user._id, newTask, token);
+            console.log(response);
+            if (response && response.task) {
+                toast.success('Task added successfully!');
+                setTasks([...tasks, response.task]);
+            }
+            
+          } catch (error) {
+            if (error.response && error.response.status === 401) {
+                console.error('UNAUTHORIZED_ERROR');
+                navigate('/login');
+            }
+            toast.error('Failed to adding task. Please try again.');
+        }
     };
 
     const handleEditTask = async (updatedTask) => {
+        setIsEditMode(false);
+        setEditingTask(null);
+
         try {
-            await updateUserTask(user._id, updatedTask, token)
-            setTasks(tasks.map(task => (task._id === updatedTask._id ? updatedTask : task)));
-            setIsModalOpen(false);
+            await updateUserTask(user._id, updatedTask, token);
+            setTasks(prevTasks => 
+                prevTasks.map(task => (task._id === updatedTask._id ? updatedTask : task))
+            );
+            // setTasks(tasks.map(task => (task._id === updatedTask._id ? updatedTask : task)));
         } catch (error) {
             if (error.response && error.response.status === 401) {
                 console.error('UNAUTHORIZED_ERROR');
@@ -103,7 +163,7 @@ const TaskListPage = () => {
 
     const handleDeleteTask = async (taskId) => {
         try {
-            await deleteUserTask(user._id, taskId);
+            await deleteUserTask(user._id, taskId, token);
             setTasks(tasks.filter(task => task._id !== taskId));
         } catch (error) {
             if (error.response && error.response.status === 401) {
@@ -115,21 +175,6 @@ const TaskListPage = () => {
         }
     };
 
-    const openAddModal = () => {
-        setIsEditMode(false);
-        setCurrentTask(null);
-        setIsModalOpen(true);
-    };
-
-    const openEditModal = (task) => {
-        setIsEditMode(true);
-        setCurrentTask(task);
-        setIsModalOpen(true);
-    };
-
-    const closeModal = () => {
-        setIsModalOpen(false);
-    };
 
     const handleDownload = () => {
         const headers = ["Title", "Description", "Create Date", "Due Date", "Completed"];
@@ -177,12 +222,15 @@ const TaskListPage = () => {
         );
     }
 
+    const formConfig = isEditMode ? formFieldsConfig(editingTask)[FormFieldsType.TASK] : formFieldsConfig()[FormFieldsType.TASK];
+
+
     return (
         <Box style={{padding: '20px', width: '90%', margin: '0 auto'}} >
             <Box style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}   mb={2}>
                 <Typography variant="h4">All Tasks</Typography>
                 <Box display="flex" gap="10px">
-                    <IconButton color="primary" onClick={openAddModal}>
+                    <IconButton color="primary" onClick={handleAddTaskClick}>
                         <FontAwesomeIcon icon={faAdd} />
                     </IconButton>
                     <IconButton color="primary" onClick={handleDownload}>
@@ -195,13 +243,31 @@ const TaskListPage = () => {
             ) : (
                 <Typography>No Tasks yet.</Typography>
             )}
-            <TaskModal
-                isOpen={isModalOpen}
-                onClose={closeModal}
-                onSubmit={isEditMode ? handleEditTask : handleAddTask}
-                task={currentTask}
-                isEditMode={isEditMode}
-            />
+
+            <Modal open={(isAddTaskDialogOpen && formConfig)} onClose={handleDialogClose}>
+                <Box sx={{ p: 4, backgroundColor: 'white', borderRadius: '8px', width: '50%', mx: 'auto', my: '10%' }}>
+                    <GenericActivityForm
+                        title= {formConfig.title}
+                        fields={formConfig.fields}
+                        onSave={(data) => handleAddTask(data)}
+                        onClose={handleDialogClose}
+                        validationRules={formConfig.validationRules}                
+                    />
+                </Box>
+            </Modal>
+
+            <Modal open={(isEditMode && formConfig)} onClose={handleDialogClose}>
+                <Box sx={{ p: 4, backgroundColor: 'white', borderRadius: '8px', width: '50%', mx: 'auto', my: '10%' }}>
+                <GenericActivityForm
+                    title= {formConfig.title}
+                    fields={formConfig.fields}
+                    onSave={(data) => handleEditTask(data)}
+                    onClose={() => setIsEditMode(false)}
+                    validationRules={formConfig.validationRules}    
+                    initialData={editingTask}            
+                    />
+                </Box>
+            </Modal>
         </Box>
     );
 };

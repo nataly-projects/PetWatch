@@ -32,8 +32,18 @@ export const formatDate = (timestamp) => {
 };
 
 export const formatDateUniversal = (date) => {
-  if (!date) return null
-  return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(date);
+  if (!date) {
+    return null;
+  } 
+
+  // Ensure the input is a valid Date object
+  const validDate = date instanceof Date ? date : new Date(date);
+
+  if (isNaN(validDate.getTime())) {
+    console.error('Invalid date value:', date);
+    return null; // Return null for invalid date inputs
+  }
+  return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(validDate);
 };
 
 export const formatDateAndTimeForInput = (dateString) => {
@@ -45,8 +55,13 @@ export const formatDateAndTimeForInput = (dateString) => {
 
 export const formatDateForInput = (dateString) => {
   const date = new Date(dateString);
-  console.log('localDate: ', date.toLocaleDateString());
-  return date.toLocaleDateString();
+
+  // Format the date to "yyyy-MM-dd"
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
 };
 
 
@@ -219,6 +234,7 @@ export const FormFieldsType = {
   MEDICAL_CONDITION: 'medicalCondition',
   MEAL_PLANNER: 'meal',
   EMERGENCY_CONTACT: 'contact',
+  TASK: 'task',
   OTHER: 'other'
 };
 
@@ -318,7 +334,7 @@ export const formFieldsConfig = (data = {}) => ({
       title: 'Add Vet Visit',
       fields: [
         { name: 'reason', label: 'Reason', type: 'text', placeholder: 'Reason for visit' },
-        { name: 'examination', label: '', type: 'textarea', placeholder: 'Examination details' },
+        { name: 'examination', label: 'Examination', type: 'textarea', placeholder: 'Examination details' },
         { name: 'date', label: 'Date', type: 'datetime-local' },
         { name: 'nextDate', label: 'Next Date', type: 'datetime-local' },
         { name: 'note', label: 'Note', type: 'textarea', placeholder: 'Additional notes (optional)' },
@@ -344,7 +360,6 @@ export const formFieldsConfig = (data = {}) => ({
       ],
       validationRules: {title: 'Title', content: 'Content'}
   },
-
   other: {
       title: 'Add Other Activity',
       fields: [
@@ -358,8 +373,8 @@ export const formFieldsConfig = (data = {}) => ({
   meal: {
     title: Object.keys(data).length === 0 ? 'Add new meal planner' : 'Edit the meal',
     fields: [
-      { name: 'date', label: 'Date', type: 'datetime-local' },
-      { name: 'food', label: 'Food', type: 'text', placeholder: 'Food' },
+      { name: 'date', label: 'Date', type: 'datetime-local', value: (data.date ? formatDateAndTimeForInput(data.date) : '') },
+      { name: 'food', label: 'Food', type: 'text'},
       { name: 'amount', label: 'Amount', type: 'text' },
       { name: 'note', label: 'Note', type: 'textarea', placeholder: 'Additional notes (optional)' },
     ],
@@ -374,6 +389,15 @@ export const formFieldsConfig = (data = {}) => ({
       { name: 'note', label: 'Note', type: 'textarea', placeholder: 'Additional notes (optional)' },
     ],
     validationRules: {name: 'Name', phone: 'Phone', type: 'Type' }
+  },
+  task: {
+    title: Object.keys(data).length === 0 ? 'Add New Task' : `Edit Task`,
+    fields: [
+      { name: 'title', label: 'Title', type: 'text' },
+      { name: 'description', label: 'Description', type: 'textarea' },
+      { name: 'dueDate', label: 'Due Date', type: 'date', value: (data.dueDate ? formatDateForInput(data.dueDate) : '') },
+    ],
+    validationRules: {title: 'Title', description: 'Description', dueDate: 'Due Date' }
   }
 });
   

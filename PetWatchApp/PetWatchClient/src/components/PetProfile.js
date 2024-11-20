@@ -20,9 +20,7 @@ import GallerySection from './gallerySection';
 import { formatDate } from '../utils/utils';
 import { ActivityType } from '../utils/utils';
 import petDefaultImage from '../images/paw.png';
-import EditHealthItemModal from './EditHealthItemModal';
 import EditPetDetailsModal from './EditPetDetailsModal';
-import GenericActivityForm from './GenericActivityForm';
 import EditItemModal from './EditItemModal';
 import { FormFieldsType } from '../utils/utils';
 
@@ -304,12 +302,6 @@ const PetProfile = () => {
       onClose={() => setEditHealthModalVisible(false)}
       onSubmit={handleEditSubmit}
       />
-      // <EditHealthItemModal
-      //   item={itemToEdit}
-      //   type={healthEditType}
-      //   onClose={() => setEditHealthModalVisible(false)}
-      //   onSubmit={handleEditSubmit}
-      // />
     )}
 
     {editBasicDetailsModalVisible && (
@@ -319,12 +311,6 @@ const PetProfile = () => {
         onClose={() => setEditBasicDetailsModalVisible(false)}
         onSubmit={handleEditSubmit}
       />
-      // <EditPetDetailsModal
-      //   pet={petDetails}
-      //   onClose={() => setEditBasicDetailsModalVisible(false)}
-      //   onSubmit={handleEditSubmit}
-      //   type={'pet'}
-      // />
     )}
   </Box>
   );

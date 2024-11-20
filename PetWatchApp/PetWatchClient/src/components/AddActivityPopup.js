@@ -41,12 +41,12 @@ const AddActivityPopup = ({ onActivitySelect, onClose }) => {
     };
 
     const formConfig = selectedActivity ? getFormFields() : null;
-
+    const dialogTitle = selectedActivity ? (selectedNestedActivity ? `Add record for ${selectedActivity.value}: ${selectedNestedActivity.value}` :  `Add ${selectedActivity.value}`) : 'Choose Activity to Add';
     return (
         <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
             <DialogTitle>
                 <Box display="flex" justifyContent="space-between" alignItems="center">
-                    <Typography variant="h6">Choose Activity to Add</Typography>
+                    <Typography variant="h6">{dialogTitle}</Typography>
                     <IconButton onClick={onClose}>
                         <CloseIcon />
                     </IconButton>
@@ -102,6 +102,7 @@ const AddActivityPopup = ({ onActivitySelect, onClose }) => {
                         validationRules={formConfig.validationRules}
                         onSave={handleSave}
                         onClose={onClose}
+                        showHeader={false}
                     />
                     )
                 }

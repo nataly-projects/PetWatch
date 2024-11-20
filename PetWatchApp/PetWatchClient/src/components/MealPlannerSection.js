@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
 import { formatDate } from '../utils/utils';
 import { addPetMealPlanner, updateMealPlannerById, deleteMealPlannerById } from '../services/petService';
-import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Modal } from '@mui/material';
 import { FormFieldsType, formFieldsConfig } from '../utils/utils';
 import GenericActivityForm from './GenericActivityForm';
 
@@ -13,14 +13,18 @@ const MealPlannerSection = ({ propsMeals, petId, token }) => {
   const [meals, setMeals] = useState(propsMeals);
   const [editingMeal, setEditingMeal] = useState(null);
   const [editMode, setEditMode] = useState(false);
-  const [showAddMealActivity, setShowAddMealActivity] = useState(false);
 
+  const [isAddMealDialogOpen, setIsAddMealDialogOpen] = useState(false);
+
+  const handleDialogClose = () => {
+    setIsAddMealDialogOpen(false);
+  };
   const handleAddMealClick = () => {
-    setShowAddMealActivity(true);
+    setIsAddMealDialogOpen(true);
   };
 
   const handleAddMeal = async (meal) => {
-    setShowAddMealActivity(false);
+    setIsAddMealDialogOpen(false);
     try {
       const response = await addPetMealPlanner(petId, meal, token);
       setMeals([...meals, response.meal]);
@@ -107,34 +111,33 @@ const MealPlannerSection = ({ propsMeals, petId, token }) => {
         <Typography>No Meal Planner yet.</Typography>
       )}
 
-      {editMode && formConfig && (
-        <Box sx={{ padding: 2, marginTop: 2, border: '1px solid #ccc', borderRadius: '8px' }}>
+      <Modal open={(editMode && formConfig)} onClose={handleDialogClose}>
+        <Box sx={{ p: 4, backgroundColor: 'white', borderRadius: '8px', width: '50%', mx: 'auto', my: '10%' }}>
           <GenericActivityForm
             title= {formConfig.title}
             fields={formConfig.fields}
-              onSave={handleEditMeal}
-              onClose={() => setEditMode(false)}
-              validationRules={formConfig.validationRules}  
-              initialData={editingMeal}              
+            onSave={(data) => handleEditMeal(data)}
+            onClose={() => setEditMode(false)}
+            validationRules={formConfig.validationRules}    
+            initialData={editingMeal}            
             />
         </Box>
-      )}
+      </Modal>
 
       <Button variant="contained" sx={{ mt: 2 }} onClick={handleAddMealClick}>
         Add Meal
       </Button>
-
-      {showAddMealActivity && formConfig &&(
-        <Box sx={{ padding: 2, marginTop: 2, border: '1px solid #ccc', borderRadius: '8px' }}>
-           <GenericActivityForm
+      <Modal open={(isAddMealDialogOpen && formConfig)} onClose={handleDialogClose}>
+        <Box sx={{ p: 4, backgroundColor: 'white', borderRadius: '8px', width: '50%', mx: 'auto', my: '10%' }}>
+          <GenericActivityForm
             title= {formConfig.title}
             fields={formConfig.fields}
-              onSave={handleAddMeal}
-              onClose={() => setShowAddMealActivity(false)}
-              validationRules={formConfig.validationRules}                
+            onSave={(data) => handleAddMeal(data)}
+            onClose={handleDialogClose}
+            validationRules={formConfig.validationRules}                
             />
         </Box>
-      )}
+      </Modal>
     </Box>
   );
 };
