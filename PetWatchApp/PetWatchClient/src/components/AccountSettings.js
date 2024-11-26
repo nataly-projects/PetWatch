@@ -5,40 +5,35 @@ import { toast } from 'react-toastify';
 import { updateUserSettings, fetchUserAccountSettings } from '../services/userService';
 import { Currency } from '../utils/utils';
 import { Box, Typography, FormControl, InputLabel, Select, MenuItem, Button, Checkbox, FormControlLabel, CircularProgress } from '@mui/material';
+import useFetch from '../hooks/useFetch';
 
 const AccountSettings = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
 
-  const [loading, setLoading] = useState(true);
-  const [accountSettings, setAccountSettings] = useState({});
   const [notificationPreferences, setNotificationPreferences] = useState({});
   const [theme, setTheme] = useState('');
   const [currency, setCurrency] = useState('');
 
-  useEffect(() => {
-    const fetchAccountSettings = async () => {
-      try {
-        const userAccountSettings = await fetchUserAccountSettings(user._id, token);
-        setAccountSettings(userAccountSettings.accountSettings);
-        setNotificationPreferences(userAccountSettings.accountSettings.notificationPreferences);
-        setCurrency(userAccountSettings.accountSettings.currency || Currency.ILS.name);
-        setTheme(userAccountSettings.accountSettings.theme || 'light');
-        setLoading(false);
-      } catch (error) {
-        if (error.response && error.response.status === 401) {
-          navigate('/login');
-        }
-        setLoading(false);
-        console.error('Error fetching account settings:', error);
-      }
-    };
+  const { data: accountSettingsData, loading, error } = useFetch(
+    fetchUserAccountSettings,
+    [user._id, token],
+    null
+  );
 
-    if (user) {
-      fetchAccountSettings();
+  const accountSettings = accountSettingsData?.accountSettings || {};
+  const userCurrency = accountSettings?.currency || Currency.ILS.name;
+  const userTheme = accountSettings?.theme || 'light';
+
+  useEffect(() => {
+    if (accountSettings?.notificationPreferences) {
+      setNotificationPreferences(accountSettings.notificationPreferences);
     }
-  }, [user, token, navigate]);
+    setTheme(userTheme);
+    setCurrency(userCurrency);
+  }, [accountSettings, userCurrency, userTheme]);
+
 
   const handleNotificationChange = (event) => {
     const { name, checked } = event.target;
@@ -63,11 +58,25 @@ const AccountSettings = () => {
     }
   };
 
+
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
         <CircularProgress />
         <Typography variant="body1" ml={2}>Loading...</Typography>
+      </Box>
+    );
+  }
+
+  if (error) {
+    console.error('Error fetching account settings:', error);
+    if (error.response && error.response.status === 401) {
+      navigate('/login');
+      return null;
+    }
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
+        <Typography variant="body1">Failed to fetch account settings. Please try again later.</Typography>
       </Box>
     );
   }
@@ -137,7 +146,7 @@ const AccountSettings = () => {
           label="Currency"
         >
           {Object.keys(Currency).map((currencyCode) => (
-            <MenuItem key={currencyCode} value={currencyCode}>
+            <MenuItem key={currencyCode} value={Currency[currencyCode].value}>
               {Currency[currencyCode].name} ({Currency[currencyCode].sign})
             </MenuItem>
           ))}

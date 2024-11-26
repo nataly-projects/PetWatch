@@ -16,6 +16,7 @@ router.post('/contact', userController.ContactUsMessage);
 router.use(authenticateToken);
 
 router.get('/:userId', userController.getUserById);
+router.get('/dashboard/:userId', userController.getUserDashboardData);
 router.get('/activity/:userId', userController.getUserActivityLog);
 router.get('/expenses/:userId', userController.getUserExpensesArrays);
 router.get('/upcoming/:userId', userController.getUserUpcomingEvents);

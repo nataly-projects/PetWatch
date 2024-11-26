@@ -42,6 +42,7 @@ const AddActivityPopup = ({ onActivitySelect, onClose }) => {
 
     const formConfig = selectedActivity ? getFormFields() : null;
     const dialogTitle = selectedActivity ? (selectedNestedActivity ? `Add record for ${selectedActivity.value}: ${selectedNestedActivity.value}` :  `Add ${selectedActivity.value}`) : 'Choose Activity to Add';
+    
     return (
         <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
             <DialogTitle>

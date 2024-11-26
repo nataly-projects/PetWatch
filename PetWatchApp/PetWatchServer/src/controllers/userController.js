@@ -27,6 +27,35 @@ async function getUserById(req, res) {
     }
 }
 
+async function getUserDashboardData(req, res) {
+  const {userId} = req.params;
+  try {
+      const user = await User.findById(userId).populate('pets').populate('tasks');
+console.log('user dash: ', user);
+      if (!user) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      
+      const [activityLogs, notes, events, expenses,] = await Promise.all([
+        fetchUserActivityLog(userId),
+        fetchUserNotes(userId),
+        fetchUserUpcomingEvents(userId),
+        fetchUserExpensesArrays(userId),
+      ]);
+      const dashboardData = {
+        userData: user,
+        activityLogs,
+        notes,
+        events,
+        expenses
+      };
+      console.log(dashboardData);
+      res.status(200).json(dashboardData);
+  } catch (error) {
+      res.status(400).json({ error: error.message });
+  }
+}
+
 async function register (req, res) {
     try {
       const { fullName, email, phone, password } = req.body;
@@ -592,12 +621,6 @@ async function updateUserTask(req, res) {
         return res.status(404).json({ error: 'Task not found' });
     }
 
-    // task.title = updateTask.title;
-    // task.description = updateTask.description;
-    // task.completed = updateTask.completed;
-    // task.dueDate = updateTask.dueDate;
-    // await task.save();
-
     // Log the activity
     const activityLog = new ActivityLog({
       userId: userId, 
@@ -648,10 +671,180 @@ async function deleteUserTask(req, res) {
 //   fs.writeFileSync('.env', `SECRET_KEY=${secretKey}`);
 // }
 
+// Helpers functions
+async function fetchUserNotes(userId) {
+  try {
+
+    const userWithNotes = await User.findById(userId).populate({
+      path: 'pets',
+      populate: {
+        path: 'notes',
+        populate: { path: 'pet', select: 'name' }, // Fetch pet name in notes
+      },
+    });
+
+    if (!userWithNotes) {
+      throw new Error('User not found');
+    }
+
+    // Extract notes from pets
+    const notes = userWithNotes.pets.reduce((acc, pet) => {
+      if (pet.notes) {
+        acc.push(...pet.notes);
+      }
+      return acc;
+    }, []);
+
+    return notes;
+  } catch (error) {
+    console.error('Error fetching user notes:', error);
+    throw error; 
+  }
+}
+
+async function fetchUserActivityLog(userId) {
+  try {
+
+    const activityLogs = await ActivityLog.find({ userId }).sort({ created_at: -1 })
+    .populate('petId', 'name').exec();
+
+    return activityLogs;
+  } catch (error) {
+    console.error('Error fetching user logs:', error);
+    throw error; 
+  }
+}
+
+async function fetchUserUpcomingEvents(userId) {
+  try {
+
+    const user = await User.findById(userId);
+    const petIds = user.pets;
+    const vetVisits = await VetVisit.find({
+      $or: [
+        { date: { $gte: new Date() } }
+      ],
+      pet: { $in: petIds }
+    }).populate('pet');
+    const routineCare = await RoutineCareRecord.find({
+      $or: [
+        { nextDate: { $gte: new Date() } }
+      ],
+        pet: { $in: petIds }
+    }).populate('pet');
+    const vaccinationRecords = await VaccinationRecord.find({
+        $or: [
+            { nextDate: { $gte: new Date() } }
+        ],
+        pet: { $in: petIds }
+    }).populate('pet');
+
+    const upcomingEvents = [];
+
+      vaccinationRecords.forEach(vaccineRecord => {
+          upcomingEvents.push({
+              ...vaccineRecord.toObject(),
+              petId: vaccineRecord.pet,
+              actionType: 'Vaccine Record',
+              details: `Vaccine Type: ${vaccineRecord.vaccineType}`
+          });
+      });
+
+      routineCare.forEach(routineCareRecord => {
+          upcomingEvents.push({
+              ...routineCareRecord.toObject(),
+              petId: routineCareRecord.pet,
+              actionType: 'Routine Care',
+              details: `Routine Care Type: ${routineCareRecord.activity}`
+          });
+      });
+
+      vetVisits.forEach(visit => {
+        upcomingEvents.push({
+            ...visit.toObject(),
+            nextDate: visit.date,
+            petId: visit.pet,
+            actionType: 'Vet Visit',
+            details: `The Reason: ${visit.reason}`
+        });
+    });
+    upcomingEvents.sort((a, b) => a.nextDate - b.nextDate);
+
+    return upcomingEvents;
+  } catch (error) {
+    console.error('Error fetching user events:', error);
+    throw error; 
+  }
+}
+
+async function fetchUserExpensesArrays(userId) {
+  try {
+
+    const userWithPetsAndExpenses = await User.findById(userId)
+    .populate({
+      path: 'pets',
+      populate: {
+        path: 'expenses',
+        populate: {
+          path: 'pet',
+          select: 'name'
+        }
+      }
+    });
+    const allExpenses = userWithPetsAndExpenses.pets.reduce((accumulatedExpenses, pet) => {
+      return accumulatedExpenses.concat(pet.expenses);
+    }, []);
+  
+    const petExpensesData = userWithPetsAndExpenses.pets.map(pet => ({
+      petName: pet.name,
+      totalExpenses: pet.expenses.reduce((total, expense) => total + expense.amount, 0)
+    }));
+  
+    const monthlyExpensesData = {}; 
+    const categoryExpensesData = {}; 
+  
+    userWithPetsAndExpenses.pets.forEach(pet => {
+      pet.expenses.forEach(expense => {
+        const month = new Date(expense.date).getMonth()+1; // Get month index (0-11)
+        const category = expense.category;
+  
+        // Update monthly expenses data
+        monthlyExpensesData[month] = (monthlyExpensesData[month] || 0) + expense.amount;
+  
+        // Update category expenses data
+        categoryExpensesData[category] = (categoryExpensesData[category] || 0) + expense.amount;
+      });
+    });
+  
+     // Convert monthly expenses data to array of objects
+     const monthlyExpensesChartData = Object.entries(monthlyExpensesData).map(([monthIndex, amount]) => ({
+      month: monthIndex, // Month index
+      amount: amount // Total expenses for the month
+    }));
+  
+    // Convert category expenses data to array of objects
+    const categoryExpensesChartData = Object.entries(categoryExpensesData).map(([category, amount]) => ({
+      category: category,
+      amount: amount
+    }));
+  
+    return {
+      allExpenses: allExpenses,
+      petExpensesData: petExpensesData,
+      monthlyExpensesChartData: monthlyExpensesChartData,
+      categoryExpensesChartData: categoryExpensesChartData};
+
+  } catch (error) {
+    console.error('Error fetching user events:', error);
+    throw error; 
+  }
+}
+
 module.exports = {
     register,
     login,
     getUserById,
+    getUserDashboardData,
     getUserActivityLog,
     getUserExpensesArrays,
     getUserUpcomingEvents,

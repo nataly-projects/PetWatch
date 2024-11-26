@@ -34,6 +34,20 @@ export const fetchUserData = async (userId) => {
     }
 };
 
+export const fetchUserDashboardData = async (userId, token) => {
+    try {
+        const response = await axios.get(`${BASE_API_URL}/users/dashboard/${userId}` , {
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+};
+
+
 export const fetchUserActivityLog = async (userId, token) => {
     try {
         const response = await axios.get(`${BASE_API_URL}/users/activity/${userId}` , {

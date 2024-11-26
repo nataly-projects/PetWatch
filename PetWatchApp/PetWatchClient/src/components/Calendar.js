@@ -3,35 +3,43 @@ import { useSelector } from 'react-redux';
 import Calendar from 'react-calendar';
 import { Tooltip, Box, Typography, CircularProgress, Button } from '@mui/material';
 import { fetchUserPetsActivitiesForMonth } from '../services/userService';
+import useFetch from '../hooks/useFetch';
 import ExportToCSVButton from './ExportToCSVButton';
 
 const CalendarSection = () => {
   const user = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
 
-  const [activities, setActivities] = useState([]);
+  // const [activities, setActivities] = useState([]);
   const [date, setDate] = useState(new Date());
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
+  // const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState(false);
 
-  const fetchActivitiesForMonth = async (year, month) => {
-    try {
-      const allActivities = await fetchUserPetsActivitiesForMonth(user._id, token, year, month + 1);
-      setActivities(allActivities);
-      setLoading(false);
-    } catch (error) {
-      setError(true);
-      setLoading(false);
-    }
-  };
+  const { data: activities, loading, error } = useFetch(
+    fetchUserPetsActivitiesForMonth,
+    [user._id, token, date.getFullYear(), date.getMonth() + 1],
+    date
+  );
 
-  useEffect(() => {
-    fetchActivitiesForMonth(date.getFullYear(), date.getMonth());
-  }, [date]);
+
+  // const fetchActivitiesForMonth = async (year, month) => {
+  //   try {
+  //     const allActivities = await fetchUserPetsActivitiesForMonth(user._id, token, year, month + 1);
+  //     setActivities(allActivities);
+  //     setLoading(false);
+  //   } catch (error) {
+  //     setError(true);
+  //     setLoading(false);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   fetchActivitiesForMonth(date.getFullYear(), date.getMonth());
+  // }, [date]);
 
   const handleMonthChange = ({ activeStartDate }) => {
     setDate(activeStartDate);
-    fetchActivitiesForMonth(activeStartDate.getFullYear(), activeStartDate.getMonth());
+    // fetchActivitiesForMonth(activeStartDate.getFullYear(), activeStartDate.getMonth());
   };
 
   const tileContent = ({ date, view }) => {
@@ -99,7 +107,7 @@ const CalendarSection = () => {
     return (
       <Box sx={{ textAlign: 'center', mt: 3 }}>
         <Typography>Failed to fetch user data. Please try again later.</Typography>
-        <Button variant="contained" onClick={() => fetchActivitiesForMonth(date.getFullYear(), date.getMonth())}>
+        <Button variant="contained" onClick={() => setDate(new Date())}>
           Retry
         </Button>
       </Box>
