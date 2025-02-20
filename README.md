@@ -1,5 +1,5 @@
 # PetWatchApp
-PetWatch is a web application designed to streamline pet care management for pet owners. With a comprehensive suite of features, PetWatch helps pet owners manage pet health tracking, appointment scheduling, expense management, vaccination records, routine care activities, and offers informative guides on pet care.
+A web application designed to streamline pet care management for pet owners. PetWatch helps users track pet health, manage appointments, monitor expenses, and store important records efficiently.
 
 ## Features
 - Pet Owner Dashboard: Access a comprehensive dashboard displaying all data related to your pet's care and well-being. View detailed logs of your pet's activities, track and manage all pet-related expenses, stay informed about upcoming important events, and keep organized notes and reminders for your pets.
@@ -10,20 +10,40 @@ PetWatch is a web application designed to streamline pet care management for pet
 - Emergency guide section providing important information on handling pet emergencies.
 - User authentication and account management functionalities.
 
-# Technologies Used
-## Client-Side
-- React.js: JavaScript library for building dynamic user interfaces.
-- React Router: For efficient routing and navigation within the application.
-- Redux: Centralized state management for predictable application state.
-- Axios: HTTP client for making API requests.
-- Material-UI (MUI): Component library for a sleek and responsive UI.
-## Server-Side
- - Node.js: JavaScript runtime environment for server-side development.
- - Express.js: Web framework for building RESTful APIs in Node.js.
- - MongoDB: NoSQL database for scalable data storage.
- - Mongoose: Object Data Modeling (ODM) library for MongoDB.
- - JWT (JSON Web Tokens): Authentication and authorization via token-based security.
- - Swagger: API documentation and exploration through Swagger UI.
+### Authentication:
+- User registration and login.
+- Token-based authentication using JWT.
+
+### Pet Management:
+- Add, view, edit, and manage pet profiles.
+- Track pet health information, including weight trends, vaccinations, and medical history.
+
+### Expense Tracking:
+- Monitor pet-related expenses with categorized breakdowns.
+- View expenses over time with detailed analytics.
+
+### Appointment & Routine Care:
+- Schedule and manage vet appointments, vaccinations, and routine care activities.
+- Set customizable reminders for medication, vaccinations, and other important events.
+
+### Emergency Guide:
+- Access crucial information for handling pet emergencies.
+
+# Tech Stack
+## Frontend:
+- Framework: React.js
+- Styling: Material UI
+- State Management: Redux
+- Form Handling: react-hook-form
+- HTTP Requests: Axios
+
+Routing: React Router
+## Backend:
+- Framework: Node.js with Express.js
+- Database: MongoDB with Mongoose
+- Authentication: JSON Web Token (JWT)
+- Environment Management: dotenv
+- API Documentation: Swagger
 
 # Getting Started
 ## Prerequisites
@@ -35,8 +55,7 @@ PetWatch is a web application designed to streamline pet care management for pet
 - Configure environment variables:
   For the server, create a .env file in the server directory and define the following variables:
   - PORT=your-port-number
-  - MONGO_USERNAME=your-mongo-username
-  - MONGO_PASSWORD=your-mongo-password
+  - MONGO_URI=your-mongodb-connection-string
   - JWT_SECRET_KEY=your-jwt-secret-key
  - Run both client and server.
    
