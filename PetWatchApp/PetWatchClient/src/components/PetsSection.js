@@ -5,34 +5,41 @@ import { Box, Typography, Button, CircularProgress, Grid } from '@mui/material';
 import { getPetsByUserId } from '../services/petService'; 
 import PetCard from './PetCard';
 import AddPetForm from './AddPetForm';
+import useFetch from '../hooks/useFetch';
 
 const PetsSection = () => {
     const user = useSelector((state) => state.user);
     const token = useSelector((state) => state.token);
     const navigate = useNavigate();
 
-    const [pets, setPets] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
+    // const [pets, setPets] = useState([]);
+    // const [loading, setLoading] = useState(true);
+    // const [error, setError] = useState(false);
     const [isAddPetPopupOpen, setIsAddPetPopupOpen] = useState(false);
 
-    const fetchData = async () => {
-        try {
-            const userPets = await getPetsByUserId(user._id, token);
-            setPets(userPets);
-        } catch (error) {
-            console.error('Error fetching data:', error);
-            setError(true);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const { data: pets, loading, error } = useFetch(
+        getPetsByUserId,
+        user?._id && token ? [user._id, token] : null,
+        null
+    );
 
-    useEffect(() => {
-        if (user) {
-            fetchData();
-        }
-    }, [user]);
+    // const fetchData = async () => {
+    //     try {
+    //         const userPets = await getPetsByUserId(user._id, token);
+    //         setPets(userPets);
+    //     } catch (error) {
+    //         console.error('Error fetching data:', error);
+    //         setError(true);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
+
+    // useEffect(() => {
+    //     if (user) {
+    //         fetchData();
+    //     }
+    // }, [user]);
 
     const handleAddNewPetClick = () => setIsAddPetPopupOpen(true);
     const handleClosePopup = () => setIsAddPetPopupOpen(false);
@@ -47,14 +54,23 @@ const PetsSection = () => {
     }
     
     if (error) {
+        console.error('Error fetching dashboard data:', error);
+    
+        if (error.response?.status === 401) {
+          navigate('/login');
+          return null;
+        }
+    
         return (
-            <Box textAlign="center" mt={4}>
-                <Typography variant="body1" color="error">Failed to fetch user data. Please try again later.</Typography>
-                <Button variant="outlined" color="primary" onClick={fetchData} sx={{ mt: 2 }}>Retry</Button>
-            </Box>
+          <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" mt={4}>
+            <Typography>Failed to fetch dashboard data. Please try again later.</Typography>
+            <Button variant="contained" onClick={() => window.location.reload()} sx={{ mt: 2 }}>
+              Retry
+            </Button>
+          </Box>
         );
     }
-
+    
     return (
         <Box className="pets-section-container" p={3}>
             <Typography variant="h4" gutterBottom>Welcome to the Pets Section!</Typography>

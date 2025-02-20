@@ -6,6 +6,7 @@ import { faEnvelope, faLock, faEyeSlash, faEye, faUser, faPhone } from '@fortawe
 import { Box, Typography, Button, TextField, InputAdornment, IconButton } from '@mui/material';
 import {isValidEmail, hashPassword, isValidPhoneNumber} from '../utils/utils';
 import { signupUser } from '../services/userService';
+import useApiActions from '../hooks/useApiActions';
 
 
 const Register = () => {
@@ -24,6 +25,7 @@ const Register = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const { execute, loading, error: apiError } = useApiActions();
 
   useEffect(() => {
     setSubmitAllowed(!Object.values(errors).some(Boolean));
@@ -87,7 +89,8 @@ const Register = () => {
 
     try {
       const { fullName, email, phoneNumber, password } = formData;
-      const registerUser = await signupUser(fullName, email, phoneNumber, password);
+      const registerUser = await execute(signupUser, [fullName, email, phoneNumber, password]);
+
       if (registerUser) {
         dispatch({ type: 'SET_USER', payload: registerUser });
         navigate('/dashboard/adopt');

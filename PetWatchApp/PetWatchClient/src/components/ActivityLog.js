@@ -16,7 +16,7 @@ const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
         upcomingEvents = location.state.upcomingEvents;
         petName = location.state.petName;
     }
-
+   
     const [activityFilterType, setActivityFilterType] = useState('');
     const [activityStartDate, setActivityStartDate] = useState('');
     const [activityEndDate, setActivityEndDate] = useState('');
@@ -39,6 +39,7 @@ const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
             Pet: petName == null ? (item.petId?.name || item.pet?.name) : petName,
             Date: formatDateUniversal(new Date(item.created_at)),
         }));
+        console.log('processedData:', processedData);
         return processedData;
     };
 
@@ -98,8 +99,8 @@ const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
 
     return (
         <Box sx={{ backgroundColor: '#fff', boxShadow: 2, border: 1, borderColor: '#ccc', p: 3, mt: 3 }}>
+            {!petName && <Typography variant="h4" gutterBottom>Your Activity Page</Typography>}
 
-        {/* <Box sx={{ display: 'flex', flexDirection: 'column', width: '80%', margin: '0 auto' }}> */}
             <ActivityTable
                 title={petName ? `${petName} Activity Logs` : 'Your Activity Logs'}
                 tableInstance={activityTableInstance}
@@ -113,6 +114,7 @@ const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
                 }}
                 exportData={exportToCSV(filteredActivities)}
                 csvFileName={petName ? `${petName}-activity-log.csv` : 'activity-log.csv'}
+                type={'Activity Logs'}
             />
 
             <ActivityTable
@@ -128,12 +130,14 @@ const ActivityLog = ({ activityLogs, upcomingEvents, petName }) => {
                 }}
                 exportData={exportToCSV(filteredUpcomingEvents)}
                 csvFileName={petName ? `${petName}-upcoming-events.csv` : 'upcoming-events.csv'}
+                type={'Upcoming Events'}
             />
+           
         </Box>
     );
 };
 
-const ActivityTable = ({ title, tableInstance, filter, exportData, csvFileName }) => {
+const ActivityTable = ({ title, tableInstance, filter, exportData, csvFileName, type }) => {
     const {
         getTableProps,
         getTableBodyProps,
@@ -148,7 +152,17 @@ const ActivityTable = ({ title, tableInstance, filter, exportData, csvFileName }
         nextPage,
         gotoPage,
         pageCount,
+        rows,
     } = tableInstance;
+
+    if (rows.length === 0) {
+        return (
+            <Box sx={{ backgroundColor: '#fff', boxShadow: 2, border: 1, borderColor: '#ccc', p: 3, mt: 3 }}>
+                <Typography variant="h5" gutterBottom>{title}</Typography>
+                <Typography variant="body1" color="textSecondary">No {type} available. </Typography>
+            </Box>
+        );
+    }
 
     return (
         <Box sx={{ backgroundColor: '#fff', boxShadow: 2, border: 1, borderColor: '#ccc', p: 3, mt: 3 }}>

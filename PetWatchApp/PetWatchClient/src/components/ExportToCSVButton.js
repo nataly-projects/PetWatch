@@ -5,15 +5,13 @@ import { faDownload } from '@fortawesome/free-solid-svg-icons';
 import { Button } from '@mui/material';
 
 const ExportToCSVButton = ({ data, filename }) => {
+  console.log('exporting data to CSV:', data, filename);
   return (
-    <Button
-      startIcon={<FontAwesomeIcon icon={faDownload} />}
-     
-    >
-      <CSVLink data={data} filename={filename} target="_self" style={{ textDecoration: 'none', color: 'inherit' }}>
-        {/* Export to CSV */}
+      <CSVLink data={data} filename={filename} target="_self" style={{ textDecoration: 'none', color: 'inherit', display: 'inline-block', alignItems: 'center' }}>
+        <Button startIcon={<FontAwesomeIcon icon={faDownload} />} sx={{ textTransform: 'none', padding: '6px 12px' }}>
+          Export
+        </Button>
       </CSVLink>
-    </Button>
   );
 };
 

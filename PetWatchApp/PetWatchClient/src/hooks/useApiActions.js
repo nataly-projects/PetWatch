@@ -1,32 +1,26 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
-const useApiActions = (func, params, ) => {
-    const [data, setData] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-  
-    useEffect(() => {
-      if (!func) {
-          return;
-      }
-  
-      const useAction = async () => {
-          setLoading(true);
-          try {
-              const response = await func(...params);
-              console.log(params, 'use action hook res: ', response);
-              setData(response);
-          } catch (err) {
-              setError(err);
-          } finally {
-              setLoading(false);
-          }
-      };
-  
-      useAction();
-    }, [dependencies]);
-  
-    return { data, loading, error };
+const useApiActions = () => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const execute = useCallback(async (func, params) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await func(...params);
+      setData(response);
+      return response; // Return the response to allow further chaining in the component.
+    } catch (err) {
+      setError(err);
+      throw err; // Re-throw the error for error handling in the component.
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return { data, loading, error, execute };
 };
 
 export default useApiActions;

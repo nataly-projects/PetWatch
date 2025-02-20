@@ -7,6 +7,7 @@ import { addPetEmergencyContact, updateEmergencyContactById, deleteEmergencyCont
 import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Modal } from '@mui/material';
 import { FormFieldsType, formFieldsConfig } from '../utils/utils';
 import GenericActivityForm from './GenericActivityForm';
+import useApiActions from '../hooks/useApiActions';
 
 const EmergencyContactsSection = ({ propsContacts, petId, token }) => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const EmergencyContactsSection = ({ propsContacts, petId, token }) => {
   const [editingContact, setEditingContact] = useState(null);
   const [editMode, setEditMode] = useState(false);
   const [isAddContactDialogOpen, setIsAddContactDialogOpen] = useState(false);
+  const { execute, loading } = useApiActions();
 
   const handleAddContactClick = () => {
     setIsAddContactDialogOpen(true);
@@ -26,7 +28,7 @@ const EmergencyContactsSection = ({ propsContacts, petId, token }) => {
   const handleAddContact = async (contact) => {
     setIsAddContactDialogOpen(false);
     try {
-      const response = await addPetEmergencyContact(petId, contact, token);
+      const response = await execute(addPetEmergencyContact, [petId, contact, token]);
       setContacts([...contacts, response.contact]);
       toast.success('Emergency contact added successfully!');
     } catch (error) {
@@ -51,7 +53,7 @@ const EmergencyContactsSection = ({ propsContacts, petId, token }) => {
     setEditingContact(null);
     setEditMode(false);
     try {
-      await updateEmergencyContactById(updatedContact, token);
+      await execute(updateEmergencyContactById, [updatedContact, token]);
       setContacts(contacts.map(contact => (contact._id === updatedContact._id ? updatedContact : contact)));
       toast.success('Emergency Contact updated successfully!');
     } catch (error) {
@@ -62,7 +64,7 @@ const EmergencyContactsSection = ({ propsContacts, petId, token }) => {
 
   const handleDeleteContact = async (id) => {
     try {
-      await deleteEmergencyContactById(id, token);
+      await execute(deleteEmergencyContactById, [id, token]);
       setContacts(contacts.filter(contact => contact._id !== id));
       toast.success('Emergency Contact deleted successfully!');
     } catch (error) {

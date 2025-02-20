@@ -6,11 +6,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import { addPetAdditionalImages } from '../services/petService';
 import { Box, Typography, Button } from '@mui/material';
+import useApiActions from '../hooks/useApiActions';
 
 const GallerySection = ({ additionalImages, petId, token }) => {
     const navigate = useNavigate();
     const [images, setImages] = useState(additionalImages || []);
     const [isChange, setIsChange] = useState(false);
+    const { execute, loading, error } = useApiActions();
 
     const onAdditionalPhotosDrop = (acceptedFiles) => {
         if (acceptedFiles && acceptedFiles.length > 0) {
@@ -40,7 +42,8 @@ const GallerySection = ({ additionalImages, petId, token }) => {
             images.forEach((image) => {
                 formData.append('additionalImages', image);
             });
-            await addPetAdditionalImages(formData, token, petId);
+            // await addPetAdditionalImages(formData, token, petId);
+            await execute(addPetAdditionalImages, [formData, token, petId]);
             toast.success('Changes saved successfully!');
             setIsChange(false);
         } catch (error) {

@@ -2,19 +2,21 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import PropTypes from 'prop-types';
-import { formatDate } from '../utils/utils';
+import { formatDateUniversal } from '../utils/utils';
 import { addPetMealPlanner, updateMealPlannerById, deleteMealPlannerById } from '../services/petService';
 import { Box, Typography, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Modal } from '@mui/material';
 import { FormFieldsType, formFieldsConfig } from '../utils/utils';
 import GenericActivityForm from './GenericActivityForm';
+import useApiActions from '../hooks/useApiActions';
 
 const MealPlannerSection = ({ propsMeals, petId, token }) => {
   const navigate = useNavigate();
   const [meals, setMeals] = useState(propsMeals);
   const [editingMeal, setEditingMeal] = useState(null);
   const [editMode, setEditMode] = useState(false);
-
   const [isAddMealDialogOpen, setIsAddMealDialogOpen] = useState(false);
+
+  const { execute, loading, error } = useApiActions();
 
   const handleDialogClose = () => {
     setIsAddMealDialogOpen(false);
@@ -26,7 +28,8 @@ const MealPlannerSection = ({ propsMeals, petId, token }) => {
   const handleAddMeal = async (meal) => {
     setIsAddMealDialogOpen(false);
     try {
-      const response = await addPetMealPlanner(petId, meal, token);
+      // const response = await addPetMealPlanner(petId, meal, token);
+      const response = await execute(addPetMealPlanner, [petId, meal, token]);
       setMeals([...meals, response.meal]);
       toast.success('Meal Planner added successfully!');
     } catch (error) {
@@ -59,7 +62,8 @@ const MealPlannerSection = ({ propsMeals, petId, token }) => {
 
   const handleDeleteMeal = async (id) => {
     try {
-      await deleteMealPlannerById(id, token);
+      // await deleteMealPlannerById(id, token);
+      await execute(deleteMealPlannerById, [id, token]);
       setMeals(meals.filter(meal => meal._id !== id));
       toast.success('Meal deleted successfully!');
     } catch (error) {
@@ -91,12 +95,12 @@ const MealPlannerSection = ({ propsMeals, petId, token }) => {
             <TableBody>
               {meals.map((meal) => (
                 <TableRow key={meal._id}>
-                  <TableCell>{formatDate(meal.date)}</TableCell>
+                  <TableCell>{formatDateUniversal(meal.date)}</TableCell>
                   <TableCell>{meal.food}</TableCell>
                   <TableCell>{meal.amount}</TableCell>
                   <TableCell>{meal.note || '-'}</TableCell>
-                  <TableCell>{formatDate(meal.created_at)}</TableCell>
-                  <TableCell>{meal.updatedDate ? formatDate(meal.updatedDate) : '-'}</TableCell>
+                  <TableCell>{formatDateUniversal(meal.created_at)}</TableCell>
+                  <TableCell>{meal.updatedDate ? formatDateUniversal(meal.updatedDate) : '-'}</TableCell>
                   <TableCell>
                     <Box sx={{ display: 'flex', gap: 1 }}>
                       <Button variant="outlined" onClick={() => handleEditClick(meal)}>Edit</Button>

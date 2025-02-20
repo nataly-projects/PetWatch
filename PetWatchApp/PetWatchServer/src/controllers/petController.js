@@ -73,6 +73,20 @@ async function getPetById(req, res) {
     }
 }
 
+async function getPetData(req, res) {
+    try {
+        const { petId } = req.params;
+
+        const pet = await Pet.findById(petId).populate('vaccinationRecords').populate('routineCareRecords');
+        if (!pet) {
+            return res.status(404).json({ error: 'Pet not found.' });
+        }
+        res.status(200).json({pet});
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+}
+
 async function getPetVaccinationRecord (req, res) {
     try {
         const { petId } = req.params;
@@ -181,7 +195,8 @@ async function getPetNote (req, res) {
             upcomingEvents.push({
                 ...vaccineRecord.toObject(),
                 actionType: 'Vaccine Record',
-                details: `Vaccine Type: ${vaccineRecord.vaccineType}`
+                details: `Vaccine Type: ${vaccineRecord.vaccineType}`,
+                petId: vaccineRecord.pet
             });
         });
       
@@ -189,7 +204,8 @@ async function getPetNote (req, res) {
             upcomingEvents.push({
                 ...routineCareRecord.toObject(),
                 actionType: 'Routine Care',
-                details: `Routine Care Type: ${routineCareRecord.activity}`
+                details: `Routine Care Type: ${routineCareRecord.activity}`,
+                petId: routineCareRecord.pet
             });
         });
 
@@ -198,7 +214,9 @@ async function getPetNote (req, res) {
                 ...visit.toObject(),
                 nextDate: visit.date,
                 actionType: 'Vet Visit',
-                details: `The Reason: ${visit.reason}`
+                details: `The Reason: ${visit.reason}`,
+                petId: visit.pet
+
             });
         });
         

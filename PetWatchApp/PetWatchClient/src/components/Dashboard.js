@@ -13,6 +13,7 @@ import CalendarSection from './Calendar';
 import TaskList from './TaskList';
 import TaskPerformanceChart from './TaskPerformanceChart';
 import AddPetForm from './AddPetForm';
+import { fetchUserDashboardData } from '../services/userService';
 import useFetch  from '../hooks/useFetch';
 
 const Dashboard = () => {

@@ -44,7 +44,7 @@ const NoteSection = ({ propsNotes, petId }) => {
       { Header: 'Title', accessor: 'title' },
       { Header: 'Note', accessor: 'content' },
       { Header: 'Created Date', accessor: 'createdDate', Cell: ({ value }) => formatDateUniversal(new Date(value)) },
-      { Header: 'Updated Date', accessor: 'updatedDate', Cell: ({ value }) => (value ? formatDateUniversal(new Date(value)) : '') },
+      { Header: 'Updated Date', accessor: 'updatedDate', Cell: ({ value }) => (value ? formatDateUniversal(new Date(value)) : '-') },
       petId ? { Header: 'Actions', accessor: 'actions', disableSortBy: true, Cell: ({ row }) => (
           <Box>
             <Button size="small" onClick={() => handleEditClick(row.original)}>Edit</Button>

@@ -4,6 +4,7 @@ import { resetPasswordRequest, validateResetPasswordCode, resetPassword  } from 
 import { isValidEmail } from '../utils/utils';
 import { Box, Typography, Button, TextField, Modal, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import useApiActions from '../hooks/useApiActions';
 
 const ForgotPassword = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -14,7 +15,9 @@ const ForgotPassword = ({ onClose }) => {
   });
   const [errors, setErrors] = useState({});
   const [step, setStep] = useState(1);
-  const [error, setError] = useState(null);
+  // const [error, setError] = useState(null);
+  const { data, loading, error, execute } = useApiActions();
+
 
   const validateField = (name, value) => {
     let errorMessage = '';
@@ -61,13 +64,14 @@ const ForgotPassword = ({ onClose }) => {
     event.preventDefault();
     if (!errors.email) {
       try {
-        const response = await resetPasswordRequest(formData.email);
+        // const response = await resetPasswordRequest(formData.email);
+        const response = await execute(resetPasswordRequest, [formData.email]);
         if (response) {
           toast.success('Email with verification code sent to your email');
           setStep(2);
         }
       } catch (error) {
-        setError(error.response?.data?.error || 'An error occurred while processing your request');
+        // setError(error.response?.data?.error || 'An error occurred while processing your request');
         toast.error('An error occurred. Please try again later.');
       }
     }
@@ -78,12 +82,13 @@ const ForgotPassword = ({ onClose }) => {
     event.preventDefault();
     if (!errors.code) {
       try {
-        const response = await validateResetPasswordCode(formData.email, formData.code);
+        // const response = await validateResetPasswordCode(formData.email, formData.code);
+        const response = await execute(validateResetPasswordCode, [formData.email, formData.code]);
         if (response) {
           setStep(3);
         }
       } catch (error) {
-        setError(error.response?.data?.error || 'An error occurred while processing your request');
+        // setError(error.response?.data?.error || 'An error occurred while processing your request');
         toast.error('An error occurred. Please try again later.');
       }
     }
@@ -94,13 +99,14 @@ const ForgotPassword = ({ onClose }) => {
     event.preventDefault();
     if (!errors.newPassword && !errors.confirmPassword) {
       try {
-        const response = await resetPassword(formData.email, formData.newPassword);
+        // const response = await resetPassword(formData.email, formData.newPassword);
+        const response = await execute(resetPassword, [formData.email, formData.newPassword]);
         if (response) {
           toast.success('Password reset successfully');
           onClose();
         }
       } catch (error) {
-        setError('An error occurred while updating your password');
+        // setError('An error occurred while updating your password');
         toast.error('An error occurred. Please try again later.');
       }
     }

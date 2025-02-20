@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { editUserDetails, changePassword } from '../services/userService';
 import userDefaultImage from '../images/default-user-profile-image.png';
 import ForgotPassword from '../components/ForgotPassword';
+import useApiActions from '../hooks/useApiActions';
 
 const UserProfile = () => {
   const navigate = useNavigate();
@@ -30,6 +31,8 @@ const UserProfile = () => {
   const [detailsErrors, setDetailsErrors] = useState({});
   const [passwordErrors, setPasswordErrors] = useState({});
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+
+  const { execute } = useApiActions();
 
   const onProfileImageDrop = (acceptedFiles) => {
     if (acceptedFiles.length > 0) {
@@ -56,7 +59,8 @@ const UserProfile = () => {
     if (validateDetailsInput()) {
       setEditDetailsMode(false);
       try {
-        await editUserDetails(user._id, formData, token);
+        // await editUserDetails(user._id, formData, token);
+        await execute(editUserDetails, [user._id, formData, token]);
         toast.success('Details updated successfully!');
       } catch (error) {
         initFormData();
@@ -99,7 +103,8 @@ const UserProfile = () => {
     if (validateChangePasswordInput()) {
       setChangePasswordMode(false);
       try {
-        await changePassword(changePasswordData, token);
+        // await changePassword(changePasswordData, token);
+        await execute(changePassword, [changePasswordData, token]);
         toast.success('Password changed successfully!');
       } catch (error) {
         if (error.response && error.response.status === 401) {

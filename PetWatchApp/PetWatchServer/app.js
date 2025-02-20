@@ -5,11 +5,12 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const cors = require('cors');
 const swaggerSetup = require('./swagger');
-const mongoUser = process.env.MONGO_USERNAME;
-const mongoPass = process.env.MONGO_PASSWORD;
+// const mongoUser = process.env.MONGO_USERNAME;
+// const mongoPass = process.env.MONGO_PASSWORD;
+const mongoUri = process.env.MONGO_URI;
 const appRoutes = require('./src/routes/appRoutes');
 
-const mongoUri = `mongodb+srv://${mongoUser}:${mongoPass}@petwatch.bfebbx2.mongodb.net/`;
+// const mongoUri = `mongodb+srv://${mongoUser}:${mongoPass}@petwatch.bfebbx2.mongodb.net/`;
 
 const app = express();
 const PORT = process.env.PORT;

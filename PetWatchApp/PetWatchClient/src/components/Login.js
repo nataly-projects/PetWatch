@@ -7,6 +7,7 @@ import { faEnvelope, faLock, faEyeSlash, faEye } from '@fortawesome/free-solid-s
 import ForgotPassword from './ForgotPassword';
 import {isValidEmail} from '../utils/utils';
 import { loginUser } from '../services/userService';
+import useApiActions from '../hooks/useApiActions';
 
 
 const Login = () => {
@@ -19,6 +20,8 @@ const Login = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isForgotPasswordModalOpen, setForgotPasswordModalOpen] = useState(false);
   const [submitAllowed, setSubmitAllowed] = useState(false);
+
+  const { execute, loading, error: apiError } = useApiActions();
 
   const navigate = useNavigate();
   const dispatch = useDispatch(); 
@@ -77,7 +80,7 @@ const Login = () => {
 
     try {
       const { email, password } = formData;
-      const loginData = await loginUser(email, password);
+      const loginData = await execute(loginUser, [email, password]);
       if (loginData) {
         dispatch({ type: 'SET_USER', payload: loginData });
         navigate('/main');

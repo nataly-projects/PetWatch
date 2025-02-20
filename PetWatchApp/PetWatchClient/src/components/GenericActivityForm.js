@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Box, Typography, TextField, Button, IconButton, Radio, RadioGroup, FormControlLabel } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
@@ -6,7 +6,6 @@ import { styled } from '@mui/system';
 
 const Container = styled(Box)({
   padding: '20px',
-//   width: '80%',
   border: '1px solid #795B4A',
   borderRadius: '10px',
   marginTop: '5px',

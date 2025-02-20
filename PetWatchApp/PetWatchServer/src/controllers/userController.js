@@ -30,7 +30,19 @@ async function getUserById(req, res) {
 async function getUserDashboardData(req, res) {
   const {userId} = req.params;
   try {
-      const user = await User.findById(userId).populate('pets').populate('tasks');
+      // const user = await User.findById(userId).populate('pets').populate('tasks');
+      const user = await User.findById(userId).populate('tasks').populate({
+        path: 'pets',
+            populate: [
+                { path: 'notes' },
+                { path: 'allergies' },
+                { path: 'medications' },
+                { path: 'vetVisits' },
+                { path: 'mealPlanner' },
+                { path: 'emergencyContacts' },
+                { path: 'medicalConditions' }
+            ]
+      });
 console.log('user dash: ', user);
       if (!user) {
         return res.status(404).json({ error: 'User not found' });

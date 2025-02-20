@@ -7,11 +7,14 @@ import { addUserTask, updateUserTask } from '../services/userService';
 import TaskItem from './TaskItem';
 import { FormFieldsType, formFieldsConfig } from '../utils/utils';
 import GenericActivityForm from '../components/GenericActivityForm';
+import useApiActions from '../hooks/useApiActions';
 
 const TaskList = ({propTasks, token, userId}) => {
     const navigate = useNavigate();
     const [tasks, setTasks] = useState([]);
     const [isAddTaskDialogOpen, setIsAddTaskDialogOpen] = useState(false);
+
+    const { execute, loading, error: apiError } = useApiActions();
 
     useEffect(() => {
         setTasks(propTasks);
@@ -19,7 +22,8 @@ const TaskList = ({propTasks, token, userId}) => {
 
     const handleAddTask = async (newTask) => {
         try {
-            await addUserTask(userId, newTask, token);
+            // await addUserTask(userId, newTask, token);
+            await execute(userId, newTask, token);
             toast.success('Task added successfully!');
             setTasks([...tasks, newTask]);
         } catch (error) {
@@ -46,7 +50,8 @@ const TaskList = ({propTasks, token, userId}) => {
 
         updatedTask.completed = !updatedTask.completed;
         try {
-            await updateUserTask(userId, updatedTask, token);
+            // await updateUserTask(userId, updatedTask, token);
+            await execute(updateUserTask, [userId, updatedTask, token]);
         } catch (error) {
             if (error.response && error.response.status === 401) {
                 console.error('UNAUTHORIZED_ERROR');

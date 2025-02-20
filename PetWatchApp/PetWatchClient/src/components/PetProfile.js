@@ -29,7 +29,7 @@ const PetProfile = () => {
   const { pet } = location.state;
   const navigate = useNavigate();
   const token = useSelector((state) => state.token);
-
+console.log(pet);
   const [petDetails, setPetDetails] = useState(pet);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
@@ -41,7 +41,8 @@ const PetProfile = () => {
     allergies: [],
     medications: [],
     medicalConditions: [],
-    weights: []
+    weights: [],
+    notes: []
   });
 
   const [editHealthModalVisible, setEditHealthModalVisible] = useState(false); 
@@ -64,7 +65,8 @@ const PetProfile = () => {
           allergies: pet.allergies,
           medications: pet.medications,
           medicalConditions: pet.medicalConditions,
-          weights: petWeights
+          weights: petWeights,
+          notes: pet.notes
         }));
         setLoading(false);
     } catch (error) {
@@ -288,7 +290,7 @@ const PetProfile = () => {
     </Box>
 
     <Box sx={{ mb: 4 }}>
-      <NoteSection propsNotes={petDetails.notes} petId={petDetails._id} />
+      <NoteSection propsNotes={activityRecords.notes} petId={petDetails._id} />
     </Box>
 
     <Box sx={{ mb: 4 }}>

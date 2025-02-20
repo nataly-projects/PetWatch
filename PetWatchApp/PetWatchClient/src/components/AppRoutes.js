@@ -48,7 +48,6 @@ const AppRoutes = ({ isUserRoute = false }) => {
           <Route path="/pets" element={<PetsSection />} />
           <Route path="/add-pet" element={<AddPetForm />} />
           <Route path="/contact-us" element={<ContactPage />} />
-          {/* <Route path="/calendar" element={<CalendarSection />} /> */}
         </> )
         :
         (
@@ -66,16 +65,6 @@ const AppRoutes = ({ isUserRoute = false }) => {
             <Route path="/info/dog-guide" element={<DogGuide />} />
             <Route path="/info/cat-guide" element={<CatGuide />} />
             <Route path="/info/emergency-guide" element={<EmergencyGuide />} />
-            {/* <Route path="*" element={isLoggedIn ? <UserMainPage /> : <SignupLoginPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/contact" element={<ContactPage />} />
-            <Route path="/info" element={<ImportantInfoPage />} />
-            <Route path="/info/dog-care" element={<DogCarePage />} />
-            <Route path="/info/cat-care" element={<CatCarePage />} />
-            <Route path="/info/pet-names" element={<PetNamesIdea />} />
-            <Route path="/info/dog-guide" element={<DogGuide />} />
-            <Route path="/info/cat-guide" element={<CatGuide />} />
-            <Route path="/info/emergency-guide" element={<EmergencyGuide />} /> */}
         </>
         )}
       

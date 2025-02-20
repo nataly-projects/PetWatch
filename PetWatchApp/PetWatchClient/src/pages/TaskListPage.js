@@ -10,6 +10,8 @@ import { formatDateUniversal } from '../utils/utils';
 import { fetchUserTasks, updateUserTask, deleteUserTask, addUserTask } from '../services/userService';
 import { FormFieldsType, formFieldsConfig } from '../utils/utils';
 import GenericActivityForm from '../components/GenericActivityForm';
+import useFetch from '../hooks/useFetch';
+import useApiActions from '../hooks/useApiActions';
 
 const TaskListPage = () => {
     const navigate = useNavigate();
@@ -19,33 +21,47 @@ const TaskListPage = () => {
     const [tasks, setTasks] = useState([]);
     const [editingTask, setEditingTask] = useState(null);
     const [isEditMode, setIsEditMode] = useState(false);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(false);
+    // const [loading, setLoading] = useState(true);
+    // const [error, setError] = useState(false);
     const [isAddTaskDialogOpen, setIsAddTaskDialogOpen] = useState(false);
 
-    useEffect(() => {
-        fetchTasks();
-    }, []);
+    const { data: fetchedTasks, loading, error } = useFetch(
+        fetchUserTasks,
+        user?._id && token ? [user._id, token] : null,
+        null
+    );
 
-    const fetchTasks = async () => {
-        try {
-            const response = await fetchUserTasks(user._id, token);
-            console.log(response);
-            setTasks(response);
-            setLoading(false);
-        } catch (error) {
-            if (error.response && error.response.status === 401) {
-                console.error('UNAUTHORIZED_ERROR');
-                setError(true);
-                setLoading(false);
-                navigate('/login');
-            } else {
-                console.error('Error fetching data:', error);
-                setError(true);
-                setLoading(false);
-            }
+    const { execute } = useApiActions();
+
+    useEffect(() => {
+        if (fetchedTasks) {
+            setTasks(fetchedTasks);
         }
-    };
+    }, [fetchedTasks]);
+    
+    // useEffect(() => {
+    //     fetchTasks();
+    // }, []);
+
+    // const fetchTasks = async () => {
+    //     try {
+    //         const response = await fetchUserTasks(user._id, token);
+    //         console.log(response);
+    //         setTasks(response);
+    //         setLoading(false);
+    //     } catch (error) {
+    //         if (error.response && error.response.status === 401) {
+    //             console.error('UNAUTHORIZED_ERROR');
+    //             setError(true);
+    //             setLoading(false);
+    //             navigate('/login');
+    //         } else {
+    //             console.error('Error fetching data:', error);
+    //             setError(true);
+    //             setLoading(false);
+    //         }
+    //     }
+    // };
 
     const handleDialogClose = () => {
         setIsAddTaskDialogOpen(false);
@@ -66,8 +82,8 @@ const TaskListPage = () => {
             completed: !task.completed, 
         };
         try {
-            await updateUserTask(user._id, updatedTask, token);
-            console.log(tasks);
+            // await updateUserTask(user._id, updatedTask, token);
+            await execute(updateUserTask, [user._id, updatedTask, token]);
             setTasks(prevTasks => 
                 prevTasks.map(t => (t._id === task._id ? updatedTask : t))
             );
@@ -125,8 +141,8 @@ const TaskListPage = () => {
     const handleAddTask = async (newTask) => {
         setIsAddTaskDialogOpen(false);
         try{
-            const response = await addUserTask(user._id, newTask, token);
-            console.log(response);
+            // const response = await addUserTask(user._id, newTask, token);
+            const response = await execute(addUserTask, [user._id, newTask, token]);
             if (response && response.task) {
                 toast.success('Task added successfully!');
                 setTasks([...tasks, response.task]);
@@ -146,7 +162,8 @@ const TaskListPage = () => {
         setEditingTask(null);
 
         try {
-            await updateUserTask(user._id, updatedTask, token);
+            // await updateUserTask(user._id, updatedTask, token);
+            await execute(updateUserTask, [user._id, updatedTask, token]);
             setTasks(prevTasks => 
                 prevTasks.map(task => (task._id === updatedTask._id ? updatedTask : task))
             );
@@ -213,14 +230,24 @@ const TaskListPage = () => {
         );
     }
 
-    if (error) {
-        return (
-            <Box className="error-container" display="flex" flexDirection="column" alignItems="center">
-                <Typography color="error">Failed to fetch user data. Please try again later.</Typography>
-                <Button variant="contained" color="primary" onClick={fetchTasks}>Retry</Button>
-            </Box>
-        );
+   
+  if (error) {
+    console.error('Error fetching dashboard data:', error);
+
+    if (error.response?.status === 401) {
+      navigate('/login');
+      return null;
     }
+
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" mt={4}>
+        <Typography>Failed to fetch dashboard data. Please try again later.</Typography>
+        <Button variant="contained" onClick={() => window.location.reload()} sx={{ mt: 2 }}>
+          Retry
+        </Button>
+      </Box>
+    );
+  }
 
     const formConfig = isEditMode ? formFieldsConfig(editingTask)[FormFieldsType.TASK] : formFieldsConfig()[FormFieldsType.TASK];
 
