@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography, List, ListItem, Table, TableBody, TableCell, TableHead, TableRow, Divider } from '@mui/material';
+import { Box, Typography, List, ListItem, Table, TableBody, TableCell, TableHead, TableRow, Divider, Card, CardContent } from '@mui/material';
 import fruitsCanEatImg from '../images/catFruitCanEat.jpg';
 import meatCanEatImg from '../images/catMeatCanEat.jpg';
 import otherCanEatImg from '../images/catOtherCanEat.jpg';
@@ -30,9 +30,18 @@ const CatCarePage = () => {
         <Table>
             <TableHead>
                 <TableRow>
-                    <TableCell>Vaccine</TableCell>
-                    <TableCell>Kitten Age</TableCell>
-                    <TableCell>Adult Cat Age</TableCell>
+                    <TableCell sx={{ 
+                        fontWeight: 'bold', 
+                        textAlign: 'center' 
+                    }}>Vaccine</TableCell>
+                    <TableCell sx={{ 
+                        fontWeight: 'bold', 
+                        textAlign: 'center' 
+                    }}>Kitten Age</TableCell>
+                    <TableCell sx={{ 
+                        fontWeight: 'bold', 
+                        textAlign: 'center' 
+                    }}>Adult Cat Age</TableCell>
                 </TableRow>
             </TableHead>
             <TableBody>
@@ -47,8 +56,26 @@ const CatCarePage = () => {
         </Table>
     );
 
+    const renderRoutineCareList = () => (
+        <List sx={{ width: '100%', mt: 2 }}>
+          {routineCare.map((item, index) => (
+            <Card key={index} variant="outlined" sx={{ mb: 1, p: 2 }}>
+              <CardContent>
+                <Typography variant="h6" color="primary" gutterBottom>
+                  {item.name}
+                </Typography>
+                <Divider sx={{ my: 1 }} />
+                <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+                  {item.description}
+                </Typography>
+              </CardContent>
+            </Card>
+          ))}
+        </List>
+      );
+
     return (
-        <Box sx={{ maxWidth: 800, margin: '0 auto', padding: 3 }}>
+        <Box sx={{ maxWidth: 800, padding: 3 }}>
             <Box className="section" sx={{ mb: 4 }}>
                 <Typography variant="h4" gutterBottom>Cat Vaccinations and Routine Care</Typography>
                 <Typography variant="body1">Below is a list of common cat vaccinations and their descriptions:</Typography>
@@ -62,56 +89,51 @@ const CatCarePage = () => {
                 </List>
             </Box>
 
-            <Divider />
+            <Divider sx={{mb: 4}}/>
 
             <Box className="section" sx={{ mb: 4 }}>
                 <Typography variant="h4" gutterBottom>Cat Vaccination Schedule:</Typography>
                 {renderVaccineScheduleTable()}
             </Box>
 
-            <Divider />
+            <Divider sx={{mb: 4}}/>
 
             <Box className="section" sx={{ mb: 4 }}>
                 <Typography variant="h4" gutterBottom>Routine Care</Typography>
-                <List>
-                    {routineCare.map((care, index) => (
-                        <ListItem key={index} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', mb: 2 }}>
-                            <Typography variant="h6">{care.name}</Typography>
-                            <Typography variant="body2">{care.description}</Typography>
-                        </ListItem>
-                    ))}
-                </List>
+                {renderRoutineCareList()}
+
                 <Typography variant="body2" sx={{ mt: 2 }}>
                     <strong>It is important to consult with a veterinarian about the vaccination program that is most appropriate for your cat.</strong>
                 </Typography>
             </Box>
 
-            <Divider />
+            <Divider sx={{mb: 4}}/>
 
             <Box className="section" sx={{ mb: 4 }}>
                 <Typography variant="h4" gutterBottom>Feeding Your Cat</Typography>
                 <Typography variant="h5" gutterBottom>What Can Cats Eat?</Typography>
                 <Typography variant="body1">Cats can enjoy a variety of foods that are beneficial for their health. Here are some foods that cats can eat:</Typography>
-                <List>
-                    <ListItem>
-                        <Typography variant="h6">Fruit and Vegetables</Typography>
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: 4 }}>
+                
+                    <Box className="section" sx={{ mb: 2 }}>
+                        <Typography variant="h5" gutterBottom>Fruit and Vegetables</Typography>
                         <Typography>Apples, bananas, strawberries, carrots, and more.</Typography>
                         <Box component="img" src={fruitsCanEatImg} alt="Fruits cats can eat" sx={{ width: '100%', mt: 2 }} />
-                    </ListItem>
-                    <ListItem>
-                        <Typography variant="h6">Meat & Fish</Typography>
+                    </Box>
+                    <Box className="section" sx={{ mb: 2 }}>
+                    <Typography variant="h5" gutterBottom>Meat & Fish</Typography>
                         <Typography>Chicken, beef, salmon, and other meats.</Typography>
                         <Box component="img" src={meatCanEatImg} alt="Meat cats can eat" sx={{ width: '100%', mt: 2 }} />
-                    </ListItem>
-                    <ListItem>
-                        <Typography variant="h6">Other Foods</Typography>
+                    </Box>
+                    <Box className="section" sx={{ mb: 2 }}>
+                    <Typography variant="h5" gutterBottom>Other Foods</Typography>
                         <Typography>Grains, dairy, and eggs in moderation.</Typography>
                         <Box component="img" src={otherCanEatImg} alt="Other foods cats can eat" sx={{ width: '100%', mt: 2 }} />
-                    </ListItem>
-                </List>
+                    </Box>
+                </Box>
             </Box>
 
-            <Divider />
+            <Divider sx={{mb: 4}}/>
 
             <Box className="section" sx={{ mb: 4 }}>
                 <Typography variant="h5" gutterBottom>Foods to Be Cautious About</Typography>
@@ -129,9 +151,9 @@ const CatCarePage = () => {
                     Certain foods are toxic to cats and should be avoided. Here are some examples:
                 </Typography>
                 <List>
-                    <ListItem><strong>Chocolate:</strong> Contains theobromine and caffeine, which are toxic to cats.</ListItem>
-                    <ListItem><strong>Onions and Garlic:</strong> Can cause damage to a cat's red blood cells.</ListItem>
-                    <ListItem><strong>Grapes and Raisins:</strong> Can cause kidney failure in cats.</ListItem>
+                    <ListItem><strong><span style={{ marginRight: '5px' }}>Chocolate:</span></strong> Contains theobromine and caffeine, which are toxic to cats.</ListItem>
+                    <ListItem><strong><span style={{ marginRight: '5px' }}>Onions and Garlic:</span></strong> Can cause damage to a cat's red blood cells.</ListItem>
+                    <ListItem><strong><span style={{ marginRight: '5px' }}>Grapes and Raisins:</span></strong> Can cause kidney failure in cats.</ListItem>
                 </List>
                 <Box component="img" src={notToEatImg} alt="Foods cats can't eat" sx={{ width: '100%', mt: 2 }} />
             </Box>

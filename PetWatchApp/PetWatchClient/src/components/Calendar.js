@@ -1,19 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import Calendar from 'react-calendar';
-import { Tooltip, Box, Typography, CircularProgress, Button } from '@mui/material';
+import { Tooltip, Box, Typography, CircularProgress, Button, Paper, Grid } from '@mui/material';
 import { fetchUserPetsActivitiesForMonth } from '../services/userService';
 import useFetch from '../hooks/useFetch';
-import ExportToCSVButton from './ExportToCSVButton';
 
 const CalendarSection = () => {
   const user = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
-
-  // const [activities, setActivities] = useState([]);
   const [date, setDate] = useState(new Date());
-  // const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState(false);
 
   const { data: activities, loading, error } = useFetch(
     fetchUserPetsActivitiesForMonth,
@@ -21,25 +16,8 @@ const CalendarSection = () => {
     date
   );
 
-
-  // const fetchActivitiesForMonth = async (year, month) => {
-  //   try {
-  //     const allActivities = await fetchUserPetsActivitiesForMonth(user._id, token, year, month + 1);
-  //     setActivities(allActivities);
-  //     setLoading(false);
-  //   } catch (error) {
-  //     setError(true);
-  //     setLoading(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   fetchActivitiesForMonth(date.getFullYear(), date.getMonth());
-  // }, [date]);
-
   const handleMonthChange = ({ activeStartDate }) => {
     setDate(activeStartDate);
-    // fetchActivitiesForMonth(activeStartDate.getFullYear(), activeStartDate.getMonth());
   };
 
   const tileContent = ({ date, view }) => {
@@ -78,21 +56,37 @@ const CalendarSection = () => {
 
   const tileClassName = ({ date, view }) => {
     if (view === 'month') {
+
+      const today = new Date().toDateString();
+      const isToday = date.toDateString() === today;
+  
       const activity = activities.find(activity =>
         new Date(activity.date).toDateString() === date.toDateString() ||
         new Date(activity.nextDate).toDateString() === date.toDateString()
       );
 
+      let classNames = [];
+
       if (activity) {
-        return activity.vaccineType
-          ? 'tile-vaccine-type'
-          : activity.activity
-          ? 'tile-routine-care'
-          : 'tile-vet-visit';
+        if (activity.vaccineType) {
+          classNames.push('tile-vaccine-type');
+        } else if (activity.activity) {
+          classNames.push('tile-routine-care');
+        } else {
+          classNames.push('tile-vet-visit');
+        }
       }
+
+      if (isToday) {
+        classNames.push('current-day');
+      }
+
+      return classNames.length > 0 ? classNames.join(' ') : null;
     }
     return null;
   };
+
+
 
   if (loading) {
     return (
@@ -115,73 +109,65 @@ const CalendarSection = () => {
   }
 
   return (
-    <Box   
-    sx={{
-       backgroundColor: '#fff',
-      display: 'flex',
-      alignItems: 'center',
-      '.react-calendar': {
-        border: '1px solid #ccc',
-        boxShadow: '2',
-        p: 2,
-      },
-      '.react-calendar__navigation': {
-        display: 'flex',
-        justifyContent: 'space-between',
-        mb: 2,
-        button: {
-          color: '#007bff',
-          fontSize: '1rem',
-          fontWeight: 'bold',
-          '&:hover': {
-            color: '#0056b3',
+    <Grid container justifyContent="center" sx={{ mt: 4 }}>
+      <Grid item xs={12} >
+      <Paper
+        elevation={3}
+        sx={{
+          p: 3,
+          width: '100%',
+          maxWidth: '1200px',
+          margin: '0 auto',
+          '.react-calendar': {
+            border: '1px solid #ccc',
+            boxShadow: 2,
+            p: 2,
+            width: '100%', 
           },
-        },
-      },
-      '.react-calendar__month-view__weekdays': {
-        fontWeight: 'bold',
-        color: '#555',
-        mb: 1,
-      },
-      '.react-calendar__tile': {
-        textAlign: 'center',
-        p: 1,
-        borderRadius: 1,
-        '&:hover': {
-          backgroundColor: '#f5f5f5',
-        },
-      },
-      '.react-calendar__tile--now': {
-        backgroundColor: 'rgba(0, 123, 255, 0.1)',
-      },
-      '.react-calendar__tile--active': {
-        backgroundColor: '#007bff',
-        color: 'white',
-        fontWeight: 'bold',
-        '&:hover': {
-          backgroundColor: '#0056b3',
-        },
-      },
-      '.react-calendar__tile--hasActive': {
-        backgroundColor: 'rgba(0, 123, 255, 0.15)',
-      },
-    }}>
-      <Calendar
-        onChange={setDate}
-        value={date}
-        tileContent={tileContent}
-        onActiveStartDateChange={handleMonthChange}
-        tileClassName={tileClassName}
-        className="custom-calendar"
-      />
-      {/* <Box sx={{ mt: 2 }}>
-        <ExportToCSVButton
-          data={activities}
-          filename={`activities-${date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}.csv`}
+          '& .react-calendar__navigation': {
+            width: '70%',
+            display: 'flex',
+            margin: '0 auto',
+            paddingBottom: '10px',
+          },
+          '& .react-calendar__navigation button': {
+            fontSize: '1.2rem',
+            fontWeight: 'bold',
+          },
+          '.react-calendar__tile.current-day': {
+            backgroundColor: '#007bff !important',
+            color: 'white !important',
+            fontWeight: 'bold',
+            
+          },
+          '.react-calendar__tile--active': {
+            backgroundColor: '#007bff',
+            color: 'white',
+            fontWeight: 'bold',
+            '&:hover': {
+              backgroundColor: '#0056b3',
+            },
+          },
+        }}
+      >
+        <Typography variant="h5" sx={{ mb: 2, textAlign: 'center', fontWeight: 'bold' }}>
+          Pet Activities Calendar
+        </Typography>
+        <Calendar
+          onChange={setDate}
+          value={date}
+          tileContent={tileContent}
+          tileClassName={tileClassName}
+          onActiveStartDateChange={handleMonthChange}
+          className="custom-calendar"
+          locale="en-US"
+          tileDisabled={() => false}
         />
-      </Box> */}
-    </Box>
+        </Paper>
+      </Grid>
+    </Grid>
   );
+
 };
 
 export default CalendarSection;

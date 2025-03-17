@@ -40,7 +40,7 @@ const TaskItem = ({ task, onToggleComplete }) => {
       >
         {task.title}
       </Typography>
-      {task.dueDate && (
+      {!task.completed && task.dueDate && (
         <Typography
           variant="body2"
           sx={{

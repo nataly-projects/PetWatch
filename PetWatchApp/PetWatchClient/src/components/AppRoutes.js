@@ -7,12 +7,12 @@ import SignupLoginPage from '../pages/SignupLoginPage';
 import AboutPage from '../pages/AboutPage';
 import ContactPage from '../pages/ContactPage';
 import ImportantInfoPage from '../pages/ImportantInfoPage';
-import DogCarePage from '../pages/DogCarePage';
-import CatCarePage from '../pages/CatCarePage';
+import DogCarePage from './DogCare';
+import CatCarePage from './CatCare';
 import PetNamesIdea from '../components/PetNamesIdea';
 import DogGuide from '../components/DogGuide';
 import CatGuide from '../components/CatGuide';
-import EmergencyGuide from '../pages/EmergencyGuide';
+import EmergencyGuide from './EmergencyGuide';
 
 import UserProfile from '../pages/UserProfile';
 import ActivityLog from '../components/ActivityLog';

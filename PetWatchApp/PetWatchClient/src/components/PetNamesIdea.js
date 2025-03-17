@@ -1,22 +1,23 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Box, Typography, Grid, Paper } from '@mui/material';
 import { petNameIdeas } from '../utils/utils';
 
 const PetNamesIdea = () => {
 
-  const handleLetterClick = (letter) => {
-    const sectionId = `letter-section-${letter}`;
-    const sectionElement = document.getElementById(sectionId);
-    const headerHeight = document.getElementById('header').offsetHeight;
+  const handleLetterClick = useCallback((letter) => {
+    const sectionElement = document.getElementById(`letter-section-${letter}`);
+    const headerElement = document.getElementById("header");
 
-    if (sectionElement) {
-      const sectionTop = sectionElement.getBoundingClientRect().top + window.pageYOffset;
+    if (sectionElement && headerElement) {
+      const headerHeight = headerElement.offsetHeight;
+      const sectionTop = sectionElement.getBoundingClientRect().top + window.scrollY;
+
       window.scrollTo({ top: sectionTop - headerHeight * 2, behavior: "smooth" });
     }
-  };
+  }, []);
 
   return (
-    <Box sx={{ maxWidth: 800, margin: '0 auto', padding: 3 }}>
+    <Box sx={{ maxWidth: 900, padding: 3 }}>
       <Box id="header" sx={{ position: 'sticky', top: 100, backgroundColor: '#fff', zIndex: 1000, mb: 3 }}>
         <Typography variant="h4" align="center" gutterBottom>
           Finding The Perfect Pet Name
@@ -26,17 +27,23 @@ const PetNamesIdea = () => {
             <Paper
               key={letter}
               onClick={() => handleLetterClick(letter)}
+              tabIndex={0}
+              role="button"
+              onKeyPress={(e) => e.key === "Enter" && handleLetterClick(letter)}
               sx={{
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
                 width: 40,
                 height: 40,
-                borderRadius: '50%',
+                borderRadius: '80%',
                 border: '1px solid #795B4A',
                 cursor: 'pointer',
                 color: '#795B4A',
                 backgroundColor: '#F8F4EF',
+                transition: "background-color 0.3s",
+                "&:hover": { backgroundColor: "#eae0d5" },
+                "&:focus": { outline: "2px solid #795B4A" },
               }}
             >
               {letter}
@@ -45,7 +52,7 @@ const PetNamesIdea = () => {
         </Box>
       </Box>
 
-      <Box sx={{ color: '#795B4A', mb: 3 }}>
+      <Box sx={{ mb: 3}}>
         <Typography variant="body1" paragraph>
           Choosing the most suitable name for your pet is a significant yet not always simple task. A pet's name is more than just a label...
         </Typography>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { Box, Typography, Button, TextField } from '@mui/material';
 import { toast } from 'react-toastify';
@@ -9,13 +9,14 @@ import pawBackground from '../images/paw_background.jpg';
 const ContactPage = () => {
   const user = useSelector((state) => state.user);
   
-  const [formData, setFormData] = useState({
-    email: user ? user.email : '',
-    name: user ? user.fullName : '',
+  const defaultFormData = useMemo(() => ({
+    email: user?.email || '',
+    name: user?.fullName || '',
     message: '',
-  });
+  }), [user]);
+  const [formData, setFormData] = useState(defaultFormData);
+
   const [errors, setErrors] = useState({});
-  const [error, setError] = useState(null);
 
   const validateInputs = () => {
     const validationErrors = {};
@@ -45,20 +46,23 @@ const ContactPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (validateInputs()) {
-      try {
-        const userId = user ? user._id : null;
-        const response = await sendContactMessage({ userId, ...formData });
-        if (response) {
-          toast.success('Message sent successfully');
-        } else {
-          toast.error('An error occurred. Please try again later.');
-        }
-      } catch (error) {
-        setError('An error occurred while processing your request');
+
+    if (!validateInputs()) return;
+
+    try {
+      const userId = user?._id || null;
+      const response = await sendContactMessage({ userId, ...formData });
+      if (response) {
+        toast.success('Message sent successfully');
+        setFormData(defaultFormData);
+        setErrors({});
+      } else {
         toast.error('An error occurred. Please try again later.');
       }
+    } catch (error) {
+      toast.error('An error occurred. Please try again later.');
     }
+    
   };
 
   return (
@@ -84,46 +88,47 @@ const ContactPage = () => {
           mb: 5,
         }}
       >
-        <Typography variant="h4" sx={{ color: '#795B4A', textAlign: 'center', mb: 2 }}>
+        <Typography variant="h4" sx={{textAlign: 'center', mb: 2 }}>
           Contact Us
         </Typography>
-        <Typography variant="body1" sx={{ color: '#795B4A', mb: 3 }}>
+        <Typography variant="body1" sx={{ mb: 3 }}>
           Please fill out the form below to contact us with any questions or feedback. <br />
           We will get back to you as soon as possible. <br />
           Thank you for your interest in Pet Watch!
         </Typography>
 
         <Box sx={{ mb: 3 }}>
-          <Typography variant="body1" sx={{ color: '#795B4A' }}>
+          <Typography variant="body1">
             Email: petwatch07@gmail.com
           </Typography>
-          <Typography variant="body1" sx={{ color: '#795B4A' }}>
+          <Typography variant="body1">
             Address: 123 Pet Avenue, Watch Valley
           </Typography>
         </Box>
 
         <form onSubmit={handleSubmit}>
-          {['name', 'email', 'message'].map((field, idx) => (
+          {[{ name: 'name', type: 'text' },
+            { name: 'email', type: 'email' },
+            { name: 'message', type: 'text', multiline: true, rows: 4 },].map(({name, type, multiline, rows}) => (
             <TextField
-              key={idx}
+              key={name}
               fullWidth
               required
-              label={field.charAt(0).toUpperCase() + field.slice(1)}
-              name={field}
-              type={field === 'email' ? 'email' : 'text'}
-              value={formData[field]}
+              label={name.charAt(0).toUpperCase() + name.slice(1)}
+              name={name}
+              type={type}
+              value={formData[name]}
               onChange={handleChange}
-              error={Boolean(errors[field])}
-              helperText={errors[field]}
-              multiline={field === 'message'}
-              rows={field === 'message' ? 4 : 1}
+              error={Boolean(errors[name])}
+              helperText={errors[name]}
+              multiline={multiline}
+              rows={rows}
               sx={{ mb: 2 }}
             />
           ))}
 
           <Button
             type="submit"
-            fullWidth
             variant="contained"
             sx={{
               backgroundColor: '#007bff',
@@ -132,14 +137,15 @@ const ContactPage = () => {
               fontSize: '16px',
               mt: 2,
               borderRadius: '5px',
+              '&:hover': { backgroundColor: '#0056b3' },
             }}
           >
             Submit
           </Button>
         </form>
-        {error && (
+        {/* {error && (
           <Typography sx={{ color: 'red', textAlign: 'center', mt: 2 }}>{error}</Typography>
-        )}
+        )} */}
       </Box>
     </Box>
   );

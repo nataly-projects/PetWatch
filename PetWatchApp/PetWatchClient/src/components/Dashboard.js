@@ -114,25 +114,30 @@ const Dashboard = () => {
     </Box>
        
     <ActivityLog activityLogs={activityLogs} upcomingEvents={upcomingEvents} />
+    <Box mb={3} />
+    <ExpenseTracker expenses={expenses} from="user"/>
 
-    <ExpenseTracker expenses={expenses} from="user" />
+    <Grid container spacing={3}>
 
-    <Grid container spacing={3} mb={4}>
-      <Grid item xs={12} md={8}>
-          <NoteSection propsNotes={notes} />
-          <CalendarSection />
-      </Grid>
-      <Grid item xs={12} md={4}>
-        <Box display="flex" flexDirection="column" gap="10px" p={1}>
-          <TaskList propTasks={tasks} token={token} userId={user._id} />
-          <TaskPerformanceChart tasks={tasks} />
-        </Box>
-      </Grid>
-    </Grid>  
-
-    <Box display="flex" mt={4}>
+    <Grid item xs={12} md={8}>
+      <Box display="flex" flexDirection="column" gap={3}>
+        <NoteSection propsNotes={notes} />
+        <CalendarSection />
+      </Box>
+      <Box display="flex" mt={4}>
       <Button variant="contained" onClick={handleAddNewPetClick}>Add New Pet</Button>
     </Box>
+    </Grid>
+
+    <Grid item xs={12} md={4}>
+      <Box display="flex" flexDirection="column" gap={3}>
+        <TaskList propTasks={tasks} token={token} userId={user._id} />
+        <TaskPerformanceChart tasks={tasks} />
+      </Box>
+    </Grid>
+  </Grid>
+
+    
 
     <AddPetForm open={isAddPetPopupOpen} handleClose={handleClosePopup} />
 
