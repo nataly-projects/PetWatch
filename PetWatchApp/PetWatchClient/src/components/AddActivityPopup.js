@@ -7,41 +7,49 @@ import GenericActivityForm from './GenericActivityForm';
 import { formFieldsConfig, FormFieldsType } from '../utils/utils';
 
 const AddActivityPopup = ({ onActivitySelect, onClose }) => {
-    const [initialItems, setInitialItems] = useState(ActivityTypeObject);
-    const [expandedItems, setExpandedItems] = useState(null);
-    const [selectedActivity, setSelectedActivity] = useState(null);
-    const [selectedNestedActivity, setSelectedNestedActivity] = useState(null);
+    const [activities, setActivities] = useState({ selected: null, nested: null, expanded: null });
 
     const handleActivityClick = (activity) => {
-        if (activity.items) {
             const itemsMap = {
                 VACCINE_RECORD: VaccineRecordType,
                 ROUTINE_CARE: RoutineCareActivityItems,
                 EXPENSE: ExpenseCategory,
             };
-            setExpandedItems(itemsMap[activity.name] || null);
-            setSelectedActivity(activity);
-        } else {
-            setSelectedActivity(activity);
-            setExpandedItems(null);
-        }
+            setActivities({
+                selected: activity,
+                nested: null,
+                expanded: activity.items ? itemsMap[activity.name] || null : null,
+            });
     };
 
     const handleNestedItemClick = (item) => {
-        setSelectedNestedActivity(item);
+        setActivities((prev) => ({ ...prev, nested: item }));
     };
 
     const handleSave = (data) => {
-        onActivitySelect(selectedActivity, data);
+        let updatedData = { ...data };
+        if (activities.nested) {
+            const fieldMap = {
+                EXPENSE: 'category',
+                ROUTINE_CARE: 'activity',
+                VACCINE_RECORD: 'vaccineType',
+            };
+            const fieldName = fieldMap[activities.selected.name];
+            if (fieldName) updatedData[fieldName] = activities.nested.name;
+        }
+        onActivitySelect(activities.selected, updatedData);
         onClose();
     };
     
-    const getFormFields = () => {
-        return formFieldsConfig(selectedNestedActivity ? selectedNestedActivity : {})[FormFieldsType[selectedActivity.name]];
-    };
+    const formConfig = activities.selected 
+        ? formFieldsConfig(activities.nested || {})[FormFieldsType[activities.selected.name]]
+        : null;
 
-    const formConfig = selectedActivity ? getFormFields() : null;
-    const dialogTitle = selectedActivity ? (selectedNestedActivity ? `Add record for ${selectedActivity.value}: ${selectedNestedActivity.value}` :  `Add ${selectedActivity.value}`) : 'Choose Activity to Add';
+    const dialogTitle = activities.selected 
+    ? activities.nested 
+        ? `Add record for ${activities.selected.value}: ${activities.nested.value}`
+        : `Add ${activities.selected.value}`
+    : 'Choose Activity to Add';
     
     return (
         <Dialog open={true} onClose={onClose} maxWidth="sm" fullWidth>
@@ -54,9 +62,9 @@ const AddActivityPopup = ({ onActivitySelect, onClose }) => {
                 </Box>
             </DialogTitle>
             <DialogContent dividers>
-            {!selectedActivity ? (
+            {!activities.selected ? (
                     <Grid container spacing={2}>
-                        {initialItems.map((activity, index) => (
+                        {ActivityTypeObject.map((activity, index) => (
                             <Grid item xs={6} sm={4} key={index}>
                                 <Paper
                                     onClick={() => handleActivityClick(activity)}
@@ -75,9 +83,9 @@ const AddActivityPopup = ({ onActivitySelect, onClose }) => {
                             </Grid>
                         ))}
                     </Grid>
-                ) : !selectedNestedActivity && expandedItems ? (
+                ) : !activities.nested && activities.expanded ? (
                     <Grid container spacing={2}>
-                        {expandedItems.map((item, index) => (
+                        {activities.expanded.map((item, index) => (
                             <Grid item xs={6} sm={4} key={index}>
                                 <Paper
                                     onClick={() => handleNestedItemClick(item)}
@@ -97,7 +105,7 @@ const AddActivityPopup = ({ onActivitySelect, onClose }) => {
                         ))}
                     </Grid>
                 ) : (
-                    <GenericActivityForm
+                    formConfig && ( <GenericActivityForm
                         title={formConfig.title}
                         fields={formConfig.fields}
                         validationRules={formConfig.validationRules}
@@ -106,7 +114,7 @@ const AddActivityPopup = ({ onActivitySelect, onClose }) => {
                         showHeader={false}
                     />
                     )
-                }
+                )}
             </DialogContent>
         </Dialog>
     );

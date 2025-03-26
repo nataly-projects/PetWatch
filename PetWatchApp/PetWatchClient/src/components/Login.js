@@ -28,8 +28,9 @@ const Login = () => {
 
 
   useEffect(() => {
-    setSubmitAllowed(!Object.values(errors).some(Boolean));
-  }, [errors]);
+    const isFormValid = Object.values(errors).every(error => !error) && Object.values(formData).every(value => value.trim() !== '');
+    setSubmitAllowed(isFormValid);
+  }, [errors, formData]);
 
   const openForgotPasswordModal = () => {
     setForgotPasswordModalOpen(true);
@@ -70,7 +71,7 @@ const Login = () => {
   };
 
   const togglePasswordVisibility = () => {
-    setIsPasswordVisible(!isPasswordVisible);
+    setIsPasswordVisible(prev => !prev);
   };
 
 
@@ -79,6 +80,7 @@ const Login = () => {
     if (!submitAllowed) return;
 
     try {
+      setError(null);
       const { email, password } = formData;
       const loginData = await execute(loginUser, [email, password]);
       if (loginData) {
@@ -101,7 +103,7 @@ const Login = () => {
         marginBottom: '30%',
       }}
     >
-      <Typography variant="h6" sx={{ color: '#795B4A', fontSize: '19px', textAlign: 'center', fontWeight: 'bold' }}>
+      <Typography variant="h6" sx={{ fontSize: '19px', textAlign: 'center', fontWeight: 'bold' }}>
         Welcome back to Pet Watch
       </Typography>
       <form onSubmit={handleSubmit}>
@@ -118,8 +120,8 @@ const Login = () => {
             { label: 'Email', name: 'email', icon: faEnvelope, type: 'email' },
             { label: 'Password', name: 'password', icon: faLock, type: isPasswordVisible ? 'text' : 'password' },
           ].map(({ label, name, icon, type }) => (
-            <Box key={name} sx={{ width: '70%', marginBottom: '26px' }}>
-              <Typography component="label" sx={{ fontWeight: 'bold', color: '#795B4A' }}>
+            <Box key={name} sx={{ width: { xs: '90%', sm: '80%', md: '70%' }, marginBottom: '26px' }}>
+              <Typography component="label" sx={{ fontWeight: 'bold' }}>
                 {label}:
               </Typography>
               <TextField
@@ -135,14 +137,14 @@ const Login = () => {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <FontAwesomeIcon icon={icon} style={{ color: '#795B4A' }} />
+                      <FontAwesomeIcon icon={icon}  />
                     </InputAdornment>
                   ),
                   endAdornment:
                     name === 'password' && (
                       <InputAdornment position="end">
                         <IconButton onClick={togglePasswordVisibility} edge="end">
-                          <FontAwesomeIcon icon={isPasswordVisible ? faEye : faEyeSlash} style={{ color: '#795B4A' }} />
+                          <FontAwesomeIcon icon={isPasswordVisible ? faEye : faEyeSlash}  />
                         </IconButton>
                       </InputAdornment>
                     ),
@@ -178,7 +180,6 @@ const Login = () => {
           marginTop: '22px',
           opacity: 0.8,
           fontSize: '16px',
-          color: '#795B4A',
           width: '70%',
           textAlign: 'center',
           cursor: 'pointer',

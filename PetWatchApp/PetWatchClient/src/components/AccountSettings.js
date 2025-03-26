@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { updateUserSettings, fetchUserAccountSettings } from '../services/userService';
@@ -9,12 +9,14 @@ import useFetch from '../hooks/useFetch';
 
 const AccountSettings = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const user = useSelector((state) => state.user);
   const token = useSelector((state) => state.token);
-
+  const currentTheme = useSelector((state) => state.theme); 
   const [notificationPreferences, setNotificationPreferences] = useState({});
-  const [theme, setTheme] = useState('');
   const [currency, setCurrency] = useState('');
+  const [tempTheme, setTempTheme] = useState(currentTheme);
 
   const { data: accountSettingsData, loading, error } = useFetch(
     fetchUserAccountSettings,
@@ -24,15 +26,13 @@ const AccountSettings = () => {
 
   const accountSettings = accountSettingsData?.accountSettings || {};
   const userCurrency = accountSettings?.currency || Currency.ILS.name;
-  const userTheme = accountSettings?.theme || 'light';
 
   useEffect(() => {
     if (accountSettings?.notificationPreferences) {
       setNotificationPreferences(accountSettings.notificationPreferences);
     }
-    setTheme(userTheme);
     setCurrency(userCurrency);
-  }, [accountSettings, userCurrency, userTheme]);
+  }, [accountSettings]);
 
 
   const handleNotificationChange = (event) => {
@@ -40,14 +40,19 @@ const AccountSettings = () => {
     setNotificationPreferences((prev) => ({ ...prev, [name]: checked }));
   };
 
+  const handleThemeChange = (event) => {
+    setTempTheme(event.target.value);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await updateUserSettings(user._id, {
         notificationPreferences,
-        theme,
+        theme: tempTheme,
         currency,
       }, token);
+      dispatch({ type: 'SET_THEME', payload: tempTheme });
       toast.success('Account settings updated successfully!');
     } catch (error) {
       if (error.response && error.response.status === 401) {
@@ -129,8 +134,8 @@ const AccountSettings = () => {
       <FormControl fullWidth margin="normal">
         <InputLabel>Theme</InputLabel>
         <Select
-          value={theme}
-          onChange={(e) => setTheme(e.target.value)}
+          value={tempTheme || 'light'}
+          onChange={handleThemeChange}
           label="Theme"
         >
           <MenuItem value="light">Light</MenuItem>

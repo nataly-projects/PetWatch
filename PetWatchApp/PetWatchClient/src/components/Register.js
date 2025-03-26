@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -8,95 +8,109 @@ import {isValidEmail, hashPassword, isValidPhoneNumber} from '../utils/utils';
 import { signupUser } from '../services/userService';
 import useApiActions from '../hooks/useApiActions';
 
-
-const Register = () => {
-  const [formData, setFormData] = useState({
+const initialState = {
+  formData: {
     fullName: '',
     email: '',
     phoneNumber: '',
     password: '',
     confirmPassword: '',
-  });
-  const [errors, setErrors] = useState({});
-  const [error, setError] = useState(null);
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
-  const [submitAllowed, setSubmitAllowed] = useState(false);
+  },
+  errors: {},
+  isPasswordVisible: false,
+  submitAllowed: false,
+};
 
-  const dispatch = useDispatch();
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'SET_FIELD':
+      const updatedFormData = { ...state.formData, [action.field]: action.value };
+      const updatedErrors = validateField(action.field, action.value, state);
+      return {
+        ...state,
+        formData: updatedFormData,
+        errors: updatedErrors,
+        submitAllowed: Object.values(updatedFormData).every(value => value.trim() !== '') &&
+               !Object.values(updatedErrors).some(Boolean),
+      };
+    case 'SET_ERROR':
+      return {
+        ...state,
+        errors: { ...state.errors, [action.field]: action.error },
+      };
+    case 'TOGGLE_PASSWORD':
+      return { ...state, isPasswordVisible: !state.isPasswordVisible };
+    case 'SET_SUBMIT_ALLOWED':
+      return { ...state, submitAllowed: action.value };
+    default:
+      return state;
+  }
+};
+
+const validateField = (name, value, state) => {
+  let errorMessage = '';
+  switch (name) {
+    case 'fullName':
+      errorMessage = value ? '' : 'Full Name is required';
+      break;
+    case 'email':
+      errorMessage = value ? (isValidEmail(value) ? '' : 'Invalid email format') : 'Email is required';
+      break;
+    case 'phoneNumber':
+      errorMessage = value ? (isValidPhoneNumber(value) ? '' : 'Invalid phone number format') : 'Phone Number is required';
+      break;
+    case 'password':
+      errorMessage = value ? (value.length >= 3 ? '' : 'Password must be at least 8 characters long') : 'Password is required';
+      break;
+    case 'confirmPassword':
+      errorMessage = value ? (value === state.formData.password ? '' : 'Passwords do not match') : 'Confirm Password is required';
+      break;
+    default:
+      break;
+  }
+  return { ...state.errors, [name]: errorMessage };
+};
+
+const Register = () => {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
   const navigate = useNavigate();
-
+  const reduxDispatch = useDispatch();
   const { execute, loading, error: apiError } = useApiActions();
 
-  useEffect(() => {
-    setSubmitAllowed(!Object.values(errors).some(Boolean));
-  }, [errors]);
-
-  const validateField = (name, value) => {
-    let errorMessage = '';
-
-    switch (name) {
-      case 'fullName':
-        errorMessage = value ? '' : 'Full Name is required';
-        break;
-      case 'email':
-        errorMessage = value
-          ? isValidEmail(value)
-            ? ''
-            : 'Invalid email format'
-          : 'Email is required';
-        break;
-      case 'phoneNumber':
-        errorMessage = value
-          ? isValidPhoneNumber(value)
-            ? ''
-            : 'Invalid phone number format'
-          : 'Phone Number is required';
-        break;
-      case 'password':
-        errorMessage = value
-          ? value.length >= 3
-            ? ''
-            : 'Password must be at least 8 characters long'
-          : 'Password is required';
-        break;
-      case 'confirmPassword':
-        errorMessage = value
-          ? value === formData.password
-            ? ''
-            : 'Passwords do not match'
-          : 'Confirm Password is required';
-        break;
-      default:
-        break;
-    }
-    setErrors((prevErrors) => ({ ...prevErrors, [name]: errorMessage }));
-  };
-
+  const formFields = [
+    { label: 'Full Name', name: 'fullName', icon: faUser, type: 'text' },
+    { label: 'Email', name: 'email', icon: faEnvelope, type: 'email' },
+    { label: 'Phone', name: 'phoneNumber', icon: faPhone, type: 'number' },
+    { label: 'Password', name: 'password', icon: faLock, type: state.isPasswordVisible ? 'text' : 'password' },
+    { label: 'Confirm Password', name: 'confirmPassword', icon: faLock, type: state.isPasswordVisible ? 'text' : 'password' },
+  ];
+  
   const togglePasswordVisibility = () => {
-    setIsPasswordVisible(!isPasswordVisible);
+    dispatch({ type: 'TOGGLE_PASSWORD' });
   };
 
   
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    validateField(name, value);
-  };
+  const handleChange = useCallback((e) => {
+    dispatch({ type: 'SET_FIELD', field: e.target.name, value: e.target.value });
+
+  }, []);
   
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!submitAllowed) return;
+    if (!state.submitAllowed) return;
 
     try {
-      const { fullName, email, phoneNumber, password } = formData;
+      const { fullName, email, phoneNumber, password } = state.formData;
       const registerUser = await execute(signupUser, [fullName, email, phoneNumber, password]);
 
       if (registerUser) {
-        dispatch({ type: 'SET_USER', payload: registerUser });
+        reduxDispatch({ type: 'SET_USER', payload: registerUser });
         navigate('/dashboard/adopt');
       }
     } catch (error) {
-      setError(error.response?.data?.error || 'An error occurred while processing your request');
+
+      console.error(error);
     }
   };
 
@@ -111,10 +125,10 @@ const Register = () => {
         marginBottom: '30%',
       }}
     >
-      <Typography variant="h6" sx={{ color: '#795B4A', fontSize: '19px', textAlign: 'center', fontWeight: 'bold' }}>
+      <Typography variant="h6" sx={{ fontSize: '19px', textAlign: 'center', fontWeight: 'bold' }}>
         Become a Pet Watch member
       </Typography>
-      <Typography variant="body1" sx={{ color: '#795B4A', fontSize: '16px', textAlign: 'center', marginBottom: '10px' }}>
+      <Typography variant="body1" sx={{ fontSize: '16px', textAlign: 'center', marginBottom: '10px' }}>
         Sign up to get the most of Pet Watch website
       </Typography>
       <form onSubmit={handleSubmit}>
@@ -127,15 +141,9 @@ const Register = () => {
             alignItems: 'center',
           }}
         >
-          {[
-            { label: 'Full Name', name: 'fullName', icon: faUser },
-            { label: 'Email', name: 'email', icon: faEnvelope },
-            { label: 'Phone', name: 'phoneNumber', icon: faPhone },
-            { label: 'Password', name: 'password', icon: faLock, type: isPasswordVisible ? 'text' : 'password' },
-            { label: 'Confirm Password', name: 'confirmPassword', icon: faLock, type: isPasswordVisible ? 'text' : 'password' },
-          ].map(({ label, name, icon, type = 'text' }) => (
+          {formFields.map(({ label, name, icon, type }) => (
             <Box key={name} sx={{ width: '70%', marginBottom: '26px' }}>
-              <Typography component="label" sx={{ fontWeight: 'bold', color: '#795B4A' }}>
+              <Typography component="label" sx={{ fontWeight: 'bold' }}>
                 {label}:
               </Typography>
               <TextField
@@ -143,22 +151,22 @@ const Register = () => {
                 required
                 name={name}
                 type={type}
-                value={formData[name]}
+                value={state.formData[name]}
                 onChange={handleChange}
-                error={Boolean(errors[name])}
-                helperText={errors[name]}
+                error={Boolean(state.errors[name])}
+                helperText={state.errors[name]}
                 sx={{ mt: 1 }}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <FontAwesomeIcon icon={icon} style={{ color: '#795B4A' }} />
+                      <FontAwesomeIcon icon={icon}/>
                     </InputAdornment>
                   ),
                   endAdornment:
                     name.includes('password') && (
                       <InputAdornment position="end">
                         <IconButton onClick={togglePasswordVisibility} edge="end">
-                          <FontAwesomeIcon icon={isPasswordVisible ? faEye : faEyeSlash} style={{ color: '#795B4A' }} />
+                          <FontAwesomeIcon icon={state.isPasswordVisible ? faEye : faEyeSlash} />
                         </IconButton>
                       </InputAdornment>
                     ),
@@ -180,12 +188,12 @@ const Register = () => {
               borderRadius: '4px',
               cursor: 'pointer',
             }}
-            disabled={!submitAllowed}
+            disabled={!state.submitAllowed}
           >
             Sign Up
           </Button>
         </Box>
-        {error && <Typography sx={{ color: 'red', textAlign: 'center', mt: 2 }}>{error}</Typography>}
+      
       </form>
     </Box>
   );

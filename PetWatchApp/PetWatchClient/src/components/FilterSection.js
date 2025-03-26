@@ -1,7 +1,5 @@
 import React from 'react';
-import { IconButton, Select, MenuItem, TextField, InputAdornment, FormControl, InputLabel, Input, Box } from '@mui/material';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFilter } from '@fortawesome/free-solid-svg-icons';
+import { Select, MenuItem, TextField, InputAdornment, FormControl, InputLabel, Box } from '@mui/material';
 
 const FilterSection = ({
     filterType, handleTypeChange, startDate, handleStartDateChange, endDate, 
@@ -11,17 +9,22 @@ const FilterSection = ({
     <Box 
       display="flex"
       gap={2}
-      mb={2}
       sx={{ width: '100%' }}
     >
+
       {/* Filter Type */}
-      <FormControl variant="standard" size="small" sx={{ minWidth: 120 }}>
+      <FormControl variant="outlined" size="small" sx={{ minWidth: 150 }}>
         <InputLabel>Type</InputLabel>
         <Select
           value={filterType}
           onChange={handleTypeChange}
-          input={<Input />}
-        >
+          label="Type"
+          sx={{
+            '& .MuiOutlinedInput-notchedOutline': {
+              height: '60px' 
+            },
+          }}
+          >
           <MenuItem value="">All</MenuItem>
           {Object.entries(selectOptions).map(([key, value]) => (
             <MenuItem key={key} value={value}>{value}</MenuItem>
@@ -37,15 +40,15 @@ const FilterSection = ({
           value={startDate}
           onChange={handleStartDateChange}
           InputLabelProps={{ shrink: true }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton size="small">
-                  <FontAwesomeIcon icon={faFilter} />
-                </IconButton>
-              </InputAdornment>
-            )
-          }}
+          // InputProps={{
+          //   endAdornment: (
+          //     <InputAdornment position="end">
+          //       <IconButton size="small">
+          //         <FontAwesomeIcon icon={faFilter} />
+          //       </IconButton>
+          //     </InputAdornment>
+          //   )
+          // }}
         />
       </FormControl>
 
@@ -57,19 +60,18 @@ const FilterSection = ({
           value={endDate}
           onChange={handleEndDateChange}
           InputLabelProps={{ shrink: true }}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton size="small">
-                  <FontAwesomeIcon icon={faFilter} />
-                </IconButton>
-              </InputAdornment>
-            )
-          }}
+          // InputProps={{
+          //   endAdornment: (
+          //     <InputAdornment position="end">
+          //       <IconButton size="small">
+          //         <FontAwesomeIcon icon={faFilter} />
+          //       </IconButton>
+          //     </InputAdornment>
+          //   )
+          // }}
         />
       </FormControl>
 
-      {/* Min Amount (only if isExpenseFilter is true) */}
       {isExpenseFilter && (
         <FormControl variant="standard" size="small">
           <TextField
@@ -77,19 +79,19 @@ const FilterSection = ({
             type="number"
             value={minAmount}
             onChange={handleMinAmountChange}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton size="small">
-                    <FontAwesomeIcon icon={faFilter} />
-                  </IconButton>
-                </InputAdornment>
-              )
-            }}
+            // InputProps={{
+            //   endAdornment: (
+            //     <InputAdornment position="end">
+            //       <IconButton size="small">
+            //         <FontAwesomeIcon icon={faFilter} />
+            //       </IconButton>
+            //     </InputAdornment>
+            //   )
+            // }}
           />
         </FormControl>
       )}
-    </Box>
+      </Box>
   );
 };
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box } from '@mui/material';
-import AppRoutes from '../components/AppRoutes';
 import Sidebar from '../components/SideBar';
+import { Outlet } from 'react-router-dom';
 
 
 const UserMainPage = () => {
@@ -24,7 +24,7 @@ const UserMainPage = () => {
           marginLeft: '270px',
         }}
       >
-         <AppRoutes isUserRoute /> 
+        <Outlet />
       </Box>
     </Box>
   );

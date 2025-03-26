@@ -542,6 +542,39 @@ export const getPetMedicalConditions = async (petId, token) => {
     }
   };
 
+  export const updateExpenseById = async (expenseData, token) => {
+    try {
+      const response = await axios.put(`${BASE_API_URL}/pets/expense/${expenseData._id}`, expenseData, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+  };
+
+  export const deleteExpenseById = async (expenseId, token) => {
+    try {
+      const response = await axios.delete(`${BASE_API_URL}/pets/expense/${expenseId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      if (response && response.data) {
+          return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw error; 
+    }
+  };
+
   export const updateEmergencyContactById = async (contactData, token) => {
     try {
       const response = await axios.put(`${BASE_API_URL}/pets/contact/${contactData._id}`, contactData, {

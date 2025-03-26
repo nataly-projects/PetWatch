@@ -126,7 +126,7 @@ const EmergencyContactsSection = ({ propsContacts, petId, token }) => {
         </Box>
       </Modal>
 
-      <Button variant="contained" sx={{ mt: 2 }} onClick={handleAddContactClick}>Add Contact</Button>
+      {/* <Button variant="contained" sx={{ mt: 2 }} onClick={handleAddContactClick}>Add Contact</Button> */}
        <Modal open={(isAddContactDialogOpen && formConfig)} onClose={handleDialogClose}>
         <Box sx={{ p: 4, backgroundColor: 'white', borderRadius: '8px', width: '50%', mx: 'auto', my: '10%' }}>
         <GenericActivityForm

@@ -15,6 +15,7 @@ const UserPopup = ({ onClose }) => {
 
   const handleLogout = () => {
     dispatch({ type: 'LOGOUT' });
+
   };
 
   return (
@@ -31,9 +32,9 @@ const UserPopup = ({ onClose }) => {
       }}
       onClick={handleClick}
     >
-      {/* User Header */}
+    
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 1, borderBottom: '1px solid #ccc', backgroundColor: '#f0f0f0' }}>
-        {/* Profile image */}
+        
         {user.imageUrl ? (
           <Avatar 
             alt={user.fullName} 
@@ -48,13 +49,13 @@ const UserPopup = ({ onClose }) => {
           {user.fullName}
         </Typography>
 
-        {/* Close Button */}
+        
         <IconButton onClick={onClose} >
           <FontAwesomeIcon icon={faTimes} />
         </IconButton>
       </Box>
 
-      {/* User Options List */}
+    
       <Box component="ul" sx={{ listStyle: 'none', padding: 0, margin: 0 }}>
         <Box component="li" sx={{ padding: 2, borderBottom: '1px solid #ccc', '&:hover': { backgroundColor: '#f0f0f0' } }}>
           <Link to="/user-profile" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', color: '#333' }}>

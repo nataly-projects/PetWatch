@@ -54,6 +54,9 @@ router.delete('/vet-visit/:vetVisitId', petController.deleteMedication);
 router.put('/meal/:mealId', petController.updateMealPlannerById);
 router.delete('/meal/:mealId', petController.deleteMealPlanner);
 
+router.put('/expense/:expenseId', petController.updateExpenserById);
+router.delete('/expense/:expenseId', petController.deleteExpense);
+
 router.put('/contact/:contactId', petController.updateEmergencyContactById);
 router.delete('/contact/:contactId', petController.deleteEmergencyContact);
 

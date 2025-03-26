@@ -280,10 +280,10 @@ export const formFieldsConfig = (data = {}) => ({
       }
   },             
   expense: {
-      title: `Add record for expense type: ${data.value}`,
+      title: Object.keys(data).length === 0 ? `Add record for expense type: ${data.category}` : `Edit expense record: ${data.category}`,
       fields: [
         { name: 'amount', label: 'Amount', type: 'number'},
-        { name: 'date', label: 'Date', type: 'datetime-local' },
+        { name: 'date', label: 'Date', type: 'datetime-local', value: (data.date ? formatDateAndTimeForInput(data.date) : '') },
         { name: 'note', label: 'Note', type: 'textarea', placeholder: 'Additional notes (optional)' },
       ],
       validationRules: {amount: 'Amount',date: 'Date' }

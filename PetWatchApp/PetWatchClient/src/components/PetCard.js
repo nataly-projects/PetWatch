@@ -17,7 +17,7 @@ const PetCard = ({ pet }) => {
 
     const onPetClick = (e) => {
         e.stopPropagation();
-        navigate(`/pet-profile/${pet._id}`, { state: { pet } });
+        navigate(`/main/pet-profile/${pet._id}`, { state: { pet } });
     };
 
     return (

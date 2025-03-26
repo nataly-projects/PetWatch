@@ -278,7 +278,7 @@ console.log(pet);
     </Box>
 
     <Box sx={{ mb: 4 }}>
-      <ExpenseTracker expenses={activityRecords.expensesRecord} from="pet" petName={petDetails.name} />
+      <ExpenseTracker propsExpenses={activityRecords.expensesRecord} from="pet" petName={petDetails.name} token={token} />
     </Box>
 
     <Box sx={{ mb: 4 }}>

@@ -36,7 +36,7 @@ const ExpenseCategory = Object.freeze({
     VET_VISIT: 'VetVisit',
     INSURANCE: 'Insurance',
     ROUTINE_CARE: 'Routine Care',
-    TOYS: 'Toyes',
+    TOYS: 'Toys',
     RELATED_PRODUCTS: 'Related Products',
     HOME_PROUSUCTS: 'Home Products',
     TRAINING: 'Training',

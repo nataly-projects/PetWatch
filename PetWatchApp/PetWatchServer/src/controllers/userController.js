@@ -43,7 +43,6 @@ async function getUserDashboardData(req, res) {
                 { path: 'medicalConditions' }
             ]
       });
-console.log('user dash: ', user);
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
       }
@@ -266,7 +265,6 @@ async function getUserUpcomingEvents (req, res) {
 
 async function getUserNotes (req, res) {
   try {
-    console.log('getUserNotes');
     const { userId } = req.params;
     const userWithNotes = await User.findById(userId).populate({
       path: 'pets',
@@ -275,7 +273,6 @@ async function getUserNotes (req, res) {
            populate: {path: 'pet',select: 'name'} },
       ]
     });
-    console.log('userWithNotes: ', userWithNotes);
     const notes = [];
 
     userWithNotes.pets.map(pet => {
@@ -292,7 +289,6 @@ async function getUserNotes (req, res) {
 
 async function getUserAccountSettings (req, res) {
   try {
-    console.log('getUserAccountSettings');
     const { userId } = req.params;
     const user = await User.findById(userId);
     if (!user) {
@@ -314,7 +310,6 @@ async function getUserAccountSettings (req, res) {
 }
 
 async function updateUserById(req, res) {
-  console.log('updateUserById: ', req.body);
     const {userId} = req.params; 
     const { userData } = req.body;
     // let imagePath = null;
@@ -371,7 +366,6 @@ async function updateUserAccountSettings (req, res) {
   try {
     const { userId } = req.params;
     const {updateSettings} = req.body;
-    console.log('updateSettings: ', updateSettings)
     const user = await User.findById(userId);
     if (!user) {
       return { error: 'User not found' };
@@ -397,10 +391,8 @@ async function updateUserAccountSettings (req, res) {
 }
 
 async function changePassword (req, res) {
-  console.log('changePassword: ', req.body);
   const {changePasswordData} = req.body;
   // const { email, oldPassword, newPassword } = req.body;
-  console.log('resetPassword: ', req.body);
     try {
       // find the user by email 
       const user = await User.findOne({email: changePasswordData.email});
@@ -485,7 +477,6 @@ function generateVerificationCode() {
 
 async function resetPasswordCode(req, res) {
   const { email, code } = req.body;
-console.log('resetPasswordCode: ', code, email);
   try {
     // get the user (already check if the email exists in the start of the reset password proccess)
     const user = await User.findOne({ email });
@@ -507,7 +498,6 @@ console.log('resetPasswordCode: ', code, email);
 
 async function resetPassword(req, res) {
   const { email, newPassword } = req.body;
-console.log('resetPassword: ', email, newPassword);
   try {
     // find the user by email 
     const user = await User.findOne({ email});
@@ -575,7 +565,6 @@ async function getUserTasks(req, res) {
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
-    console.log('tasks: ', user.tasks);
     res.status(200).json(user.tasks);
   } catch (error) {
     console.log(error);
@@ -587,7 +576,6 @@ async function getUserTasks(req, res) {
 async function addUserTask(req, res) {
   const { userId } = req.params;
   const {newTask} = req.body;
-  console.log('newTask: ', newTask);
   try {
     const task = new Task({...newTask});
      await task.save();
@@ -621,7 +609,6 @@ async function addUserTask(req, res) {
 async function updateUserTask(req, res) {
   const { userId, taskId } = req.params;
   const {updateTask} = req.body;
-  console.log('updateTask: ', updateTask);
   try {
     const task = await Task.findByIdAndUpdate(
       taskId,
@@ -1794,7 +1781,7 @@ module.exports = {
  *             - VetVisit
  *             - Insurance
  *             - Routine Care
- *             - Toyes
+ *             - Toys
  *             - Related Products
  *             - Home Products
  *             - Training

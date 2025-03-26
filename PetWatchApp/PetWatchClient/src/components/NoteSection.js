@@ -46,9 +46,9 @@ const NoteSection = ({ propsNotes, petId }) => {
       { Header: 'Created Date', accessor: 'createdDate', Cell: ({ value }) => formatDateUniversal(new Date(value)) },
       { Header: 'Updated Date', accessor: 'updatedDate', Cell: ({ value }) => (value ? formatDateUniversal(new Date(value)) : '-') },
       petId ? { Header: 'Actions', accessor: 'actions', disableSortBy: true, Cell: ({ row }) => (
-          <Box>
-            <Button size="small" onClick={() => handleEditClick(row.original)}>Edit</Button>
-            <Button size="small" onClick={() => handleDeleteNote(row.original._id)}>Delete</Button>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button size="small" variant="outlined" onClick={() => handleEditClick(row.original)}>Edit</Button>
+            <Button size="small" variant="outlined" color="error" onClick={() => handleDeleteNote(row.original._id)}>Delete</Button>
           </Box>
         ) } : { Header: 'Actions', accessor: 'actions', show: false }
     ],
@@ -110,9 +110,9 @@ const NoteSection = ({ propsNotes, petId }) => {
           <Table instance={notesTableInstance} />
           {petId && (
             <>
-              <Button variant="contained" sx={{ mt: 2 }} onClick={handleAddNoteClick}>
+              {/* <Button variant="contained" sx={{ mt: 2 }} onClick={handleAddNoteClick}>
                 Add Note
-              </Button>
+              </Button> */}
               <Modal open={(isAddNoteDialogOpen && formConfig)} onClose={handleDialogClose}>
                 <Box sx={{ p: 4, backgroundColor: 'white', borderRadius: '8px', width: '50%', mx: 'auto', my: '10%' }}>
                   <GenericActivityForm

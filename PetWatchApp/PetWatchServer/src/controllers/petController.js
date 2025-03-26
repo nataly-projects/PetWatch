@@ -162,7 +162,6 @@ async function getPetNote (req, res) {
         const { petId } = req.params;
 
         const weightLogs = await ActivityLog.find({ petId, actionType: ActivityLogType.PET_WEIGHT_UPDATE });
-        console.log('weightLogs: ', weightLogs);
         res.status(200).json(weightLogs);
       
     } catch (error) {
@@ -188,7 +187,6 @@ async function getPetNote (req, res) {
             populate: {path: 'pet',select: 'name'} 
         });
 
-        console.log('petWithUpcomingEvents: ', petWithUpcomingEvents);
         const upcomingEvents = [];
 
         petWithUpcomingEvents.vaccinationRecords.forEach(vaccineRecord => {
@@ -376,14 +374,12 @@ async function addPet (req, res) {
             weight: petData.weight,
             image: imagePath,
         });
-        console.log('new pet: ', newPetData);
         await newPetData.save();
         const pet = newPetData._id.toString();
 
         if (petData.expenses.length > 0) {
             expenseIds = await Promise.all(petData.expenses.map(async (expense) => {
                 const newExpense = new Expense({ ...expense, pet });
-                console.log('newExpense: ', newExpense);
                 await newExpense.save();
 
                 const activityLog = new ActivityLog({
@@ -566,8 +562,6 @@ async function addPet (req, res) {
 async function uploadAdditionalImageToNewPet(req, res) {
     try {
         const {petId} = req.params;
-        console.log('pet id: ', petId);
-        console.log('uploadAdditionalImageToNewPet: ', req.files);
 
         const pet = await Pet.findById(petId);
         if (!pet) {
@@ -586,7 +580,6 @@ async function uploadAdditionalImageToNewPet(req, res) {
 
 async function addPetVaccineRecord (req, res) {
     try {
-        console.log('addPetVaccineRecord');
         const { petId } = req.params;
         const { vaccineType, note, date, nextDate } = req.body;
 
@@ -717,6 +710,7 @@ async function addPetNote (req, res) {
 
 async function addPetExpense (req, res) {
     try {
+        console.log('add pet expenses');
         const { petId } = req.params;
         const { category, amount, note, date } = req.body;
 
@@ -748,10 +742,9 @@ async function addPetExpense (req, res) {
             details: note ? `expense type: ${ExpenseCategory[category]}.\n your note: ${note}` :  `expense type: ${ExpenseCategory[category]}`
         });
         await activityLog.save();
-
         //Add to the totalExpenses for the pet owner
         const user = await User.findById(pet.owner);
-        user.totalExpenses += amount;
+        user.totalExpenses += Number(amount);
         await user.save();
 
         res.status(201).json({ message: 'Expense added successfully', expense });
@@ -765,7 +758,6 @@ async function addPetAllergy (req, res) {
     try {
         const { petId } = req.params;
         const { allergyData } = req.body;
-console.log('addPetAllergy: ', allergyData);
 
         const allergy = new Allergy({
             name: allergyData.name,
@@ -901,7 +893,7 @@ async function addPetMealPlanner (req, res) {
     try {
         const { petId } = req.params;
         const { mealData } = req.body;
-console.log('mealData: ', mealData);
+
         const mealPlanner = new MealPlanner({
             amount: mealData.amount,
             note: mealData.note ? mealData.note : null,
@@ -1038,7 +1030,7 @@ async function updateNoteById (req, res) {
         await note.save();
 
         const pet = await Pet.findById(note.pet);
-        // Update the corresponding note within the pet notes array
+        
         // const index = pet.notes.findIndex(note => note._id.toString() === noteId);
         // if (index !== -1) {
         //     pet.notes[index] = note;
@@ -1070,7 +1062,6 @@ async function deleteNote (req, res) {
         // Remove from the pet notes array
         const pet = await Pet.findById(note.pet);
         pet.notes = pet.notes.filter(petNote => petNote.toString() !== noteId );
-        console.log('pet notes: ', pet.notes);
         await pet.save();
 
          // Log the activity
@@ -1105,7 +1096,7 @@ async function updateAllergyById (req, res) {
         await allergy.save();
 
         const pet = await Pet.findById(allergy.pet);
-        // Update the corresponding allergy within the pet allergies array
+
         const index = pet.allergies.findIndex(allergy => allergy._id.toString() === alleryId);
         if (index !== -1) {
             pet.allergies[index] = allergy;
@@ -1139,7 +1130,6 @@ async function deleteAllergy (req, res) {
         const pet = await Pet.findById(allergy.pet);
         pet.allergies = pet.allergies.filter(allergy => allergy.toString() !== allergyId );
 
-        console.log('pet allergies: ', pet.allergies);
         await pet.save();
 
          // Log the activity
@@ -1308,7 +1298,7 @@ async function updateMealPlannerById (req, res) {
         await meal.save();
 
         const pet = await Pet.findById(meal.petId);
-        // Update the corresponding note within the pet notes array
+
         const index = pet.mealPlanner.findIndex(meal => meal._id.toString() === mealId);
         if (index !== -1) {
             pet.mealPlanner[index] = meal;
@@ -1317,7 +1307,7 @@ async function updateMealPlannerById (req, res) {
          // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
-            petId: visit.pet,
+            petId: meal.pet,
             type: ActivityType.MEAL_PLANNER,
             actionType: ActivityLogType.MEAL_PLANNER_EDIT
         });
@@ -1372,7 +1362,7 @@ async function updateEmergencyContactById (req, res) {
         await contact.save();
 
         const pet = await Pet.findById(contact.petId);
-        // Update the corresponding note within the pet notes array
+
         const index = pet.emergencyContacts.findIndex(contact => contact._id.toString() === contactId);
         if (index !== -1) {
             pet.emergencyContacts[index] = contact;
@@ -1482,6 +1472,72 @@ async function deleteMedicalCondition (req, res) {
         res.status(200).json({ message: 'Medical Condition deleted successfully' });
     } catch (error) {
         res.status(500).json({ error: 'Error while deleting medical condition, please try again later' });
+    }
+}
+
+async function updateExpenserById (req, res) {
+    try {
+        const { expenseId } = req.params;
+        const { expenseData } = req.body;
+
+        const expense = await Expense.findById(expenseId);
+        if (!expense) {
+            return res.status(404).json({ error: 'Expense not found' });
+        }
+
+        expense.date = expenseData.date;
+        expense.amount = expenseData.foamountod;
+        expense.category = expenseData.category;
+        expense.note = expenseData.note;
+        expense.updatedDate = Date.now();
+        await expense.save();
+
+        const pet = await Pet.findById(expense.pet);
+
+        const index = pet.expenses.findIndex(expense => expense._id.toString() === expenseId);
+        if (index !== -1) {
+            pet.expenses[index] = expense;
+        }
+
+         // Log the activity
+         const activityLog = new ActivityLog({
+            userId: pet.owner, 
+            petId: expense.pet,
+            type: ActivityType.EXPENSE,
+            actionType: ActivityLogType.EXPENSE_EDIT
+        });
+        await activityLog.save();
+
+        res.status(200).json({ message: 'Expense updated successfully', expense });
+    } catch (error) {
+        res.status(500).json({ error: 'Error while updating expense, please try again later' });
+    }
+}
+
+async function deleteExpense(req, res) {
+    try {
+        const { expenseId } = req.params;
+        const expense = await Expense.findByIdAndDelete(expenseId);
+        if (!expense) {
+            return res.status(404).json({ error: 'Expense not found' });
+        }
+        
+        const pet = await Pet.findById(expense.pet);
+        pet.expenses = pet.expenses.filter(expense => expense.toString() !== expenseId );
+        await pet.save();
+
+         // Log the activity
+         const activityLog = new ActivityLog({
+            userId: pet.owner, 
+            petId: pet._id,
+            type: ActivityType.EXPENSE,
+            actionType: ActivityLogType.EXPENSE_DELETE
+        });
+        await activityLog.save();
+
+        res.status(200).json({ message: 'Expense deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ error: 'Error while deleting expense, please try again later' });
     }
 }
 
@@ -1625,6 +1681,8 @@ module.exports = {
     deleteMedication,
     updateVetVisitById,
     deleteVetVisit,
+    updateExpenserById,
+    deleteExpense,
     deletePet,
     singleImageUpload,
     multipleImagesUpload,

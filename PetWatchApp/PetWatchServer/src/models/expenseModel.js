@@ -24,6 +24,9 @@ const ExpenseSchema = new Schema({
         type: Date, 
         required: true 
     },
+    updatedDate: { 
+        type: Date, 
+    },
     created_at: {
         type: Date,
         default: Date.now()

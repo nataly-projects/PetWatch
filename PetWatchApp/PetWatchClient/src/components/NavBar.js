@@ -24,7 +24,8 @@ const NavBar = () => {
     const [isNotificationPopupVisible, setNotificationPopupVisible] = useState(false);
     const [anchorElUser, setAnchorElUser] = useState(null);
     const [anchorElNotification, setAnchorElNotification] = useState(null);
-    
+
+
     const handleUserIconClick = () => {
         setUserPopupVisible(!isUserPopupVisible);
     };

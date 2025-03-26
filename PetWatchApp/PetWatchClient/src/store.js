@@ -4,15 +4,35 @@ const initialState = {
   user: null,
   token: null,
   isLoggedIn: false,
+  theme: 'light'
 };
 
 
 const rootReducer = (state = initialState, action) => {
+  console.log('action:',
+    action);
   switch (action.type) {
     case 'SET_USER':
-      return { ...state, user: action.payload.user, token: action.payload.token, isLoggedIn: true };
+      return { 
+        ...state, 
+        user: action.payload.user,
+        token: action.payload.token, 
+        isLoggedIn: true,
+        theme: action.payload.user.theme || 'light',
+      };
     case 'LOGOUT':
-      return { ...state, user: null, token: null, isLoggedIn: false };
+      return { 
+        ...state, 
+        user: null, 
+        token: null, 
+        isLoggedIn: false, 
+        theme: 'light' 
+      };
+      case 'SET_THEME':
+        return { 
+          ...state, 
+          theme: action?.payload ?? 'light'
+        };
     default:
         return state;
   }

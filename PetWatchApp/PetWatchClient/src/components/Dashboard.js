@@ -23,11 +23,15 @@ const Dashboard = () => {
 
   const [isAddPetPopupOpen, setIsAddPetPopupOpen] = useState(false);
 
-  const { data: dashboardData, loading, error } = useFetch(
+
+  const { data: dashboardData, loading, error, refetch } = useFetch(
     fetchUserDashboardData,
-    user?._id && token ? [user._id, token] : null,
-    null
+    user?._id && token ? [user._id, token] : null
   );
+
+  useEffect(() => {
+    refetch(); 
+  }, []);
 
 
   if (loading) {
@@ -60,7 +64,7 @@ const Dashboard = () => {
   const { userData, activityLogs, notes, events: upcomingEvents, expenses } = dashboardData || {};
   const pets = userData?.pets || [];
   const tasks = userData?.tasks || [];
-  const currency = user.currency;
+  const currency = user?.currency;
 
   const handleAddNewPetClick = () => {
     // navigate('/add-pet');
@@ -69,6 +73,10 @@ const Dashboard = () => {
 
   const handleClosePopup = () => {
     setIsAddPetPopupOpen(false);
+  };
+
+  const handleDataUpdated = async () => {
+    refetch();
   };
 
   return (
@@ -86,7 +94,7 @@ const Dashboard = () => {
           <DashboardCard 
           title="Total Expenses" 
           icon={faMoneyCheck}
-          content={`${user.totalExpenses} ${Currency[currency].sign}`}
+          content={`${userData?.totalExpenses} ${Currency[currency]?.sign}`}
           />
         </Grid>
        
@@ -115,7 +123,7 @@ const Dashboard = () => {
        
     <ActivityLog activityLogs={activityLogs} upcomingEvents={upcomingEvents} />
     <Box mb={3} />
-    <ExpenseTracker expenses={expenses} from="user"/>
+    <ExpenseTracker propsExpenses={expenses} from="user"/>
 
     <Grid container spacing={3}>
 
@@ -131,7 +139,7 @@ const Dashboard = () => {
 
     <Grid item xs={12} md={4}>
       <Box display="flex" flexDirection="column" gap={3}>
-        <TaskList propTasks={tasks} token={token} userId={user._id} />
+        <TaskList propTasks={tasks} token={token} userId={user?._id} />
         <TaskPerformanceChart tasks={tasks} />
       </Box>
     </Grid>
@@ -139,7 +147,7 @@ const Dashboard = () => {
 
     
 
-    <AddPetForm open={isAddPetPopupOpen} handleClose={handleClosePopup} />
+  <AddPetForm open={isAddPetPopupOpen} handleClose={handleClosePopup} />
 
   </Box>
 
