@@ -61,10 +61,16 @@ The backend API is documented using Swagger. You can explore the API using the S
 ### Accessing Swagger UI
 
 Once the server is running, you can access the Swagger UI at the following URL:
-```[http://localhost:5001/api-docs-ui](http://localhost:5001/api-docs-ui)```
+```
+http://localhost:5001/api-docs-ui
+```
 
 The client will be served at 
-```http://localhost:3000``` 
+```
+http://localhost:3000
+``` 
 and the server will run at 
-```http://localhost:5001.```
+```
+http://localhost:5001
+```
 
