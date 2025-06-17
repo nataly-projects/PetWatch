@@ -421,8 +421,6 @@ export const getPetMedicalConditions = async (petId, token) => {
           return addPetVetVisit(petId, data, token);
       case 'MEDICAL_CONDITION':
         return addPetMedicalCondition(petId, data, token);
-      // case 'OTHER':
-      //     return addOtherActivity(petId, data, token);
       default:
           throw new Error('Invalid activity type');
   }

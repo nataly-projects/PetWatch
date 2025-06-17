@@ -5,7 +5,6 @@ const {EMAIL_SUBJECTS } = require('../utils/config');
 const appEmail = process.env.EMAIL; 
 const emailKey = process.env.EMAIL_KEY;
 
-  // create a nodemailer transporter
   const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
@@ -16,7 +15,6 @@ const emailKey = process.env.EMAIL_KEY;
 
   async function sendContactEmail(messageData) {
     
-    // email options
     const mailOptions = {
       from: messageData.emil,
       to: appEmail, 
@@ -33,7 +31,6 @@ const emailKey = process.env.EMAIL_KEY;
       `
     };
   
-    // send the email
     transporter.sendMail(mailOptions, (error, info) => {
       if (error) {
         console.error('Error sending email:', error);

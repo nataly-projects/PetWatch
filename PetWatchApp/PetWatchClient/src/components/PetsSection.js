@@ -12,9 +12,6 @@ const PetsSection = () => {
     const token = useSelector((state) => state.token);
     const navigate = useNavigate();
 
-    // const [pets, setPets] = useState([]);
-    // const [loading, setLoading] = useState(true);
-    // const [error, setError] = useState(false);
     const [isAddPetPopupOpen, setIsAddPetPopupOpen] = useState(false);
 
     const { data: pets, loading, error } = useFetch(
@@ -23,23 +20,6 @@ const PetsSection = () => {
         null
     );
 
-    // const fetchData = async () => {
-    //     try {
-    //         const userPets = await getPetsByUserId(user._id, token);
-    //         setPets(userPets);
-    //     } catch (error) {
-    //         console.error('Error fetching data:', error);
-    //         setError(true);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     if (user) {
-    //         fetchData();
-    //     }
-    // }, [user]);
 
     const handleAddNewPetClick = () => setIsAddPetPopupOpen(true);
     const handleClosePopup = () => setIsAddPetPopupOpen(false);

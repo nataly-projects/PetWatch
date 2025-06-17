@@ -118,7 +118,6 @@ console.log(pet);
   }
 
   const handleActivitySelect = async (selectedActivity, data) => {
-      // Handle the selected activity here
       setPopupVisible(false);
       try{
         await addPetActivity(petDetails._id, selectedActivity, data, token);
@@ -139,19 +138,16 @@ console.log(pet);
 
   const handleEditSubmit = async (updatedItem, type) => {
     try {
-      // Dynamically select the update function based on type
       const updateFunctions = {
         [ActivityType.MEDICAL_CONDITION]: updateMedicalConditionById,
         [ActivityType.MEDICATION]: updateMedicationById,
         [ActivityType.ALLERGY]: updateAllergyById,
-        pet: updatePetById, // handle pet update separately if needed
+        pet: updatePetById, 
       };
   
-      // Call the respective update function
       if (updateFunctions[type]) {
         await updateFunctions[type](updatedItem, token);
   
-        // Update the local state in `activityRecords`
         setActivityRecords((prevRecords) => ({
           ...prevRecords,
           [type.toLowerCase()]: prevRecords[type.toLowerCase()].map((item) =>
@@ -162,7 +158,6 @@ console.log(pet);
         toast.success(`${type} updated successfully!`);
       }
   
-      // Close modal if editing health details or pet details
       if (type === 'pet') {
         setEditBasicDetailsModalVisible(false);
       } else {
@@ -176,19 +171,16 @@ console.log(pet);
 
   const handleDelete = async (item, type) => {
     try {
-      // Dynamically select the delete function based on type
       const deleteFunctions = {
         [ActivityType.MEDICAL_CONDITION]: deleteMedicalConditionById,
         [ActivityType.MEDICATION]: deleteMedicationById,
         [ActivityType.ALLERGY]: deleteAllergyById,
-        pet: deletePet, // handle pet deletion separately if needed
+        pet: deletePet, 
       };
   
-      // Call the respective delete function
       if (deleteFunctions[type]) {
         await deleteFunctions[type](item._id, token);
   
-        // Update local state by removing the deleted item
         setActivityRecords((prevRecords) => ({
           ...prevRecords,
           [type.toLowerCase()]: prevRecords[type.toLowerCase()].filter(

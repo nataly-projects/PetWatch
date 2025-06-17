@@ -10,11 +10,10 @@ const WeightTracker = ({ weightUpdateLogs }) => {
   const dates = weightUpdateLogs.map(log => formatDateUniversal(new Date(log.created_at)));
 
   const weights = weightUpdateLogs.map(log => {
-    const weightString = log.details.match(/\d+/); // Extracts digits from the string
-    return weightString ? parseInt(weightString[0]) : null; // Parses the first matched digits as an integer
+    const weightString = log.details.match(/\d+/); 
+    return weightString ? parseInt(weightString[0]) : null; 
   });
 
-  // Data for the bar chart
   const data = {
     labels: dates,
     datasets: [

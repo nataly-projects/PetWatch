@@ -199,14 +199,12 @@ const AddPetForm = ({open, handleClose} ) => {
         setAdditionalPhotos((prevPhotos) => prevPhotos.filter((photo, index) => index !== indexToDelete));
     };
 
-    // Function to move to the next section
     const handleNext = () => {
         const validations = [validateSection1, validateSection2];
         if (currentSection <= 2 && !validations[currentSection - 1]()) return;
         setCurrentSection((prev) => (prev < 10 ? prev + 1 : prev));
     };
 
-    // Function to move to the previous section
     const handlePrevious = () => setCurrentSection((prev) => (prev > 1 ? prev - 1 : prev));
 
 

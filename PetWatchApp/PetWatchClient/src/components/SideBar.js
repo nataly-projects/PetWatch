@@ -56,8 +56,7 @@ const Sidebar = () => {
       {text: 'Expenses', link: '/main/expenses' , icon: faMoneyCheck},
       {text: 'Tasks', link: '/main/tasks' , icon: faTasks}
     ]},
-    // {title: 'Expenses', items: [{text: 'Expenses', link: '/main/expenses' , icon: faMoneyCheck} ]},
-    // {title: 'Calendar', items: [{text: 'Calendar', link: '/main/calendar' , icon: faCalendar} ]},
+
     {title: 'Info', items: [
     {text: 'Dogs Care Routine', link: '/main/dog-care' , icon: faDog}, 
     {text: 'Dog Guide', link: '/main/dog-guide' , icon: faDog}, 

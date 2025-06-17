@@ -40,7 +40,7 @@ const PetSlider = ({ pets }) => {
           color: '#ccc',
         },
         '.slick-dots li.slick-active button:before': {
-          color: '#1976d2', // Active dot color
+          color: '#1976d2',  
         },
         '.slick-arrow': {
           color: '#1976d2',

@@ -15,7 +15,6 @@ const { MedicalCondition } = require( '../models/MedicalConditionsModel');
 const  {ActivityLogType, ActivityType, VaccineRecordType, RoutineCareActivity, ExpenseCategory } = require('../utils/enums');
 const { all } = require('../routes/userRoutes');
 
-// Set up storage configuration for single image upload
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         cb(null, 'uploads/');
@@ -25,10 +24,8 @@ const storage = multer.diskStorage({
     }
 });
 
-// Set up multer instance for single image upload
 const singleImageUpload = multer({ storage }).single('image');
 
-// Set up multer instance for array of images upload
 const multipleImagesUpload = multer({ storage }).array('additionalImages');
 
 
@@ -218,7 +215,6 @@ async function getPetNote (req, res) {
             });
         });
         
-        // Sort the combined events by nextDate
         upcomingEvents.sort((a, b) => a.nextDate - b.nextDate);
         res.status(200).json(upcomingEvents);
     } catch (error) {
@@ -237,23 +233,19 @@ async function getPetNote (req, res) {
       const categoryExpensesData = {};
   
       petWithExpenses.expenses.forEach(expense => {
-        const month = new Date(expense.date).getMonth() + 1; // Get month index (0-11)
+        const month = new Date(expense.date).getMonth() + 1; 
         const category = expense.category;
   
-        // Update monthly expenses data
         monthlyExpensesData[month] = (monthlyExpensesData[month] || 0) + expense.amount;
   
-        // Update category expenses data
         categoryExpensesData[category] = (categoryExpensesData[category] || 0) + expense.amount;
       });
   
-      // Convert monthly expenses data to array of objects
       const monthlyExpensesChartData = Object.entries(monthlyExpensesData).map(([monthIndex, amount]) => ({
-        month: monthIndex, // Month index
-        amount: amount // Total expenses for the month
+        month: monthIndex, 
+        amount: amount 
       }));
   
-      // Convert category expenses data to array of objects
       const categoryExpensesChartData = Object.entries(categoryExpensesData).map(([category, amount]) => ({
         category: category,
         amount: amount
@@ -517,7 +509,6 @@ async function addPet (req, res) {
             }));
         }
 
-        // Update the pet document with the IDs of related data items
         newPetData.medications = medicationIds;
         newPetData.allergies = allergyIds;
         newPetData.vaccinationRecords = vaccinationIds;
@@ -528,10 +519,9 @@ async function addPet (req, res) {
         newPetData.medicalConditions = contidionIds;
         await newPetData.save();
 
-        // Find the user by ID and update the pets field
         const updatedUser = await User.findByIdAndUpdate(
             userId,
-            { $push: { pets: newPetData._id } }, // Add the pet's ID to the pets array
+            { $push: { pets: newPetData._id } }, 
             { new: true }
         );
 
@@ -544,7 +534,6 @@ async function addPet (req, res) {
         });
         await weightActivityLog.save();
 
-          // Log the activity
           const activityLog = new ActivityLog({
             userId: userId, 
             petId: pet,
@@ -567,7 +556,7 @@ async function uploadAdditionalImageToNewPet(req, res) {
         if (!pet) {
             return res.status(404).json({ error: 'Pet not found' });
         }
-        // Extract paths of additional images from req.files and add them to pet.additionalImages
+        
         const additionalImagePaths = req.files.map(file => file.path);
         pet.additionalImages = pet.additionalImages.concat(additionalImagePaths);
         await pet.save();
@@ -583,7 +572,6 @@ async function addPetVaccineRecord (req, res) {
         const { petId } = req.params;
         const { vaccineType, note, date, nextDate } = req.body;
 
-        // Create a new VaccinationRecord document
         const vaccinationRecord = new VaccinationRecord({
             vaccineType: VaccineRecordType[vaccineType],
             note,
@@ -595,7 +583,6 @@ async function addPetVaccineRecord (req, res) {
         await vaccinationRecord.save();
 
 
-        // Find the pet by ID and update its vaccinationRecords array
         const pet = await Pet.findByIdAndUpdate(
             petId,
             { $push: { vaccinationRecords: vaccinationRecord._id } },
@@ -606,7 +593,6 @@ async function addPetVaccineRecord (req, res) {
             return res.status(404).json({ error: 'Pet not found' });
         }
 
-        // Log the activity
         const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: petId,
@@ -629,7 +615,6 @@ async function addPetRoutineCare (req, res) {
         const { petId } = req.params;
         const { activity, note, date, nextDate } = req.body;
 
-        // Create a new RoutineCareRecord document
         const routineCareRecord = new RoutineCareRecord({
             activity: RoutineCareActivity[activity],
             note,
@@ -640,7 +625,7 @@ async function addPetRoutineCare (req, res) {
 
         await routineCareRecord.save();
        
-        //TODO - if there is cost value - add it to the pet expense fiels 
+        //TODO - if there is cost value - add it to the pet expense field 
         //with the expenses type - ExpenseCategory.RoutineCare
         const pet = await Pet.findByIdAndUpdate(
             petId,
@@ -652,7 +637,6 @@ async function addPetRoutineCare (req, res) {
             return res.status(404).json({ error: 'Pet not found' });
         }
 
-         // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: petId,
@@ -675,7 +659,6 @@ async function addPetNote (req, res) {
         const { petId } = req.params;
         const { noteData } = req.body;
  
-        // Create a new Note document
         const note = new Note({
             ...noteData,
             pet: petId
@@ -691,7 +674,6 @@ async function addPetNote (req, res) {
             return res.status(404).json({ error: 'Pet not found' });
         }
 
-         // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: petId,
@@ -714,7 +696,6 @@ async function addPetExpense (req, res) {
         const { petId } = req.params;
         const { category, amount, note, date } = req.body;
 
-         // Create a new Note document
          const expense = new Expense({
             category: ExpenseCategory[category],
             amount, 
@@ -729,11 +710,11 @@ async function addPetExpense (req, res) {
             { $push: { expenses: expense._id } },
             { new: true }
         );
+
         if (!pet) {
             return res.status(404).json({ error: 'Pet not found' });
         }
 
-         // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: petId,
@@ -742,7 +723,6 @@ async function addPetExpense (req, res) {
             details: note ? `expense type: ${ExpenseCategory[category]}.\n your note: ${note}` :  `expense type: ${ExpenseCategory[category]}`
         });
         await activityLog.save();
-        //Add to the totalExpenses for the pet owner
         const user = await User.findById(pet.owner);
         user.totalExpenses += Number(amount);
         await user.save();
@@ -769,8 +749,6 @@ async function addPetAllergy (req, res) {
 
         await allergy.save();
 
-
-        // Find the pet by ID and update its allergies array
         const pet = await Pet.findByIdAndUpdate(
             petId,
             { $push: { allergies: allergy._id } },
@@ -781,7 +759,6 @@ async function addPetAllergy (req, res) {
             return res.status(404).json({ error: 'Pet not found' });
         }
 
-        // Log the activity
         const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: petId,
@@ -815,7 +792,6 @@ async function addPetMedication (req, res) {
 
         await medication.save();
 
-        // Find the pet by ID and update its medications array
         const pet = await Pet.findByIdAndUpdate(
             petId,
             { $push: { medications: medication._id } },
@@ -826,7 +802,6 @@ async function addPetMedication (req, res) {
             return res.status(404).json({ error: 'Pet not found' });
         }
 
-        // Log the activity
         const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: petId,
@@ -860,7 +835,6 @@ async function addPetVetVisit (req, res) {
 
         await vetVisit.save();
 
-        // Find the pet by ID and update its vetVisitis array
         const pet = await Pet.findByIdAndUpdate(
             petId,
             { $push: { vetVisitis: vetVisit._id } },
@@ -871,7 +845,6 @@ async function addPetVetVisit (req, res) {
             return res.status(404).json({ error: 'Pet not found' });
         }
 
-        // Log the activity
         const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: petId,
@@ -902,7 +875,6 @@ async function addPetMealPlanner (req, res) {
             petId: petId
         });
         await mealPlanner.save();
-        // Find the pet by ID and update its vetVisitis array
         const pet = await Pet.findByIdAndUpdate(
             petId,
             { $push: { mealPlanner: mealPlanner._id } },
@@ -913,7 +885,6 @@ async function addPetMealPlanner (req, res) {
             return res.status(404).json({ error: 'Pet not found' });
         }
        
-        // Log the activity
         const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: petId,
@@ -943,7 +914,6 @@ async function addPetEmergencyContacts (req, res) {
             petId: petId
         });
         await contact.save();
-        // Find the pet by ID and update its vetVisitis array
         const pet = await Pet.findByIdAndUpdate(
             petId,
             { $push: { emergencyContacts: contact._id } },
@@ -954,7 +924,6 @@ async function addPetEmergencyContacts (req, res) {
             return res.status(404).json({ error: 'Pet not found' });
         }
         
-        // Log the activity
         const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: petId,
@@ -985,7 +954,6 @@ async function addPetMedicalCondition (req, res) {
             pet: petId
         });
         await condition.save();
-        // Find the pet by ID and update its vetVisitis array
         const pet = await Pet.findByIdAndUpdate(
             petId,
             { $push: { medicalConditions: condition._id } },
@@ -996,7 +964,6 @@ async function addPetMedicalCondition (req, res) {
             return res.status(404).json({ error: 'Pet not found' });
         }
         
-        // Log the activity
         const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: petId,
@@ -1030,13 +997,7 @@ async function updateNoteById (req, res) {
         await note.save();
 
         const pet = await Pet.findById(note.pet);
-        
-        // const index = pet.notes.findIndex(note => note._id.toString() === noteId);
-        // if (index !== -1) {
-        //     pet.notes[index] = note;
-        // }
 
-         // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: noteData.pet,
@@ -1059,12 +1020,10 @@ async function deleteNote (req, res) {
         if (!note) {
             return res.status(404).json({ error: 'Note not found' });
         }
-        // Remove from the pet notes array
         const pet = await Pet.findById(note.pet);
         pet.notes = pet.notes.filter(petNote => petNote.toString() !== noteId );
         await pet.save();
 
-         // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: pet._id,
@@ -1102,7 +1061,6 @@ async function updateAllergyById (req, res) {
             pet.allergies[index] = allergy;
         }
 
-         // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: allergy.pet,
@@ -1126,13 +1084,11 @@ async function deleteAllergy (req, res) {
         if (!allergy) {
             return res.status(404).json({ error: 'Allergy not found' });
         }
-        // Remove from the pet allergies array
         const pet = await Pet.findById(allergy.pet);
         pet.allergies = pet.allergies.filter(allergy => allergy.toString() !== allergyId );
 
         await pet.save();
 
-         // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: pet._id,
@@ -1170,7 +1126,6 @@ async function updateMedicationById (req, res) {
             pet.medications[index] = medication;
         }
 
-         // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: medication.pet,
@@ -1193,12 +1148,10 @@ async function deleteMedication (req, res) {
         if (!medication) {
             return res.status(404).json({ error: 'Medication not found' });
         }
-        // Remove from the pet medications array
         const pet = await Pet.findById(medication.pet);
         pet.medications = pet.notes.filter(med => med.toString() !== medication );
         await pet.save();
 
-         // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: pet._id,
@@ -1236,7 +1189,6 @@ async function updateVetVisitById (req, res) {
             pet.vetVisits[index] = visit;
         }
 
-         // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: visit.pet,
@@ -1259,12 +1211,10 @@ async function deleteVetVisit (req, res) {
         if (!visit) {
             return res.status(404).json({ error: 'Visit not found' });
         }
-        // Remove from the pet visits array
         const pet = await Pet.findById(visit.pet);
         pet.vetVisits = pet.notes.filter(visit => visit.toString() !== visitId );
         await pet.save();
 
-         // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: pet._id,
@@ -1304,7 +1254,6 @@ async function updateMealPlannerById (req, res) {
             pet.mealPlanner[index] = meal;
         }
 
-         // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: meal.pet,
@@ -1326,12 +1275,10 @@ async function deleteMealPlanner (req, res) {
         if (!meal) {
             return res.status(404).json({ error: 'Meal Planner not found' });
         }
-        // Remove from the pet meals array
         const pet = await Pet.findById(meal.petId);
         pet.mealPlanner = pet.mealPlanner.filter(meal => meal.toString() !== mealId );
         await pet.save();
 
-         // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: pet._id,
@@ -1368,7 +1315,6 @@ async function updateEmergencyContactById (req, res) {
             pet.emergencyContacts[index] = contact;
         }
 
-         // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: contact.pet,
@@ -1389,12 +1335,10 @@ async function deleteEmergencyContact (req, res) {
         if (!contact) {
             return res.status(404).json({ error: 'Contact not found' });
         }
-        // Remove from the pet contacts array
         const pet = await Pet.findById(contact.petId);
         pet.emergencyContacts = pet.emergencyContacts.filter(contact => contact.toString() !== contactId );
         await pet.save();
 
-         // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: pet._id,
@@ -1433,7 +1377,6 @@ async function updateMedicalConditionById (req, res) {
             pet.medicalConditions[index] = condition;
         }
 
-         // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: pet._id,
@@ -1460,7 +1403,6 @@ async function deleteMedicalCondition (req, res) {
         pet.medicalConditions = pet.medicalConditions.filter(condition => condition.toString() !== conditionId );
         await pet.save();
 
-         // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: pet._id,
@@ -1485,21 +1427,33 @@ async function updateExpenserById (req, res) {
             return res.status(404).json({ error: 'Expense not found' });
         }
 
+        const user = await User.findById(pet.owner);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        user.totalExpenses -= Number(expense.amount);
+        user.totalExpenses += Number(expenseData.amount);
+
         expense.date = expenseData.date;
-        expense.amount = expenseData.foamountod;
+        expense.amount = expenseData.amount;
         expense.category = expenseData.category;
         expense.note = expenseData.note;
         expense.updatedDate = Date.now();
         await expense.save();
+        await user.save();
 
         const pet = await Pet.findById(expense.pet);
+        if (!pet) {
+            return res.status(404).json({ error: 'Pet not found' });
+        }
 
         const index = pet.expenses.findIndex(expense => expense._id.toString() === expenseId);
         if (index !== -1) {
             pet.expenses[index] = expense;
         }
+        await pet.save();
 
-         // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: expense.pet,
@@ -1510,6 +1464,7 @@ async function updateExpenserById (req, res) {
 
         res.status(200).json({ message: 'Expense updated successfully', expense });
     } catch (error) {
+        console.error('Error updating expense:', error);
         res.status(500).json({ error: 'Error while updating expense, please try again later' });
     }
 }
@@ -1517,16 +1472,29 @@ async function updateExpenserById (req, res) {
 async function deleteExpense(req, res) {
     try {
         const { expenseId } = req.params;
-        const expense = await Expense.findByIdAndDelete(expenseId);
+        const expense = await Expense.findById(expenseId);
         if (!expense) {
             return res.status(404).json({ error: 'Expense not found' });
         }
         
         const pet = await Pet.findById(expense.pet);
+        if (!pet) {
+            return res.status(404).json({ error: 'Pet not found' });
+        }
+
+        const user = await User.findById(pet.owner);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        user.totalExpenses -= Number(expense.amount);
+        await user.save();
+
         pet.expenses = pet.expenses.filter(expense => expense.toString() !== expenseId );
         await pet.save();
 
-         // Log the activity
+        await Expense.findByIdAndDelete(expenseId);
+
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: pet._id,
@@ -1551,7 +1519,6 @@ async function updatePetById(req, res) {
             return res.status(404).json({ error: 'Pet not found' });
         }
 
-        // Update the pet document with the new information
         if (name) pet.name = name;
         if (species) pet.species = species;
         if (breed) pet.breed = breed;
@@ -1579,14 +1546,12 @@ async function updatePetById(req, res) {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        // Update the pet reference in the user's pets array
         const petIndex = user.pets.findIndex(pet => pet._id.toString() === petId);
         if (petIndex !== -1) {
             user.pets[petIndex] = pet;
         }
         await user.save();
 
-         // Log the activity
          const activityLog = new ActivityLog({
             userId: pet.owner, 
             petId: petId,
@@ -1612,16 +1577,7 @@ async function deletePet (req, res) {
             return res.status(404).json({ error: 'Pet not found' });
         }
 
-        //  // Remove pet from user's pet list
-        //  const user = await User.findOneAndUpdate(
-        //     {_id: deletePet.owner},
-        //     // { pets: petId },
-        //     { $pull: { pets: petId } },
-        //     { new: true }
-        // );
-
-         // Log the activity
-         const activityLog = new ActivityLog({
+        const activityLog = new ActivityLog({
             userId: deletedPet.owner, 
             petId: petId,
             actionType: ActivityLogType.PET_DELETE

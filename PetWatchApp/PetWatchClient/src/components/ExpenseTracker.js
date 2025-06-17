@@ -27,10 +27,6 @@ const ExpenseTracker = ({ propsExpenses, from, petName, token }) => {
 const [expenses, setExpenses] = useState(propsExpenses);
 
   const location = useLocation();
-  if (location.pathname === '/main/expenses') {
-    expenses = location.state.expenses;
-    from = location.state.from;
-  }
   const navigate = useNavigate();
   const { execute, loading, error } = useApiActions();
 
@@ -42,9 +38,15 @@ const [expenses, setExpenses] = useState(propsExpenses);
   const [editingExpense, setEditingExpense] = useState(null);
   const [editMode, setEditMode] = useState(false);
 
+
   useEffect(() => {
-    setExpenses(propsExpenses);
-  }, [propsExpenses]);
+    if (location.pathname === '/main/expenses') {
+      setExpenses(location.state?.expenses || propsExpenses); 
+      from = location.state?.from; 
+    } else {
+      setExpenses(propsExpenses); 
+    }
+  }, [location, propsExpenses]);
 
   const handleCategoryChange = (event) => setCategoryFilter(event.target.value);
   const handleStartDateChange = (event) => setStartDateFilter(event.target.value);
@@ -71,7 +73,6 @@ console.log('editingExpense', editingExpense);
     setEditingExpense(null);
       setEditMode(false);
       try {
-        // await updateExpenseById(updatedExpense, token);
         await execute(updateExpenseById, [updatedExpense, token]);
         setExpenses(expenses.map((expense) => (expense._id === updatedExpense._id ? updatedExpense : expense)));
         toast.success('Expense updated successfully!');
@@ -107,6 +108,14 @@ const columns = useMemo(() => {
       Header: 'Category',
       accessor: 'category',
     },
+    ...(from === 'user'
+      ? [
+          {
+            Header: 'Pet',
+            accessor: 'pet.name',
+          },
+        ]
+      : []),
     {
       Header: 'Amount',
       accessor: 'amount',
@@ -236,7 +245,13 @@ const columns = useMemo(() => {
       )}
 
       {allExpenses?.length > 0 ? (
-        <Table instance={expensesTableInstance} />
+        filteredExpenses?.length > 0 ? (
+          <Table instance={expensesTableInstance} />
+        ) : (
+          <Typography variant="h6" align="center" sx={{ mt: 2 }}>
+            No expenses match this filter. Try a different one...
+          </Typography>
+        )
       ) : (
         <Typography>No expenses yet.</Typography>
       )}

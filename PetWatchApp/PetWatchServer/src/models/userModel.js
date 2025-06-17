@@ -42,7 +42,6 @@ const userSchema = new Schema({
         type: Number,
         default: 0 
     },
-       // Account settings
     notificationPreferences: {
         email: {
             type: Boolean,
@@ -56,11 +55,10 @@ const userSchema = new Schema({
             type: Boolean,
             default: true
         },
-        // Add more notification preferences as needed
     },
     theme: {
         type: String,
-        default: 'light' // Or any default theme
+        default: 'light'
     },
     currency: {
         type: String,
@@ -84,16 +82,14 @@ const userSchema = new Schema({
     }
 });
 
-// method that remove sensitive information from the schema
 userSchema.methods.toJSON = function () {
     const userObject = this.toObject();
-    // remove the password field from the object
     delete userObject.password;
     return userObject;
-  };
+};
 
 const User = mongoose.model('User', userSchema);
 
-module.exports = { User, userSchema };
+module.exports = User;
 
 

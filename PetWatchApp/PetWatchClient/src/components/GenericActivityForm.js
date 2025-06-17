@@ -30,7 +30,6 @@ const Container = styled(Box)({
 
 const GenericActivityForm = ({ title, fields, onSave, onClose, initialData = {}, validationRules = {}, showHeader = true }) => {
     const [formData, setFormData] = useState(() => {
-        // Initialize formData with field values or defaults
         return fields.reduce((acc, field) => {
           acc[field.name] = field.value || initialData[field.name] || '';
           return acc;

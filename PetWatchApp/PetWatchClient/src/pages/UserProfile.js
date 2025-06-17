@@ -59,7 +59,6 @@ const UserProfile = () => {
     if (validateDetailsInput()) {
       setEditDetailsMode(false);
       try {
-        // await editUserDetails(user._id, formData, token);
         await execute(editUserDetails, [user._id, formData, token]);
         toast.success('Details updated successfully!');
       } catch (error) {
@@ -76,24 +75,20 @@ const UserProfile = () => {
   const validateChangePasswordInput = () => {
     const validationErrors = {};
   
-    // Validate old password
     if (!changePasswordData.oldPassword) {
       validationErrors.oldPassword = 'Old password is required';
     }
   
-    // Validate new password
     if (!changePasswordData.newPassword) {
       validationErrors.newPassword = 'New password is required';
     }
   
-    // Confirm password and check match
     if (!changePasswordData.confirmPassword) {
       validationErrors.confirmPassword = 'Confirm new password is required';
     } else if (changePasswordData.newPassword !== changePasswordData.confirmPassword) {
       validationErrors.confirmPassword = 'Passwords do not match';
     }
   
-    // Set the errors state and return if valid
     setPasswordErrors(validationErrors);
     return Object.keys(validationErrors).length === 0;
   };
@@ -103,7 +98,6 @@ const UserProfile = () => {
     if (validateChangePasswordInput()) {
       setChangePasswordMode(false);
       try {
-        // await changePassword(changePasswordData, token);
         await execute(changePassword, [changePasswordData, token]);
         toast.success('Password changed successfully!');
       } catch (error) {

@@ -10,7 +10,6 @@ import { formFieldsConfig, FormFieldsType } from '../utils/utils';
 const VaccinationRecords = ({ vaccinationRecords, onAdd, onDelete}) => {
     const [vaccineType, setVaccineType] = useState(null);
 
-    // Get form configuration for the vaccine
     const formConfig = vaccineType ? formFieldsConfig(vaccineType)[FormFieldsType.VACCINE_RECORD] : null;
     
     return (

@@ -2,7 +2,7 @@ require('dotenv').config();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const {sendResetCodeEmail, sendContactEmail} = require('../services/mailService');
-const {User} = require('../models/userModel');
+const User = require('../models/userModel');
 const {ContactUs} = require('../models/contactUsModel');
 const { ActivityLog } = require('../models/activityLogModel');
 const { validatePhone, validateEmail, validatePassword } = require('../validators/userValidators');
@@ -30,7 +30,6 @@ async function getUserById(req, res) {
 async function getUserDashboardData(req, res) {
   const {userId} = req.params;
   try {
-      // const user = await User.findById(userId).populate('pets').populate('tasks');
       const user = await User.findById(userId).populate('tasks').populate({
         path: 'pets',
             populate: [
@@ -71,19 +70,16 @@ async function register (req, res) {
     try {
       const { fullName, email, phone, password } = req.body;
 
-      // check if the email is already registered
       const existingUser = await User.findOne({ email });
   
       if (existingUser) {
         return res.status(400).json({ error: 'Email is already registered' });
       }
 
-      // validate email and phone
       validateEmail(email);
       validatePhone(phone);
       //TODO - need to change the validatePassword function
       validatePassword(password);
-      // hash the password before saving it to the database
       const hashedPassword = await bcrypt.hash(password, 10);
   
       const newUser = new User({
@@ -108,12 +104,11 @@ async function login(req, res) {
         if (!user) {
           return res.status(404).json({ error: 'No user found with that email' });
         }
-        // check if the provided password matches the stored hashed password
+   
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
           return res.status(401).json({ error: 'Incorrect  password' });
         }
-        // If the password is correct, generate a JWT token
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '100y' });
 
         res.status(200).json({ message: 'Login successful', user, token });
@@ -164,24 +159,20 @@ async function getUserExpensesArrays (req, res) {
 
   userWithPetsAndExpenses.pets.forEach(pet => {
     pet.expenses.forEach(expense => {
-      const month = new Date(expense.date).getMonth()+1; // Get month index (0-11)
+      const month = new Date(expense.date).getMonth()+1; 
       const category = expense.category;
 
-      // Update monthly expenses data
       monthlyExpensesData[month] = (monthlyExpensesData[month] || 0) + expense.amount;
 
-      // Update category expenses data
       categoryExpensesData[category] = (categoryExpensesData[category] || 0) + expense.amount;
     });
   });
 
-   // Convert monthly expenses data to array of objects
    const monthlyExpensesChartData = Object.entries(monthlyExpensesData).map(([monthIndex, amount]) => ({
-    month: monthIndex, // Month index
-    amount: amount // Total expenses for the month
+    month: monthIndex,
+    amount: amount 
   }));
 
-  // Convert category expenses data to array of objects
   const categoryExpensesChartData = Object.entries(categoryExpensesData).map(([category, amount]) => ({
     category: category,
     amount: amount
@@ -254,7 +245,6 @@ async function getUserUpcomingEvents (req, res) {
         });
     });
 
-    // Sort the combined events by nextDate
     upcomingEvents.sort((a, b) => a.nextDate - b.nextDate);
     res.status(200).json(upcomingEvents);
   } catch (error) {
@@ -295,7 +285,6 @@ async function getUserAccountSettings (req, res) {
       return { error: 'User not found' };
     }
 
-    // Extract and return account settings
     const accountSettings = {
       notificationPreferences: user.notificationPreferences,
       theme: user.theme,
@@ -312,13 +301,8 @@ async function getUserAccountSettings (req, res) {
 async function updateUserById(req, res) {
     const {userId} = req.params; 
     const { userData } = req.body;
-    // let imagePath = null;
-    // if (req.file && req.file.path) {
-    //   imagePath = req.file.path;
-    // }
 
     try {
-        // check if the user exists
         const user = await User.findById(userId);
 
         if (!user) {
@@ -329,7 +313,6 @@ async function updateUserById(req, res) {
 
             isValid = validateEmail(userData.email);
             if (isValid) {
-              // check if the email is already registered
               const existingUser = await User.findOne({ email });
                 
               if (existingUser) {
@@ -350,9 +333,6 @@ async function updateUserById(req, res) {
         if (userData.fullName && userData.fullName != user.fullName) {
             user.fullName = userData.fullName;
         }
-        // if (imagePath && user.imageUrl != imagePath) {
-        //   user.imageUrl = imagePath;
-        // }
 
         const updatedUser = await user.save();
         return res.status(200).json({ message: 'User updated successfully', updatedUser });
@@ -371,7 +351,6 @@ async function updateUserAccountSettings (req, res) {
       return { error: 'User not found' };
     }
 
-    // Update user account settings
     if (updateSettings.notificationPreferences) {
       user.notificationPreferences = updateSettings.notificationPreferences;
     }
@@ -392,22 +371,18 @@ async function updateUserAccountSettings (req, res) {
 
 async function changePassword (req, res) {
   const {changePasswordData} = req.body;
-  // const { email, oldPassword, newPassword } = req.body;
     try {
-      // find the user by email 
       const user = await User.findOne({email: changePasswordData.email});
 
       if (!user) {
         return res.status(401).json({ error: 'No user found with that email' });
       }
 
-      // check if the provided password matches the stored hashed password
       const passwordMatch = await bcrypt.compare(changePasswordData.oldPassword, user.password);
       if (!passwordMatch) {
         return res.status(401).json({ error: 'Incorrect password' });
       }
 
-      // hash and update the user password in the db
       const hashedNewPassword = await bcrypt.hash(changePasswordData.newPassword, 10);
       user.password = hashedNewPassword;
       await user.save();
@@ -421,19 +396,16 @@ async function changePassword (req, res) {
 async function requestPasswordReset(req, res) {
   const { email } = req.body;
   try {
-    // check if the email exists in the db
     const user = await User.findOne({ email });
 
     if (!user) {
       return res.status(404).json({ error: 'No user with the provided email was found' });
     }
 
-    // generate a verification code and store it in the user document
     const verificationCode = generateVerificationCode();
     user.resetCode = verificationCode;
     await user.save();
 
-    // send the verification code to the user's email (use nodemailer)
     await sendResetCodeEmail(user.email, verificationCode, user.fullName);
 
     return res.status(200).json({ message: 'Verification code sent successfully' });
@@ -459,7 +431,6 @@ async function ContactUsMessage(req, res) {
   
       await newMessage.save();
 
-      // send an email to the company
       await sendContactEmail(messageData);
       return res.status(201).json({ message: 'Message sent successfully' });
     } catch (error) {
@@ -478,12 +449,10 @@ function generateVerificationCode() {
 async function resetPasswordCode(req, res) {
   const { email, code } = req.body;
   try {
-    // get the user (already check if the email exists in the start of the reset password proccess)
+
     const user = await User.findOne({ email });
 
-    // check if the code match
     if (user.resetCode === code) {
-      // code is correct, remove the passwordResetCode from the user document
       user.resetCode = null;
       await user.save();
       return res.status(200).json({ message: 'Code is correct' });
@@ -499,10 +468,8 @@ async function resetPasswordCode(req, res) {
 async function resetPassword(req, res) {
   const { email, newPassword } = req.body;
   try {
-    // find the user by email 
     const user = await User.findOne({ email});
 
-    // hash and update the user password in the db
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
     user.password = hashedNewPassword;
     await user.save();
@@ -525,7 +492,6 @@ async function getUserPetsActivitiesForMonth(req, res) {
     }
     const petIds = user.pets;
 
-    // Fetch activities for each table
     const vetVisits = await VetVisit.find({
       $or: [
         { date: { $gte: new Date(year, month-1, 1), $lt: new Date(year, month, 1) } },
@@ -548,7 +514,6 @@ async function getUserPetsActivitiesForMonth(req, res) {
         pet: { $in: petIds }
     }).populate('pet');
 
-    // Combine activities from all tables
     const activities = [...vetVisits, ...routineCare, ...vaccinationRecords];
     res.status(200).json(activities);
     
@@ -589,7 +554,6 @@ async function addUserTask(req, res) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Log the activity
     const activityLog = new ActivityLog({
         userId: userId, 
         type: ActivityType.TASK,
@@ -620,7 +584,6 @@ async function updateUserTask(req, res) {
         return res.status(404).json({ error: 'Task not found' });
     }
 
-    // Log the activity
     const activityLog = new ActivityLog({
       userId: userId, 
       type: ActivityType.TASK,
@@ -648,7 +611,6 @@ async function deleteUserTask(req, res) {
     user.tasks = user.tasks.filter(t => t.toString() !== taskId);
     await user.save();
 
-    // Log the activity
     const activityLog = new ActivityLog({
       userId: userId, 
       type: ActivityType.TASK,
@@ -670,7 +632,6 @@ async function deleteUserTask(req, res) {
 //   fs.writeFileSync('.env', `SECRET_KEY=${secretKey}`);
 // }
 
-// Helpers functions
 async function fetchUserNotes(userId) {
   try {
 
@@ -678,7 +639,7 @@ async function fetchUserNotes(userId) {
       path: 'pets',
       populate: {
         path: 'notes',
-        populate: { path: 'pet', select: 'name' }, // Fetch pet name in notes
+        populate: { path: 'pet', select: 'name' }, 
       },
     });
 
@@ -686,7 +647,6 @@ async function fetchUserNotes(userId) {
       throw new Error('User not found');
     }
 
-    // Extract notes from pets
     const notes = userWithNotes.pets.reduce((acc, pet) => {
       if (pet.notes) {
         acc.push(...pet.notes);
@@ -804,24 +764,20 @@ async function fetchUserExpensesArrays(userId) {
   
     userWithPetsAndExpenses.pets.forEach(pet => {
       pet.expenses.forEach(expense => {
-        const month = new Date(expense.date).getMonth()+1; // Get month index (0-11)
+        const month = new Date(expense.date).getMonth()+1; 
         const category = expense.category;
   
-        // Update monthly expenses data
         monthlyExpensesData[month] = (monthlyExpensesData[month] || 0) + expense.amount;
   
-        // Update category expenses data
         categoryExpensesData[category] = (categoryExpensesData[category] || 0) + expense.amount;
       });
     });
   
-     // Convert monthly expenses data to array of objects
      const monthlyExpensesChartData = Object.entries(monthlyExpensesData).map(([monthIndex, amount]) => ({
-      month: monthIndex, // Month index
-      amount: amount // Total expenses for the month
+      month: monthIndex, 
+      amount: amount 
     }));
   
-    // Convert category expenses data to array of objects
     const categoryExpensesChartData = Object.entries(categoryExpensesData).map(([category, amount]) => ({
       category: category,
       amount: amount
@@ -1489,7 +1445,7 @@ module.exports = {
 *           content:
 *             application/json:
 *               schema:
-*                 type: object
+ *                 type: object
 *                 properties:
 *                   error:
 *                     type: string

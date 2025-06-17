@@ -11,10 +11,10 @@ const useApiActions = () => {
     try {
       const response = await func(...params);
       setData(response);
-      return response; // Return the response to allow further chaining in the component.
+      return response; 
     } catch (err) {
       setError(err);
-      throw err; // Re-throw the error for error handling in the component.
+      throw err; 
     } finally {
       setLoading(false);
     }

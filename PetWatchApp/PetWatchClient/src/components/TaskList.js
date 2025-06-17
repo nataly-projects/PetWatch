@@ -22,7 +22,6 @@ const TaskList = ({propTasks, token, userId}) => {
 
     const handleAddTask = async (newTask) => {
         try {
-            // await addUserTask(userId, newTask, token);
             await execute(userId, newTask, token);
             toast.success('Task added successfully!');
             setTasks([...tasks, newTask]);
@@ -50,7 +49,6 @@ const TaskList = ({propTasks, token, userId}) => {
 
         updatedTask.completed = !updatedTask.completed;
         try {
-            // await updateUserTask(userId, updatedTask, token);
             await execute(updateUserTask, [userId, updatedTask, token]);
         } catch (error) {
             if (error.response && error.response.status === 401) {

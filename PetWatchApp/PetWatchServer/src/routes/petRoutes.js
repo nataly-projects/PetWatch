@@ -4,7 +4,6 @@ const authenticateToken = require('../middleware/authMiddleware');
 const router = express.Router();
 
 
-// Middleware to authenticate token
 router.use(authenticateToken);
 
 router.get('/user/:userId', petController.getPetsByUserId);
@@ -63,7 +62,6 @@ router.delete('/contact/:contactId', petController.deleteEmergencyContact);
 router.put('/medical-condition/:conditionId', petController.updateMedicalConditionById);
 router.delete('/medical-condition/:conditionId', petController.deleteMedicalCondition);
 
-// router.put('/:petId',petController.upload.single('image'),  petController.updatePetById);
 router.put('/:petId',  petController.updatePetById);
 router.delete('/:petId', petController.deletePet);
 

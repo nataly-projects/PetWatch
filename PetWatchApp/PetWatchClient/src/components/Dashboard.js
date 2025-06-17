@@ -67,7 +67,6 @@ const Dashboard = () => {
   const currency = user?.currency;
 
   const handleAddNewPetClick = () => {
-    // navigate('/add-pet');
     setIsAddPetPopupOpen(true);
   };  
 

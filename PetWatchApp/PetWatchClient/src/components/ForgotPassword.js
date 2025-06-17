@@ -15,7 +15,6 @@ const ForgotPassword = ({ onClose }) => {
   });
   const [errors, setErrors] = useState({});
   const [step, setStep] = useState(1);
-  // const [error, setError] = useState(null);
   const { data, loading, error, execute } = useApiActions();
 
 
@@ -53,7 +52,6 @@ const ForgotPassword = ({ onClose }) => {
     setErrors((prevErrors) => ({ ...prevErrors, [name]: errorMessage }));
   };
 
-  // handle step 1 - email input
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -64,49 +62,41 @@ const ForgotPassword = ({ onClose }) => {
     event.preventDefault();
     if (!errors.email) {
       try {
-        // const response = await resetPasswordRequest(formData.email);
         const response = await execute(resetPasswordRequest, [formData.email]);
         if (response) {
           toast.success('Email with verification code sent to your email');
           setStep(2);
         }
       } catch (error) {
-        // setError(error.response?.data?.error || 'An error occurred while processing your request');
         toast.error('An error occurred. Please try again later.');
       }
     }
   };
 
-  // handle step 2 - code input
   const handleCodeSubmit = async (event) => {
     event.preventDefault();
     if (!errors.code) {
       try {
-        // const response = await validateResetPasswordCode(formData.email, formData.code);
         const response = await execute(validateResetPasswordCode, [formData.email, formData.code]);
         if (response) {
           setStep(3);
         }
       } catch (error) {
-        // setError(error.response?.data?.error || 'An error occurred while processing your request');
         toast.error('An error occurred. Please try again later.');
       }
     }
   };
 
-  // handle step 3 - reset the password
   const handlePasswordSubmit = async (event) => {
     event.preventDefault();
     if (!errors.newPassword && !errors.confirmPassword) {
       try {
-        // const response = await resetPassword(formData.email, formData.newPassword);
         const response = await execute(resetPassword, [formData.email, formData.newPassword]);
         if (response) {
           toast.success('Password reset successfully');
           onClose();
         }
       } catch (error) {
-        // setError('An error occurred while updating your password');
         toast.error('An error occurred. Please try again later.');
       }
     }

@@ -21,7 +21,6 @@ export const hashPassword = async (password) => {
 
 
 export const isValidPhoneNumber = async (phoneNumber) => {
-  // Check if the phone number is a valid length 
   return phoneNumber.length >= 10 && phoneNumber.length <= 15;
 };
 
@@ -36,12 +35,11 @@ export const formatDateUniversal = (date) => {
     return null;
   } 
 
-  // Ensure the input is a valid Date object
   const validDate = date instanceof Date ? date : new Date(date);
 
   if (isNaN(validDate.getTime())) {
     console.error('Invalid date value:', date);
-    return null; // Return null for invalid date inputs
+    return null; 
   }
   return new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(validDate);
 };
@@ -56,9 +54,8 @@ export const formatDateAndTimeForInput = (dateString) => {
 export const formatDateForInput = (dateString) => {
   const date = new Date(dateString);
 
-  // Format the date to "yyyy-MM-dd"
   const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+  const month = String(date.getMonth() + 1).padStart(2, '0'); 
   const day = String(date.getDate()).padStart(2, '0');
 
   return `${year}-${month}-${day}`;

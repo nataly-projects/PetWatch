@@ -28,7 +28,6 @@ const MealPlannerSection = ({ propsMeals, petId, token }) => {
   const handleAddMeal = async (meal) => {
     setIsAddMealDialogOpen(false);
     try {
-      // const response = await addPetMealPlanner(petId, meal, token);
       const response = await execute(addPetMealPlanner, [petId, meal, token]);
       setMeals([...meals, response.meal]);
       toast.success('Meal Planner added successfully!');
@@ -62,7 +61,6 @@ const MealPlannerSection = ({ propsMeals, petId, token }) => {
 
   const handleDeleteMeal = async (id) => {
     try {
-      // await deleteMealPlannerById(id, token);
       await execute(deleteMealPlannerById, [id, token]);
       setMeals(meals.filter(meal => meal._id !== id));
       toast.success('Meal deleted successfully!');

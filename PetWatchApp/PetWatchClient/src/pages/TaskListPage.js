@@ -21,8 +21,6 @@ const TaskListPage = () => {
     const [tasks, setTasks] = useState([]);
     const [editingTask, setEditingTask] = useState(null);
     const [isEditMode, setIsEditMode] = useState(false);
-    // const [loading, setLoading] = useState(true);
-    // const [error, setError] = useState(false);
     const [isAddTaskDialogOpen, setIsAddTaskDialogOpen] = useState(false);
 
     const { data: fetchedTasks, loading, error } = useFetch(
@@ -39,29 +37,6 @@ const TaskListPage = () => {
         }
     }, [fetchedTasks]);
     
-    // useEffect(() => {
-    //     fetchTasks();
-    // }, []);
-
-    // const fetchTasks = async () => {
-    //     try {
-    //         const response = await fetchUserTasks(user._id, token);
-    //         console.log(response);
-    //         setTasks(response);
-    //         setLoading(false);
-    //     } catch (error) {
-    //         if (error.response && error.response.status === 401) {
-    //             console.error('UNAUTHORIZED_ERROR');
-    //             setError(true);
-    //             setLoading(false);
-    //             navigate('/login');
-    //         } else {
-    //             console.error('Error fetching data:', error);
-    //             setError(true);
-    //             setLoading(false);
-    //         }
-    //     }
-    // };
 
     const handleDialogClose = () => {
         setIsAddTaskDialogOpen(false);
@@ -82,7 +57,6 @@ const TaskListPage = () => {
             completed: !task.completed, 
         };
         try {
-            // await updateUserTask(user._id, updatedTask, token);
             await execute(updateUserTask, [user._id, updatedTask, token]);
             setTasks(prevTasks => 
                 prevTasks.map(t => (t._id === task._id ? updatedTask : t))
@@ -141,7 +115,6 @@ const TaskListPage = () => {
     const handleAddTask = async (newTask) => {
         setIsAddTaskDialogOpen(false);
         try{
-            // const response = await addUserTask(user._id, newTask, token);
             const response = await execute(addUserTask, [user._id, newTask, token]);
             if (response && response.task) {
                 toast.success('Task added successfully!');
@@ -162,12 +135,10 @@ const TaskListPage = () => {
         setEditingTask(null);
 
         try {
-            // await updateUserTask(user._id, updatedTask, token);
             await execute(updateUserTask, [user._id, updatedTask, token]);
             setTasks(prevTasks => 
                 prevTasks.map(task => (task._id === updatedTask._id ? updatedTask : task))
             );
-            // setTasks(tasks.map(task => (task._id === updatedTask._id ? updatedTask : task)));
         } catch (error) {
             if (error.response && error.response.status === 401) {
                 console.error('UNAUTHORIZED_ERROR');
@@ -196,7 +167,6 @@ const TaskListPage = () => {
     const handleDownload = () => {
         const headers = ["Title", "Description", "Create Date", "Due Date", "Completed"];
         
-        // Convert tasks data to CSV format
         const csvRows = tasks.map(task => [
             task.title,
             task.description,
@@ -205,13 +175,11 @@ const TaskListPage = () => {
             task.completed ? "Yes" : "No"
         ]);
 
-        // Combine headers and rows into a CSV string
         const csvContent = [
             headers.join(","), 
             ...csvRows.map(row => row.map(item => `"${item}"`).join(","))
         ].join("\n");
 
-        // Create a blob and trigger download
         const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
         const url = URL.createObjectURL(blob);
 

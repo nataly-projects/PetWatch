@@ -40,15 +40,7 @@ const FilterSection = ({
           value={startDate}
           onChange={handleStartDateChange}
           InputLabelProps={{ shrink: true }}
-          // InputProps={{
-          //   endAdornment: (
-          //     <InputAdornment position="end">
-          //       <IconButton size="small">
-          //         <FontAwesomeIcon icon={faFilter} />
-          //       </IconButton>
-          //     </InputAdornment>
-          //   )
-          // }}
+
         />
       </FormControl>
 
@@ -60,15 +52,6 @@ const FilterSection = ({
           value={endDate}
           onChange={handleEndDateChange}
           InputLabelProps={{ shrink: true }}
-          // InputProps={{
-          //   endAdornment: (
-          //     <InputAdornment position="end">
-          //       <IconButton size="small">
-          //         <FontAwesomeIcon icon={faFilter} />
-          //       </IconButton>
-          //     </InputAdornment>
-          //   )
-          // }}
         />
       </FormControl>
 
@@ -79,15 +62,6 @@ const FilterSection = ({
             type="number"
             value={minAmount}
             onChange={handleMinAmountChange}
-            // InputProps={{
-            //   endAdornment: (
-            //     <InputAdornment position="end">
-            //       <IconButton size="small">
-            //         <FontAwesomeIcon icon={faFilter} />
-            //       </IconButton>
-            //     </InputAdornment>
-            //   )
-            // }}
           />
         </FormControl>
       )}

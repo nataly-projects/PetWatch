@@ -42,7 +42,6 @@ const GallerySection = ({ additionalImages, petId, token }) => {
             images.forEach((image) => {
                 formData.append('additionalImages', image);
             });
-            // await addPetAdditionalImages(formData, token, petId);
             await execute(addPetAdditionalImages, [formData, token, petId]);
             toast.success('Changes saved successfully!');
             setIsChange(false);

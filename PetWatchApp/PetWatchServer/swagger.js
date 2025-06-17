@@ -19,23 +19,18 @@ const options = {
             },
         },
     },
-  apis: ['./src/controllers/*.js'], // Path to the API docs
+  apis: ['./src/controllers/*.js'], 
 };
 
 const swaggerSpec = swaggerJsdoc(options);
 
 module.exports = (app) => {
-    // Serve Swagger JSON document
     app.get('/api-docs', (req, res) => {
-      // Disable caching for Swagger JSON
       res.setHeader('Cache-Control', 'no-store');
-      // Set Content-Type header to application/json
       res.setHeader('Content-Type', 'application/json');
-      // Send the Swagger JSON document
       res.send(swaggerSpec);
     });
 
-    // Serve Swagger UI
     app.use('/api-docs-ui', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 };
 
